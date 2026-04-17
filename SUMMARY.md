@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Check Reading](README.md)
+* [Check Reading이란?](what-is-checkreading.md)
 
 ## 처음 시작하기 <a href="#start" id="start"></a>
 
