@@ -12,10 +12,15 @@
 | `index.html` | / | 없음 | 로그인 (부모/학생 탭) |
 | `profiles.html` | /profiles | parent | 자녀 프로필 목록 |
 | `profile-detail.html` | /profile-detail | parent | 프로필 상세 (통계, 읽는 중, 필독서) |
+| `chat.html` | /chat | any | 소통 (채팅방 목록 + 채팅 패널) |
 | `bookstore.html` | /bookstore | any | 서점 (카테고리별 캐러셀) |
 | `bookshelf.html` | /bookshelf | any | 책장 (읽는 중/읽은 책/찜/필독서 탭) |
 
 > `login.html`, `hub.html` — 구버전, 미사용
+
+## 메뉴 순서
+
+프로필 (parent only) → 소통 → 서점 → 내 책장 → 내 정보
 
 ## User State (localStorage)
 
