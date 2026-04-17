@@ -8,7 +8,7 @@
 * [자녀 프로필 등록](start/undefined-1.md)
 * [결제 및 포인트 구매](start/undefined-2.md)
 
-## Group 2
+## 책 구매하기
 
 * [책 구매하기](group-2/undefined.md)
 * [프로필에 책 할당하기](group-2/undefined-1.md)
