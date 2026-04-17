@@ -5,7 +5,7 @@
 - [x] profiles.html — 자녀 프로필 목록 (홍길동, 성춘향)
 - [x] profile-detail.html — 프로필 상세 (통계, 읽는 중, 필독서)
 - [x] bookstore.html — 서점 (드래그 캐러셀, 책 상세 패널)
-- [x] bookshelf.html — 책장 (탭 UI)
+- [x] bookshelf.html — 책장 (프로필 선택 바, 탭 UI, 프로필별 샘플 데이터)
 - [x] chat.html — 소통 (채팅방 목록, 슬라이드업 채팅 패널, 메시지 전송)
 - [x] 메뉴 순서 통일: 프로필 · 소통 · 서점 · 내 책장 · 내 정보
 

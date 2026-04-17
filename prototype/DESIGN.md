@@ -14,7 +14,7 @@
 | `profile-detail.html` | /profile-detail | parent | 프로필 상세 (통계, 읽는 중, 필독서) |
 | `chat.html` | /chat | any | 소통 (채팅방 목록 + 채팅 패널) |
 | `bookstore.html` | /bookstore | any | 서점 (카테고리별 캐러셀) |
-| `bookshelf.html` | /bookshelf | any | 책장 (읽는 중/읽은 책/찜/필독서 탭) |
+| `bookshelf.html` | /bookshelf | any | 책장 (프로필 선택 바 + 탭: 읽는 중/읽은 책/찜/필독서) |
 
 > `login.html`, `hub.html` — 구버전, 미사용
 
@@ -154,6 +154,55 @@ CSS 필요:
   <!-- 패널 -->
   <div class="relative bg-white rounded-t-3xl ...">...</div>
 </div>
+```
+
+## 책장 프로필 선택 바 (bookshelf.html)
+
+부모 로그인 시 header 내부에 `x-show="isParent"` 영역으로 표시. `overflow-x-auto no-scrollbar` 수평 스크롤.
+
+```html
+<!-- header (모두 flex-shrink-0) -->
+<header class="flex-shrink-0 bg-white border-b border-gray-100">
+  <!-- 타이틀 행 -->
+  <div class="flex items-center justify-between px-4 h-14">...</div>
+  <!-- 프로필 바 (parent only) -->
+  <div x-show="isParent" class="flex gap-4 overflow-x-auto no-scrollbar px-4 pb-3 border-b border-gray-100">
+    <template x-for="p in profiles" :key="p.id">
+      <button @click="selectProfile(p)" class="flex flex-col items-center gap-1 flex-shrink-0">
+        <!-- ring + scale when selected -->
+        <div :class="selectedProfile?.id===p.id ? 'ring-2 ring-offset-2 ring-indigo-500 scale-110' : 'opacity-60'"
+             class="w-11 h-11 rounded-full ..."></div>
+        <span x-text="p.name" class="text-[10px]"></span>
+      </button>
+    </template>
+  </div>
+  <!-- 탭 바 -->
+  <div class="flex overflow-x-auto no-scrollbar">
+    <template x-for="tab in currentTabs" :key="tab.id">...</template>
+  </div>
+</header>
+```
+
+Alpine getter로 프로필별 데이터 반응형 전환:
+
+```js
+const profileData = {
+  hong:    { reading: [...], done: [...], wish: [...], must: [...] },
+  chun:    { reading: [...], done: [...], wish: [...], must: [...] },
+  student: { reading: [...], done: [...], wish: [...], must: [...] },
+};
+
+get currentTabs() {
+  const key = this.isParent ? (this.selectedProfile?.id || 'hong') : 'student';
+  const d = profileData[key] || profileData.hong;
+  return [
+    { id:'reading', label:'읽고 있는 책', books: d.reading },
+    { id:'done',    label:'읽은 책',      books: d.done    },
+    { id:'wish',    label:'찜한 책',       books: d.wish    },
+    { id:'must',    label:'필독서',        books: d.must    },
+  ];
+},
+selectProfile(p) { this.selectedProfile = p; this.activeTab = 'reading'; },
 ```
 
 ## 색상 팔레트 (책 커버용)
