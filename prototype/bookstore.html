@@ -42,7 +42,8 @@
   </aside>
 
   <!-- 메인 -->
-  <div class="flex-1 flex flex-col min-w-0 bg-gray-50 max-w-3xl relative overflow-hidden">
+  <div class="flex-1 flex flex-col min-w-0 bg-gray-50 max-w-3xl relative overflow-hidden"
+       @open-book.window="openBook($event.detail)">
     <header class="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <div class="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center lg:hidden"><span class="text-white text-xs font-bold">CR</span></div>
@@ -60,12 +61,35 @@
     </header>
 
     <main class="flex-1 overflow-y-auto min-h-0">
-      <div class="mx-4 mt-4 rounded-2xl overflow-hidden" style="background:linear-gradient(135deg,#667eea,#764ba2)">
-        <div class="px-5 py-6">
-          <p class="text-indigo-200 text-xs font-medium mb-1">이번 주 Pick ✨</p>
-          <h2 class="text-white text-lg font-bold">Charlotte's Web</h2>
-          <p class="text-indigo-200 text-xs mt-1">E.B. White · Lv.3</p>
-          <button class="mt-3 bg-white text-indigo-600 text-xs font-semibold px-4 py-1.5 rounded-full">읽어보기</button>
+      <!-- 이번 주 Pick 슬라이더 -->
+      <div class="mt-4 relative" x-data="pickSlider()">
+        <div class="overflow-hidden mx-4 rounded-2xl">
+          <div class="flex transition-transform duration-500 ease-in-out"
+               :style="`transform:translateX(-${current*100}%)`">
+            <template x-for="(p, idx) in picks" :key="idx">
+              <div class="min-w-full rounded-2xl px-5 py-6 cursor-pointer flex items-center gap-4"
+                   :style="`background:${p.color}`"
+                   @click="$dispatch('open-book', p)">
+                <div class="flex-1 min-w-0">
+                  <p class="text-white/70 text-xs font-medium mb-1" x-text="p.label"></p>
+                  <h2 class="text-white text-lg font-bold leading-snug" x-text="p.title"></h2>
+                  <p class="text-white/70 text-xs mt-1" x-text="p.author + ' · ' + p.level"></p>
+                  <button class="mt-3 bg-white/90 text-gray-800 text-xs font-semibold px-4 py-1.5 rounded-full">읽어보기</button>
+                </div>
+                <div class="w-20 h-28 rounded-xl flex-shrink-0 flex items-end p-2 shadow-lg bg-white/20">
+                  <span class="text-white text-[10px] font-bold leading-tight drop-shadow" x-text="p.title"></span>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <!-- 도트 -->
+        <div class="flex justify-center gap-1.5 mt-2">
+          <template x-for="(p, idx) in picks" :key="idx">
+            <button @click="current=idx; resetTimer()"
+                    class="rounded-full transition-all duration-300"
+                    :class="current===idx ? 'w-4 h-1.5 bg-indigo-400' : 'w-1.5 h-1.5 bg-gray-300'"></button>
+          </template>
         </div>
       </div>
 
@@ -187,7 +211,7 @@
 
         <!-- 목차 -->
         <div x-show="bookDetailTab==='toc'" class="bg-white divide-y divide-gray-50 mb-2">
-          <template x-for="ch in [{n:1,t:'The Worst Birthday',p:12},{n:2,t:'Vanished into Thin Air',p:24},{n:3,t:'Grover Unexpectedly Loses His Pants',p:38},{n:4,t:'My Mother Teaches Me Bullfighting',p:51},{n:5,t:'I Play Pinochle with a Horse',p:63},{n:6,t:'I Become Supreme Lord of the Bathroom',p:77},{n:7,t:'My Dinner Goes Up in Smoke',p:90},{n:8,t:'We Capture a Flag',p:104}]" :key="ch.n">
+          <template x-for="ch in toc" :key="ch.n">
             <div class="flex items-center gap-3 px-4 py-3">
               <span class="text-xs text-gray-300 w-5 text-right flex-shrink-0" x-text="ch.n"></span>
               <span class="text-sm text-gray-700 flex-1" x-text="ch.t"></span>
@@ -197,22 +221,25 @@
         </div>
 
         <!-- 후기 -->
-        <div x-show="bookDetailTab==='reviews'" class="flex flex-col gap-3 p-4 mb-2">
-          <template x-for="r in [{name:'홍길동',star:5,date:'2024.03.10',text:'정말 재밌어요! 매일 읽고 싶어져요. 그리스 신화도 같이 공부할 수 있어서 좋았어요.'},{name:'이민준',star:4,date:'2024.02.28',text:'영어 실력이 늘었어요. 처음엔 어려웠는데 읽다 보니 익숙해졌어요.'},{name:'박서연',star:5,date:'2024.02.15',text:'Percy가 너무 귀엽고 용감해요. 시리즈 전체 다 읽고 싶어요!'}]" :key="r.name">
-            <div class="bg-white rounded-2xl p-4 shadow-sm">
-              <div class="flex items-center justify-between mb-2">
+        <div x-show="bookDetailTab==='reviews'" class="flex flex-col gap-0 mb-2 bg-white divide-y divide-gray-50">
+          <template x-for="r in reviews" :key="r.id">
+            <div class="px-4 py-3 cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                 @click="openReview(r)">
+              <div class="flex items-center justify-between mb-1.5">
                 <div class="flex items-center gap-2">
-                  <div class="w-7 h-7 bg-indigo-100 rounded-full flex items-center justify-center text-xs font-bold text-indigo-600" x-text="r.name[0]"></div>
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+                       :style="`background:${r.color}`" x-text="r.name[0]"></div>
                   <span class="text-sm font-semibold text-gray-800" x-text="r.name"></span>
+                  <span class="text-[10px] text-gray-400" x-text="r.age+'세'"></span>
                 </div>
                 <span class="text-[10px] text-gray-400" x-text="r.date"></span>
               </div>
-              <div class="flex mb-2">
+              <div class="flex items-center gap-1 mb-1">
                 <template x-for="i in 5" :key="i">
-                  <svg class="w-3.5 h-3.5" :class="i<=r.star?'text-yellow-400':'text-gray-200'" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  <svg class="w-3 h-3" :class="i<=r.star?'text-yellow-400':'text-gray-200'" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                 </template>
               </div>
-              <p class="text-sm text-gray-600 leading-relaxed" x-text="r.text"></p>
+              <p class="text-xs text-gray-500 leading-relaxed line-clamp-2" x-text="r.text"></p>
             </div>
           </template>
         </div>
@@ -220,8 +247,8 @@
         <!-- 비슷한 책 -->
         <div x-show="bookDetailTab==='similar'" class="p-4 mb-2">
           <div class="grid grid-cols-3 gap-3">
-            <template x-for="b in [{title:'The Lightning Thief',author:'R. Riordan',color:'linear-gradient(135deg,#667eea,#764ba2)'},{title:'Harry Potter 1',author:'J.K. Rowling',color:'linear-gradient(135deg,#4facfe,#00f2fe)'},{title:'The Giver',author:'L. Lowry',color:'linear-gradient(135deg,#43e97b,#38f9d7)'},{title:'Hatchet',author:'G. Paulsen',color:'linear-gradient(135deg,#fa709a,#fee140)'},{title:"Ender's Game",author:'O.S. Card',color:'linear-gradient(135deg,#f093fb,#f5576c)'},{title:'City of Ember',author:'J. DuPrau',color:'linear-gradient(135deg,#a18cd1,#fbc2eb)'}]" :key="b.title">
-              <div class="cursor-pointer">
+            <template x-for="b in similarBooks" :key="b.title">
+              <div class="cursor-pointer" @click="openBook(b)">
                 <div class="w-full aspect-[3/4] rounded-xl mb-1.5 flex items-end p-2 shadow-sm" :style="`background:${b.color}`">
                   <span class="text-white text-[10px] font-bold leading-tight drop-shadow" x-text="b.title"></span>
                 </div>
@@ -258,6 +285,47 @@
 
       </div>
 
+      <!-- 후기 상세 모달 -->
+      <div x-show="reviewModal" x-cloak @click.self="reviewModal=false"
+           class="absolute inset-0 bg-black/40 z-40 flex items-end"
+           x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+           x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+        <div class="w-full bg-white rounded-t-3xl flex flex-col"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
+             style="max-height:75vh;">
+          <div class="flex-shrink-0 flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+          <div class="flex-1 overflow-y-auto min-h-0 px-5 pb-6">
+            <!-- 프로필 정보 -->
+            <div class="flex items-center gap-4 py-4 border-b border-gray-100">
+              <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold text-white flex-shrink-0"
+                   :style="`background:${selectedReview?.color}`" x-text="selectedReview?.name[0]"></div>
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-gray-900 text-base" x-text="selectedReview?.name"></p>
+                <p class="text-xs text-gray-400 mt-0.5" x-text="selectedReview?.age + '세 · ' + selectedReview?.grade + ' · ' + selectedReview?.gender"></p>
+                <p class="text-xs text-indigo-500 mt-0.5" x-text="selectedReview?.level"></p>
+              </div>
+              <button @click="goReviewerProfile()"
+                      class="flex-shrink-0 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-full font-semibold">
+                프로필 보기
+              </button>
+            </div>
+            <!-- 별점 + 날짜 -->
+            <div class="flex items-center justify-between mt-4 mb-3">
+              <div class="flex items-center gap-1">
+                <template x-for="i in 5" :key="i">
+                  <svg class="w-4 h-4" :class="i<=(selectedReview?.star||0)?'text-yellow-400':'text-gray-200'" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                </template>
+                <span class="text-sm font-bold text-yellow-500 ml-1" x-text="selectedReview?.star + '.0'"></span>
+              </div>
+              <span class="text-xs text-gray-400" x-text="selectedReview?.date"></span>
+            </div>
+            <!-- 후기 본문 -->
+            <p class="text-sm text-gray-700 leading-relaxed" x-text="selectedReview?.text"></p>
+          </div>
+        </div>
+      </div>
+
       <!-- 고정 하단 [책 읽기] 버튼 -->
       <div class="flex-shrink-0 bg-white border-t border-gray-100 px-4 py-3">
         <button class="w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 active:scale-95 transition">책 읽기</button>
@@ -276,61 +344,105 @@
 </div>
 
 <script>
-/* ── 드래그 캐러셀 (단일 전역 핸들러) ── */
+/* ── 드래그 캐러셀 ── */
 function initCarousels() {
   let el = null, startX = 0, scrollStart = 0;
   let velX = 0, prevX = 0, prevT = 0, raf = null, moved = false;
-
   document.querySelectorAll('.carousel').forEach(carousel => {
     carousel.addEventListener('mousedown', e => {
       if (e.button !== 0) return;
       cancelAnimationFrame(raf);
-      el = carousel;
-      startX = e.clientX;
-      scrollStart = carousel.scrollLeft;
-      prevX = e.clientX; prevT = Date.now();
-      velX = 0; moved = false;
+      el = carousel; startX = e.clientX; scrollStart = carousel.scrollLeft;
+      prevX = e.clientX; prevT = Date.now(); velX = 0; moved = false;
       e.preventDefault();
     });
-    // 드래그 중 자식 click 차단
-    carousel.addEventListener('click', e => {
-      if (moved) { e.stopPropagation(); e.preventDefault(); }
-    }, true);
+    carousel.addEventListener('click', e => { if (moved) { e.stopPropagation(); e.preventDefault(); } }, true);
   });
-
   document.addEventListener('mousemove', e => {
     if (!el) return;
     const dx = e.clientX - startX;
     if (Math.abs(dx) > 4) { el.classList.add('grabbing'); moved = true; }
     el.scrollLeft = scrollStart - dx;
     const now = Date.now(), dt = Math.max(now - prevT, 1);
-    velX = (prevX - e.clientX) / dt * 15;
-    prevX = e.clientX; prevT = now;
+    velX = (prevX - e.clientX) / dt * 15; prevX = e.clientX; prevT = now;
   });
-
   document.addEventListener('mouseup', () => {
     if (!el) return;
-    const target = el;
-    el.classList.remove('grabbing');
-    el = null;
-    // 모멘텀
-    const glide = () => {
-      if (Math.abs(velX) < 0.3) return;
-      target.scrollLeft += velX;
-      velX *= 0.90;
-      raf = requestAnimationFrame(glide);
-    };
+    const target = el; el.classList.remove('grabbing'); el = null;
+    const glide = () => { if (Math.abs(velX) < 0.3) return; target.scrollLeft += velX; velX *= 0.90; raf = requestAnimationFrame(glide); };
     glide();
   });
+}
+
+/* ── Pick 슬라이더 컴포넌트 ── */
+function pickSlider() {
+  return {
+    current: 0, timer: null,
+    picks: [
+      { id:'p1', label:'이번 주 Pick ✨', title:"Charlotte's Web", author:'E.B. White', level:'Lv.3', color:'linear-gradient(135deg,#667eea,#764ba2)' },
+      { id:'p2', label:'에디터 추천 📖', title:'Wonder', author:'R.J. Palacio', level:'Lv.4', color:'linear-gradient(135deg,#f093fb,#f5576c)' },
+      { id:'p3', label:'이달의 베스트 🏆', title:'Harry Potter 1', author:'J.K. Rowling', level:'Lv.5', color:'linear-gradient(135deg,#4facfe,#00f2fe)' },
+      { id:'p4', label:'초보 독자 추천 🌱', title:'Magic Tree House', author:'M. Osborne', level:'Lv.2', color:'linear-gradient(135deg,#43e97b,#38f9d7)' },
+      { id:'p5', label:'고학년 강추 🚀', title:"Ender's Game", author:'O.S. Card', level:'Lv.5', color:'linear-gradient(135deg,#fa709a,#fee140)' },
+    ],
+    init() { this.startTimer(); },
+    startTimer() { this.timer = setInterval(() => { this.current = (this.current + 1) % this.picks.length; }, 3500); },
+    resetTimer() { clearInterval(this.timer); this.startTimer(); },
+    destroy() { clearInterval(this.timer); }
+  }
 }
 
 /* ── 앱 데이터 ── */
 function app() {
   const C = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#f093fb,#f5576c)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)','linear-gradient(135deg,#a18cd1,#fbc2eb)','linear-gradient(135deg,#fccb90,#d57eeb)','linear-gradient(135deg,#a1c4fd,#c2e9fb)','linear-gradient(135deg,#fd7043,#ff8a65)','linear-gradient(135deg,#26c6da,#00838f)','linear-gradient(135deg,#66bb6a,#2e7d32)','linear-gradient(135deg,#ec407a,#880e4f)'];
   const mk = (l) => l.map((b,i) => ({id:i,...b,color:C[i%C.length]}));
+
+  const minjun = { id:'minjun', name:'김민준', initial:'김', age:10, grade:'초4', gender:'남', level:'Lv.3', gradeLabel:'골드', favorites:18, totalScore:3240, color:'linear-gradient(135deg,#43e97b,#38f9d7)' };
+
   return {
     user: null, isParent: false, showMenu: false,
     selectedShelf: null, selectedBook: null, bookDetailTab: 'toc',
+    reviewModal: false, selectedReview: null,
+
+    toc: [
+      {n:1,t:'The Worst Birthday',p:1},{n:2,t:'Vanished into Thin Air',p:14},
+      {n:3,t:'Grover Unexpectedly Loses His Pants',p:27},{n:4,t:'My Mother Teaches Me Bullfighting',p:40},
+      {n:5,t:'I Play Pinochle with a Horse',p:53},{n:6,t:'I Become Supreme Lord of the Bathroom',p:67},
+      {n:7,t:'My Dinner Goes Up in Smoke',p:80},{n:8,t:'We Capture a Flag',p:94},
+      {n:9,t:'I Am Offered a Quest',p:108},{n:10,t:'I Ruin a Perfectly Good Bus',p:122},
+      {n:11,t:'We Visit the Garden Gnome',p:136},{n:12,t:'We Get Advice from a Poodle',p:150},
+      {n:13,t:'I Plunge to My Death',p:163},{n:14,t:'I Become the Swim Team Captain',p:177},
+      {n:15,t:'A God Buys Us Cheeseburgers',p:191},
+    ],
+
+    reviews: [
+      {id:1,name:'김민준',age:10,gender:'남',grade:'초4',level:'Lv.3 · 골드',star:5,date:'2026.04.10',text:'정말 재밌어요! 매일 읽고 싶어져요. 그리스 신화도 같이 공부할 수 있어서 좋았어요. 특히 Percy가 바다 속에서 숨을 쉬는 장면이 너무 멋졌어요!',color:'linear-gradient(135deg,#43e97b,#38f9d7)'},
+      {id:2,name:'이서연',age:11,gender:'여',grade:'초5',level:'Lv.4 · 플래티넘',star:5,date:'2026.04.08',text:'영어 실력이 진짜 늘었어요. 재미있게 읽다 보니 어휘가 자연스럽게 외워졌어요. 엄마한테도 추천했어요.',color:'linear-gradient(135deg,#f093fb,#f5576c)'},
+      {id:3,name:'박지호',age:12,gender:'남',grade:'초6',level:'Lv.5 · 골드',star:4,date:'2026.04.05',text:'Percy가 너무 귀엽고 용감해요. 시리즈 전체 다 읽고 싶어요! 2권도 빨리 읽을 거예요.',color:'linear-gradient(135deg,#4facfe,#00f2fe)'},
+      {id:4,name:'최유진',age:9,gender:'여',grade:'초3',level:'Lv.3 · 실버',star:4,date:'2026.04.03',text:'처음엔 조금 어려웠는데 읽다 보니 익숙해졌어요. 선생님이 추천해줬는데 역시 좋아요.',color:'linear-gradient(135deg,#fa709a,#fee140)'},
+      {id:5,name:'정승우',age:10,gender:'남',grade:'초4',level:'Lv.3 · 브론즈',star:5,date:'2026.03.28',text:'그리스 신화를 이렇게 재미있게 배울 수 있다니 놀라웠어요. 학교 수업에도 도움이 됐어요.',color:'linear-gradient(135deg,#a18cd1,#fbc2eb)'},
+      {id:6,name:'한지민',age:11,gender:'여',grade:'초5',level:'Lv.4 · 골드',star:5,date:'2026.03.25',text:'매 챕터가 끝날 때마다 다음이 궁금해서 멈출 수가 없었어요. 강력 추천합니다!',color:'linear-gradient(135deg,#667eea,#764ba2)'},
+      {id:7,name:'윤도현',age:8,gender:'남',grade:'초2',level:'Lv.2 · 브론즈',star:3,date:'2026.03.20',text:'어려운 단어가 많았지만 부모님이 도와주셔서 다 읽었어요. 재미는 있어요!',color:'linear-gradient(135deg,#fccb90,#d57eeb)'},
+      {id:8,name:'오수빈',age:12,gender:'여',grade:'초6',level:'Lv.5 · 플래티넘',star:5,date:'2026.03.18',text:'영어 원서 읽기를 처음 시작할 때 이 책으로 시작했는데 정말 잘한 선택이었어요.',color:'linear-gradient(135deg,#26c6da,#00838f)'},
+      {id:9,name:'임재원',age:10,gender:'남',grade:'초4',level:'Lv.3 · 실버',star:4,date:'2026.03.15',text:'읽기 점수가 많이 올랐어요. 재미있고 도전적인 어휘들 덕분에 실력이 업그레이드된 느낌!',color:'linear-gradient(135deg,#43e97b,#38f9d7)'},
+      {id:10,name:'신예은',age:11,gender:'여',grade:'초5',level:'Lv.4 · 골드',star:4,date:'2026.03.12',text:'Percy의 모험이 생생하게 그려져서 읽는 내내 흥미로웠어요. 영어책인데 한국책 같았어요.',color:'linear-gradient(135deg,#f093fb,#f5576c)'},
+      {id:11,name:'강민서',age:9,gender:'여',grade:'초3',level:'Lv.3 · 브론즈',star:5,date:'2026.03.08',text:'Annabeth가 제일 멋있어요! 나도 Annabeth처럼 똑똑해지고 싶어요.',color:'linear-gradient(135deg,#fd7043,#ff8a65)'},
+      {id:12,name:'장현준',age:12,gender:'남',grade:'초6',level:'Lv.5 · 플래티넘',star:4,date:'2026.03.05',text:'마지막 반전이 정말 충격적이었어요. 예상 못했던 전개에 감탄했습니다.',color:'linear-gradient(135deg,#a1c4fd,#c2e9fb)'},
+      {id:13,name:'배소연',age:10,gender:'여',grade:'초4',level:'Lv.3 · 실버',star:5,date:'2026.02.28',text:'그리스 신화 책을 따로 사서 비교하며 읽었어요. 더 깊이 이해되고 재미있었어요.',color:'linear-gradient(135deg,#66bb6a,#2e7d32)'},
+      {id:14,name:'홍길동',age:9,gender:'남',grade:'초3',level:'Lv.3 · 골드',star:3,date:'2026.02.20',text:'재밌긴 한데 좀 긴 것 같아요. 그래도 읽을 만해요. 부모님이 같이 읽어주셨어요.',color:'linear-gradient(135deg,#ec407a,#880e4f)'},
+      {id:15,name:'성춘향',age:11,gender:'여',grade:'초5',level:'Lv.4 · 플래티넘',star:5,date:'2026.02.15',text:'이 책 덕분에 영어 읽기가 좋아졌어요. 시리즈 5권까지 다 읽었고 지금 6권 읽는 중!',color:'linear-gradient(135deg,#4facfe,#00f2fe)'},
+    ],
+
+    similarBooks: [
+      {id:'s1',title:'The Lightning Thief',author:'R. Riordan',level:'Lv.4',color:'linear-gradient(135deg,#667eea,#764ba2)'},
+      {id:'s2',title:'Harry Potter 1',author:'J.K. Rowling',level:'Lv.5',color:'linear-gradient(135deg,#4facfe,#00f2fe)'},
+      {id:'s3',title:'The Giver',author:'L. Lowry',level:'Lv.5',color:'linear-gradient(135deg,#43e97b,#38f9d7)'},
+      {id:'s4',title:'Hatchet',author:'G. Paulsen',level:'Lv.4',color:'linear-gradient(135deg,#fa709a,#fee140)'},
+      {id:'s5',title:"Ender's Game",author:'O.S. Card',level:'Lv.5',color:'linear-gradient(135deg,#f093fb,#f5576c)'},
+      {id:'s6',title:'City of Ember',author:'J. DuPrau',level:'Lv.4',color:'linear-gradient(135deg,#a18cd1,#fbc2eb)'},
+      {id:'s7',title:'A Wrinkle in Time',author:"M. L'Engle",level:'Lv.4',color:'linear-gradient(135deg,#fccb90,#d57eeb)'},
+      {id:'s8',title:'Wonder',author:'R.J. Palacio',level:'Lv.4',color:'linear-gradient(135deg,#26c6da,#00838f)'},
+    ],
 
     init() {
       this.user = JSON.parse(localStorage.getItem('cr_user')||'null');
@@ -340,7 +452,12 @@ function app() {
     },
     logout() { localStorage.removeItem('cr_user'); window.location.href = 'index.html'; },
     openShelf(s) { this.selectedBook = null; this.selectedShelf = s; },
-    openBook(b) { this.selectedBook = b; this.bookDetailTab = 'toc'; },
+    openBook(b) { this.selectedBook = b; this.bookDetailTab = 'toc'; this.reviewModal = false; },
+    openReview(r) { this.selectedReview = r; this.reviewModal = true; },
+    goReviewerProfile() {
+      localStorage.setItem('cr_profile', JSON.stringify(minjun));
+      window.location.href = 'profile-detail.html';
+    },
 
     shelves: [
       { id:1, title:'🔥 또래 친구들이 많이 읽은 책', books: mk([
