@@ -14,15 +14,12 @@
   </style>
 </head>
 <body class="bg-gray-200" style="height:100dvh; overflow:hidden;">
-<div class="h-full flex items-stretch justify-center bg-gray-200"
-     x-data="app()" x-init="init()">
+<div class="h-full flex items-stretch justify-center bg-gray-200" x-data="app()" x-init="init()">
 
-  <!-- ── 사이드바 (lg+) ── -->
+  <!-- 사이드바 (lg+) -->
   <aside class="hidden lg:flex flex-col w-56 bg-white border-r border-gray-100 flex-shrink-0">
     <div class="px-5 py-5 border-b border-gray-100 flex items-center gap-3">
-      <div class="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center">
-        <span class="text-white text-xs font-bold">CR</span>
-      </div>
+      <div class="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center"><span class="text-white text-xs font-bold">CR</span></div>
       <span class="font-bold text-gray-900">CheckReading</span>
     </div>
     <nav class="flex-1 py-4 px-3 flex flex-col gap-1">
@@ -33,62 +30,60 @@
       <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>내 정보</a>
     </nav>
     <div class="px-4 py-4 border-t border-gray-100 flex items-center gap-3 relative">
-      <button @click="showMenu = !showMenu"
-        class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-xs font-bold text-indigo-600 flex-shrink-0"
-        x-text="user?.initial || '?'"></button>
-      <div class="flex-1 min-w-0">
-        <p class="text-sm font-semibold text-gray-800 truncate" x-text="user?.name"></p>
-        <p class="text-xs text-gray-400" x-text="user?.type === 'parent' ? '부모' : '학생'"></p>
-      </div>
-      <div x-show="showMenu" x-cloak @click.outside="showMenu = false"
+      <button @click="showMenu=!showMenu" class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-xs font-bold text-indigo-600 flex-shrink-0" x-text="user?.initial||'?'"></button>
+      <div class="flex-1 min-w-0"><p class="text-sm font-semibold text-gray-800 truncate" x-text="user?.name"></p><p class="text-xs text-gray-400" x-text="isParent?'부모':'학생'"></p></div>
+      <div x-show="showMenu" x-cloak @click.outside="showMenu=false"
            x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
            class="absolute bottom-16 left-3 bg-white rounded-2xl shadow-xl border border-gray-100 w-44 overflow-hidden z-50">
-        <button class="w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-          정보 보기
-        </button>
-        <button @click="logout()" class="w-full px-4 py-3 text-sm text-left text-red-500 hover:bg-red-50 flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-          로그아웃
-        </button>
+        <button class="w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>정보 보기</button>
+        <button @click="logout()" class="w-full px-4 py-3 text-sm text-left text-red-500 hover:bg-red-50 flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>로그아웃</button>
       </div>
     </div>
   </aside>
 
-  <!-- ── 메인 영역 ── -->
+  <!-- 메인 영역 -->
   <div class="flex-1 flex flex-col min-w-0 bg-gray-50 max-w-3xl">
 
-    <!-- 헤더 + 탭 -->
+    <!-- 고정 헤더 전체 (프로필바 + 탭바 포함) -->
     <header class="flex-shrink-0 bg-white border-b border-gray-100">
-      <div class="flex items-center justify-between px-4 pt-3 pb-0">
+
+      <!-- 타이틀 행 -->
+      <div class="flex items-center justify-between px-4 pt-3 pb-2">
         <h1 class="font-bold text-gray-900">책장</h1>
-        <div class="flex items-center gap-2 relative">
-          <button @click="showMenu = !showMenu"
-            class="lg:hidden w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-xs font-bold text-indigo-600"
-            x-text="user?.initial || '?'"></button>
-          <div x-show="showMenu" x-cloak @click.outside="showMenu = false"
+        <div class="relative">
+          <button @click="showMenu=!showMenu" class="lg:hidden w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-xs font-bold text-indigo-600" x-text="user?.initial||'?'"></button>
+          <div x-show="showMenu" x-cloak @click.outside="showMenu=false"
                x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                class="lg:hidden absolute top-10 right-0 bg-white rounded-2xl shadow-xl border border-gray-100 w-44 overflow-hidden z-50">
-            <div class="px-4 py-3 border-b border-gray-100">
-              <p class="text-xs text-gray-400" x-text="user?.type === 'parent' ? '부모' : '학생'"></p>
-              <p class="text-sm font-semibold text-gray-800" x-text="user?.name"></p>
-            </div>
-            <button class="w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-              정보 보기
-            </button>
-            <button @click="logout()" class="w-full px-4 py-3 text-sm text-left text-red-500 hover:bg-red-50 flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-              로그아웃
-            </button>
+            <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs text-gray-400" x-text="isParent?'부모':'학생'"></p><p class="text-sm font-semibold text-gray-800" x-text="user?.name"></p></div>
+            <button class="w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>정보 보기</button>
+            <button @click="logout()" class="w-full px-4 py-3 text-sm text-left text-red-500 hover:bg-red-50 flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>로그아웃</button>
           </div>
         </div>
       </div>
-      <div class="flex overflow-x-auto no-scrollbar mt-2">
-        <template x-for="t in tabs" :key="t.id">
-          <button @click="activeTab = t.id"
-            :class="activeTab===t.id ? 'border-b-2 border-indigo-600 text-indigo-600 font-semibold' : 'text-gray-400 border-b-2 border-transparent'"
-            class="flex-none px-4 py-2 text-sm whitespace-nowrap transition-colors">
+
+      <!-- 프로필 선택 바 (부모만) -->
+      <div x-show="isParent" class="flex overflow-x-auto no-scrollbar px-4 pb-3 gap-4 border-b border-gray-100">
+        <template x-for="p in profiles" :key="p.id">
+          <button @click="selectProfile(p)" class="flex flex-col items-center gap-1.5 flex-shrink-0">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-base transition-all"
+                 :style="`background:${p.color}`"
+                 :class="selectedProfile?.id===p.id ? 'ring-2 ring-offset-2 ring-indigo-500 scale-110' : 'opacity-60'">
+              <span x-text="p.initial"></span>
+            </div>
+            <span class="text-[10px] font-medium transition-colors"
+                  :class="selectedProfile?.id===p.id ? 'text-indigo-600' : 'text-gray-400'"
+                  x-text="p.name"></span>
+          </button>
+        </template>
+      </div>
+
+      <!-- 탭 바 -->
+      <div class="flex overflow-x-auto no-scrollbar">
+        <template x-for="t in currentTabs" :key="t.id">
+          <button @click="activeTab=t.id"
+                  :class="activeTab===t.id ? 'border-b-2 border-indigo-600 text-indigo-600 font-semibold' : 'text-gray-400 border-b-2 border-transparent'"
+                  class="flex-none px-4 py-2.5 text-sm whitespace-nowrap transition-colors">
             <span x-text="t.label"></span>
             <span class="ml-1 text-[10px]" :class="activeTab===t.id?'text-indigo-400':'text-gray-300'" x-text="'('+t.books.length+')'"></span>
           </button>
@@ -96,21 +91,20 @@
       </div>
     </header>
 
-    <!-- 콘텐츠 -->
+    <!-- 스크롤 콘텐츠 -->
     <main class="flex-1 overflow-y-auto min-h-0 p-4">
-      <template x-for="t in tabs" :key="t.id">
-        <div x-show="activeTab === t.id">
-          <div x-show="t.books.length === 0" class="flex flex-col items-center justify-center py-20 text-gray-300">
+      <template x-for="t in currentTabs" :key="t.id">
+        <div x-show="activeTab===t.id">
+          <div x-show="t.books.length===0" class="flex flex-col items-center justify-center py-20 text-gray-300">
             <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
             <p class="text-sm">아직 책이 없어요</p>
           </div>
-          <div x-show="t.books.length > 0" class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div x-show="t.books.length>0" class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             <template x-for="book in t.books" :key="book.id">
               <div class="cursor-pointer group">
-                <div class="w-full aspect-[3/4] rounded-xl mb-1.5 flex items-end p-2.5 shadow-sm transition group-hover:scale-105 relative"
-                     :style="`background:${book.color}`">
+                <div class="w-full aspect-[3/4] rounded-xl mb-1.5 flex items-end p-2.5 shadow-sm transition group-hover:scale-105 relative" :style="`background:${book.color}`">
                   <div x-show="book.progress!==undefined" class="absolute bottom-0 left-0 right-0 h-1.5 bg-black/20 rounded-b-xl overflow-hidden">
-                    <div class="h-full bg-white/70 transition-all" :style="`width:${book.progress}%`"></div>
+                    <div class="h-full bg-white/70" :style="`width:${book.progress}%`"></div>
                   </div>
                   <div x-show="book.done" class="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-[9px] font-bold px-1.5 py-0.5 rounded-full">완독</div>
                   <span class="text-white text-[10px] font-bold leading-tight drop-shadow" x-text="book.title"></span>
@@ -134,30 +128,127 @@
       <a href="#" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-gray-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="text-[10px]">내 정보</span></a>
     </nav>
   </div>
-
 </div>
+
 <script>
 function app() {
-  const C = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#f093fb,#f5576c)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)','linear-gradient(135deg,#a18cd1,#fbc2eb)'];
-  const mk = (l) => l.map((b,i)=>({id:i,...b,color:C[i%C.length]}));
+  const C = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#f093fb,#f5576c)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)','linear-gradient(135deg,#a18cd1,#fbc2eb)','linear-gradient(135deg,#fccb90,#d57eeb)','linear-gradient(135deg,#a1c4fd,#c2e9fb)','linear-gradient(135deg,#fd7043,#ff8a65)','linear-gradient(135deg,#26c6da,#00838f)','linear-gradient(135deg,#66bb6a,#2e7d32)','linear-gradient(135deg,#ec407a,#880e4f)'];
+  const mk = (l) => l.map((b,i)=>({id:`${b.title}-${i}`,...b,color:C[i%C.length]}));
+
+  const profileData = {
+    hong: {
+      reading: mk([
+        {title:'Percy Jackson',author:'R. Riordan',progress:42},
+        {title:'Magic Tree House #5',author:'M. Osborne',progress:78},
+        {title:"Charlotte's Web",author:'E.B. White',progress:15},
+        {title:'Harry Potter 1',author:'J.K. Rowling',progress:30},
+        {title:'Diary of a Wimpy Kid',author:'J. Kinney',progress:60},
+      ]),
+      done: mk([
+        {title:'Frindle',author:'A. Clements',done:true},
+        {title:'Stuart Little',author:'E.B. White',done:true},
+        {title:'Matilda',author:'R. Dahl',done:true},
+        {title:'Magic Tree House #1',author:'M. Osborne',done:true},
+        {title:'Magic Tree House #2',author:'M. Osborne',done:true},
+        {title:'Magic Tree House #3',author:'M. Osborne',done:true},
+        {title:'Magic Tree House #4',author:'M. Osborne',done:true},
+        {title:'Because of Winn-Dixie',author:'K. DiCamillo',done:true},
+        {title:'The One and Only Ivan',author:'K. Applegate',done:true},
+        {title:"My Father's Dragon",author:'R.S. Gannett',done:true},
+        {title:'Nate the Great',author:'M.W. Sharmat',done:true},
+        {title:'The BFG',author:'R. Dahl',done:true},
+      ]),
+      wish: mk([
+        {title:'Wonder',author:'R.J. Palacio'},
+        {title:'The Giver',author:'L. Lowry'},
+        {title:'Holes',author:'L. Sachar'},
+        {title:'Hatchet',author:'G. Paulsen'},
+        {title:'Bridge to Terabithia',author:'K. Paterson'},
+        {title:"Ender's Game",author:'O.S. Card'},
+        {title:'A Wrinkle in Time',author:"M. L'Engle"},
+        {title:'The Maze Runner',author:'J. Dashner'},
+      ]),
+      must: mk([
+        {title:"Charlotte's Web",author:'E.B. White'},
+        {title:'The One and Only Ivan',author:'K. Applegate'},
+        {title:'Wonder',author:'R.J. Palacio'},
+      ]),
+    },
+    chun: {
+      reading: mk([
+        {title:'Wonder',author:'R.J. Palacio',progress:55},
+        {title:'Harry Potter 1',author:'J.K. Rowling',progress:30},
+        {title:'The Giver',author:'L. Lowry',progress:20},
+      ]),
+      done: mk([
+        {title:'Matilda',author:'R. Dahl',done:true},
+        {title:'Frindle',author:'A. Clements',done:true},
+        {title:'Stuart Little',author:'E.B. White',done:true},
+        {title:"Charlotte's Web",author:'E.B. White',done:true},
+        {title:'Magic Tree House #1',author:'M. Osborne',done:true},
+        {title:'Magic Tree House #2',author:'M. Osborne',done:true},
+        {title:'Because of Winn-Dixie',author:'K. DiCamillo',done:true},
+        {title:"My Father's Dragon",author:'R.S. Gannett',done:true},
+        {title:'Nate the Great',author:'M.W. Sharmat',done:true},
+        {title:'The BFG',author:'R. Dahl',done:true},
+      ]),
+      wish: mk([
+        {title:'Percy Jackson',author:'R. Riordan'},
+        {title:'Holes',author:'L. Sachar'},
+        {title:'Hatchet',author:'G. Paulsen'},
+        {title:'Bridge to Terabithia',author:'K. Paterson'},
+        {title:'The Lion, the Witch',author:'C.S. Lewis'},
+        {title:'Harry Potter 2',author:'J.K. Rowling'},
+      ]),
+      must: mk([
+        {title:'The Giver',author:'L. Lowry'},
+        {title:'Wonder',author:'R.J. Palacio'},
+        {title:'Harry Potter 1',author:'J.K. Rowling'},
+      ]),
+    },
+    student: {
+      reading: mk([
+        {title:'Percy Jackson',author:'R. Riordan',progress:42},
+        {title:'Magic Tree House #5',author:'M. Osborne',progress:78},
+      ]),
+      done: mk([
+        {title:'Frindle',author:'A. Clements',done:true},
+        {title:'Stuart Little',author:'E.B. White',done:true},
+        {title:'Matilda',author:'R. Dahl',done:true},
+      ]),
+      wish: mk([{title:'Harry Potter 1',author:'J.K. Rowling'},{title:'Wonder',author:'R.J. Palacio'}]),
+      must: mk([{title:"Charlotte's Web",author:'E.B. White'}]),
+    },
+  };
+
   return {
-    user: null, showMenu: false, activeTab: 'reading', isParent: false,
+    user: null, isParent: false, showMenu: false,
+    activeTab: 'reading',
+    selectedProfile: null,
+    profiles: [
+      { id:'hong', name:'홍길동', initial:'홍', color:'linear-gradient(135deg,#667eea,#764ba2)' },
+      { id:'chun', name:'성춘향', initial:'성', color:'linear-gradient(135deg,#f093fb,#f5576c)' },
+    ],
+
+    get currentTabs() {
+      const key = this.isParent ? (this.selectedProfile?.id || 'hong') : 'student';
+      const d = profileData[key] || profileData.hong;
+      return [
+        { id:'reading', label:'읽고 있는 책', books: d.reading },
+        { id:'done',    label:'읽은 책',      books: d.done    },
+        { id:'wish',    label:'찜한 책',       books: d.wish    },
+        { id:'must',    label:'필독서',        books: d.must    },
+      ];
+    },
+
     init() {
-      this.user = JSON.parse(localStorage.getItem('cr_user')||'null');
+      this.user = JSON.parse(localStorage.getItem('cr_user') || 'null');
       if (!this.user) { window.location.href = 'index.html'; return; }
       this.isParent = this.user.type === 'parent';
+      if (this.isParent) this.selectedProfile = this.profiles[0];
     },
     logout() { localStorage.removeItem('cr_user'); window.location.href = 'index.html'; },
-    tabs: [
-      { id:'reading', label:'읽고 있는 책', books: mk([
-        {title:'Percy Jackson',author:'R. Riordan',progress:42},{title:'Magic Tree House #5',author:'M. Osborne',progress:78},{title:"Charlotte's Web",author:'E.B. White',progress:15}])},
-      { id:'done', label:'읽은 책', books: mk([
-        {title:'Frindle',author:'A. Clements',done:true},{title:'Stuart Little',author:'E.B. White',done:true},{title:'Matilda',author:'R. Dahl',done:true},{title:'Magic Tree House #1',author:'M. Osborne',done:true},{title:'Magic Tree House #2',author:'M. Osborne',done:true}])},
-      { id:'wish', label:'찜한 책', books: mk([
-        {title:'Harry Potter 1',author:'J.K. Rowling'},{title:'Wonder',author:'R.J. Palacio'},{title:'The Giver',author:'L. Lowry'}])},
-      { id:'must', label:'필독서', books: mk([
-        {title:"Charlotte's Web",author:'E.B. White'},{title:'The One and Only Ivan',author:'K. Applegate'}])},
-    ]
+    selectProfile(p) { this.selectedProfile = p; this.activeTab = 'reading'; },
   }
 }
 </script>
