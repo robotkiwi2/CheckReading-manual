@@ -11,17 +11,17 @@
 
 ## 책 읽기
 
-* [프로필에 책 할당하기](group-2/book-assign.md)
-* [책 선택하기](group-2/book-select.md)
-* [시선 보정하기](group-2/eye-calibration.md)
-* [뷰어로 책 읽기](group-2/viewer-reading.md)
-* [후기 쓰기](group-3/review.md)
+* [프로필에 책 할당하기](book-reading/book-assign.md)
+* [책 선택하기](book-reading/book-select.md)
+* [시선 보정하기](book-reading/eye-calibration.md)
+* [뷰어로 책 읽기](book-reading/viewer-reading.md)
+* [후기 쓰기](book-reading/review.md)
 
 ## 책읽기 모니터링
 
-* [책 읽기](group-3/reading.md)
-* [읽기 상태 확인](group-1/reading-status.md)
+* [책 읽기](monitoring/reading.md)
+* [읽기 상태 확인](monitoring/reading-status.md)
 
 ## 읽기 결과 보기
 
-* [독서 수준 확인](group-1/reading-level.md)
+* [독서 수준 확인](results/reading-level.md)
