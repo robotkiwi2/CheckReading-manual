@@ -11,6 +11,8 @@
 
 ## 책 읽기
 
+* [서점](book-reading/bookstore.md)
+* [책장](book-reading/bookshelf.md)
 * [프로필에 책 할당하기](book-reading/book-assign.md)
 * [책 선택하기](book-reading/book-select.md)
 * [시선 보정하기](book-reading/eye-calibration.md)
