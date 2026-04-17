@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>서점 - CheckReading</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<div class="w-full max-w-sm bg-gray-50 min-h-screen shadow-xl relative flex flex-col" x-data="bookstore()">
+
+  <!-- 헤더 -->
+  <header class="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center">
+        <span class="text-white text-xs font-bold">CR</span>
+      </div>
+      <span class="font-bold text-gray-900">서점</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="w-8 h-8 flex items-center justify-center text-gray-500">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </button>
+      <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-xs font-bold text-indigo-600">홍</div>
+    </div>
+  </header>
+
+  <!-- 스크롤 콘텐츠 -->
+  <div class="flex-1 overflow-y-auto pb-20">
+
+    <!-- 배너 -->
+    <div class="mx-4 mt-4 rounded-2xl overflow-hidden" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+      <div class="px-5 py-6">
+        <p class="text-indigo-200 text-xs font-medium mb-1">이번 주 Pick ✨</p>
+        <h2 class="text-white text-lg font-bold leading-tight">Charlotte's Web</h2>
+        <p class="text-indigo-200 text-xs mt-1">E.B. White · Lv.3</p>
+        <button class="mt-3 bg-white text-indigo-600 text-xs font-semibold px-4 py-1.5 rounded-full">읽어보기</button>
+      </div>
+    </div>
+
+    <!-- 선반 목록 -->
+    <template x-for="shelf in shelves" :key="shelf.id">
+      <div class="mt-6">
+        <!-- 선반 헤더 -->
+        <div class="flex items-center justify-between px-4 mb-3">
+          <h3 class="font-bold text-gray-800 text-sm" x-text="shelf.title"></h3>
+          <button @click="openShelf(shelf)"
+            class="text-xs text-indigo-500 font-medium flex items-center gap-0.5">
+            전체보기
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+        <!-- 캐러셀 -->
+        <div class="flex gap-3 overflow-x-auto no-scrollbar px-4 pb-1">
+          <template x-for="book in shelf.books" :key="book.id">
+            <div class="flex-none w-[88px] cursor-pointer group">
+              <div class="w-[88px] h-[120px] rounded-xl mb-1.5 flex items-end p-2.5 shadow-sm transition group-hover:scale-105"
+                   :style="`background: ${book.color}`">
+                <span class="text-white text-[10px] font-bold leading-tight drop-shadow" x-text="book.title"></span>
+              </div>
+              <p class="text-[11px] text-gray-700 font-medium leading-tight truncate" x-text="book.title"></p>
+              <p class="text-[10px] text-gray-400 truncate" x-text="book.author"></p>
+              <span class="inline-block text-[10px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-md mt-0.5" x-text="book.level"></span>
+            </div>
+          </template>
+        </div>
+      </div>
+    </template>
+
+  </div>
+
+  <!-- 전체보기 시트 (위로 올라오는 패널) -->
+  <div x-show="selectedShelf" x-cloak
+       x-transition:enter="transition ease-out duration-300 transform"
+       x-transition:enter-start="translate-y-full"
+       x-transition:enter-end="translate-y-0"
+       x-transition:leave="transition ease-in duration-200 transform"
+       x-transition:leave-start="translate-y-0"
+       x-transition:leave-end="translate-y-full"
+       class="absolute inset-0 bg-white z-20 flex flex-col">
+
+    <!-- 시트 헤더 -->
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+      <button @click="selectedShelf = null" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <h2 class="font-bold text-gray-900 text-sm flex-1 truncate" x-text="selectedShelf?.title"></h2>
+      <span class="text-xs text-gray-400" x-text="(selectedShelf?.books?.length || 0) + '권'"></span>
+    </div>
+
+    <!-- 그리드 -->
+    <div class="flex-1 overflow-y-auto p-4">
+      <div class="grid grid-cols-3 gap-3">
+        <template x-for="book in selectedShelf?.books" :key="book.id">
+          <div class="cursor-pointer group">
+            <div class="w-full aspect-[3/4] rounded-xl mb-1.5 flex items-end p-2 shadow-sm transition group-hover:scale-105"
+                 :style="`background: ${book.color}`">
+              <span class="text-white text-[10px] font-bold leading-tight drop-shadow" x-text="book.title"></span>
+            </div>
+            <p class="text-[11px] text-gray-700 font-medium leading-tight" x-text="book.title"></p>
+            <p class="text-[10px] text-gray-400" x-text="book.author"></p>
+            <span class="inline-block text-[10px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-md mt-0.5" x-text="book.level"></span>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 탭바 -->
+  <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex z-10">
+    <a href="bookstore.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-indigo-600">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <span class="text-[10px] font-semibold">서점</span>
+    </a>
+    <a href="bookshelf.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-gray-300">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      <span class="text-[10px]">책장</span>
+    </a>
+    <a href="#" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-gray-300">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      <span class="text-[10px]">읽기</span>
+    </a>
+    <a href="#" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-gray-300">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px]">결과</span>
+    </a>
+  </nav>
+
+</div>
+
+<script>
+function bookstore() {
+  const colors = [
+    'linear-gradient(135deg, #667eea, #764ba2)',
+    'linear-gradient(135deg, #f093fb, #f5576c)',
+    'linear-gradient(135deg, #4facfe, #00f2fe)',
+    'linear-gradient(135deg, #43e97b, #38f9d7)',
+    'linear-gradient(135deg, #fa709a, #fee140)',
+    'linear-gradient(135deg, #a18cd1, #fbc2eb)',
+    'linear-gradient(135deg, #fccb90, #d57eeb)',
+    'linear-gradient(135deg, #a1c4fd, #c2e9fb)',
+    'linear-gradient(135deg, #fd7043, #ff8a65)',
+    'linear-gradient(135deg, #26c6da, #00838f)',
+    'linear-gradient(135deg, #66bb6a, #2e7d32)',
+    'linear-gradient(135deg, #ec407a, #880e4f)',
+  ];
+
+  const mk = (list) => list.map((b, i) => ({ id: i, ...b, color: colors[i % colors.length] }));
+
+  return {
+    selectedShelf: null,
+    shelves: [
+      {
+        id: 1, title: '🔥 또래 친구들이 많이 읽은 책',
+        books: mk([
+          { title: "Charlotte's Web",     author: 'E.B. White',    level: 'Lv.3' },
+          { title: 'Magic Tree House',    author: 'M. Osborne',    level: 'Lv.2' },
+          { title: 'Wonder',              author: 'R.J. Palacio',  level: 'Lv.4' },
+          { title: 'Diary of a Wimpy Kid',author: 'J. Kinney',     level: 'Lv.3' },
+          { title: 'Percy Jackson',       author: 'R. Riordan',    level: 'Lv.4' },
+          { title: 'The Giver',           author: 'L. Lowry',      level: 'Lv.5' },
+          { title: 'Holes',               author: 'L. Sachar',     level: 'Lv.4' },
+          { title: 'Hatchet',             author: 'G. Paulsen',    level: 'Lv.4' },
+        ])
+      },
+      {
+        id: 2, title: '🚀 홍길동이 좋아하는 SF 소설',
+        books: mk([
+          { title: "Ender's Game",        author: 'O.S. Card',     level: 'Lv.5' },
+          { title: 'A Wrinkle in Time',   author: "M. L'Engle",    level: 'Lv.4' },
+          { title: 'City of Ember',       author: 'J. DuPrau',     level: 'Lv.4' },
+          { title: 'Among the Hidden',    author: 'M.P. Haddix',   level: 'Lv.4' },
+          { title: 'The Giver',           author: 'L. Lowry',      level: 'Lv.5' },
+          { title: 'Feed',                author: 'M.T. Anderson',  level: 'Lv.5' },
+          { title: 'Fahrenheit 451',      author: 'R. Bradbury',   level: 'Lv.6' },
+        ])
+      },
+      {
+        id: 3, title: '📚 이번 주 인기 도서',
+        books: mk([
+          { title: 'Harry Potter 1',      author: 'J.K. Rowling',  level: 'Lv.5' },
+          { title: 'Matilda',             author: 'R. Dahl',       level: 'Lv.3' },
+          { title: 'The BFG',             author: 'R. Dahl',       level: 'Lv.3' },
+          { title: "Bridge to Terabithia",author: 'K. Paterson',   level: 'Lv.4' },
+          { title: 'The Lion, the Witch', author: 'C.S. Lewis',    level: 'Lv.4' },
+          { title: 'Stuart Little',       author: 'E.B. White',    level: 'Lv.3' },
+          { title: 'Frindle',             author: 'A. Clements',   level: 'Lv.3' },
+        ])
+      },
+      {
+        id: 4, title: '🌱 내 수준에 딱 맞는 책 (Lv.3)',
+        books: mk([
+          { title: 'Frindle',             author: 'A. Clements',   level: 'Lv.3' },
+          { title: 'The One and Only Ivan',author: 'K. Applegate', level: 'Lv.3' },
+          { title: 'Because of Winn-Dixie',author: 'K. DiCamillo', level: 'Lv.3' },
+          { title: "My Father's Dragon",  author: 'R.S. Gannett',  level: 'Lv.2' },
+          { title: 'Stuart Little',       author: 'E.B. White',    level: 'Lv.3' },
+          { title: 'The Mouse and the Motorcycle', author: 'B. Cleary', level: 'Lv.2' },
+        ])
+      },
+    ],
+    openShelf(shelf) { this.selectedShelf = shelf; }
+  }
+}
+</script>
+</body>
+</html>

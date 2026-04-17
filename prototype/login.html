@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>로그인 - CheckReading</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-sm bg-white min-h-screen shadow-xl flex flex-col" x-data="{ tab: 'parent' }">
+
+    <!-- 로고 영역 -->
+    <div class="flex flex-col items-center pt-16 pb-8 px-6">
+      <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mb-4">
+        <span class="text-white text-2xl font-bold">CR</span>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900">CheckReading</h1>
+      <p class="text-sm text-gray-400 mt-1">영어 읽기 능력 향상 솔루션</p>
+    </div>
+
+    <!-- 탭 -->
+    <div class="flex mx-6 bg-gray-100 rounded-xl p-1 mb-6">
+      <button @click="tab = 'parent'"
+        :class="tab === 'parent' ? 'bg-white shadow text-indigo-600 font-semibold' : 'text-gray-400'"
+        class="flex-1 py-2 rounded-lg text-sm transition-all">부모 로그인</button>
+      <button @click="tab = 'student'"
+        :class="tab === 'student' ? 'bg-white shadow text-indigo-600 font-semibold' : 'text-gray-400'"
+        class="flex-1 py-2 rounded-lg text-sm transition-all">학생 로그인</button>
+    </div>
+
+    <!-- 부모 로그인 -->
+    <div x-show="tab === 'parent'" class="px-6 flex flex-col gap-3">
+      <a href="bookstore.html"
+        class="flex items-center justify-center gap-3 w-full py-3.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        <span class="text-sm font-medium text-gray-700">구글로 시작하기</span>
+      </a>
+      <a href="bookstore.html"
+        class="flex items-center justify-center gap-3 w-full py-3.5 bg-yellow-300 rounded-xl hover:bg-yellow-400 transition">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3C7.03 3 3 6.58 3 11c0 2.7 1.46 5.1 3.75 6.6L6 21l3.56-1.85C10.33 19.37 11.15 19.5 12 19.5c4.97 0 9-3.58 9-8s-4.03-8-9-8z"/></svg>
+        <span class="text-sm font-medium text-gray-800">카카오로 시작하기</span>
+      </a>
+      <p class="text-center text-xs text-gray-400 mt-2">소셜 계정으로 간편하게 가입·로그인</p>
+    </div>
+
+    <!-- 학생 로그인 -->
+    <div x-show="tab === 'student'" class="px-6 flex flex-col gap-3" style="display:none">
+      <div>
+        <label class="text-xs font-medium text-gray-500 mb-1 block">학생 아이디</label>
+        <input type="text" placeholder="아이디 입력"
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+      <div>
+        <label class="text-xs font-medium text-gray-500 mb-1 block">비밀번호</label>
+        <input type="password" placeholder="비밀번호 입력"
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+      <a href="bookshelf.html"
+        class="w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-semibold text-center mt-1 hover:bg-indigo-700 transition block">
+        로그인
+      </a>
+      <p class="text-center text-xs text-gray-400">아이디·비밀번호는 부모님께 문의하세요</p>
+    </div>
+
+  </div>
+</body>
+</html>
