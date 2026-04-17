@@ -8,9 +8,13 @@
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
     html, body { height: 100%; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     [x-cloak] { display: none !important; }
+    .carousel { cursor: grab; user-select: none; -webkit-user-select: none; }
+    .carousel.dragging { cursor: grabbing; }
+    .carousel::-webkit-scrollbar { display: none; }
+    .carousel { -ms-overflow-style: none; scrollbar-width: none; }
+    /* 드래그 중 자식 클릭 방지 */
+    .carousel.dragging * { pointer-events: none; }
   </style>
 </head>
 <body class="bg-gray-200" style="height:100dvh; overflow:hidden;">
@@ -43,7 +47,6 @@
         읽기 결과
       </a>
     </nav>
-    <!-- 사이드바 하단 유저 -->
     <div class="px-4 py-4 border-t border-gray-100 flex items-center gap-3 relative">
       <button @click="showMenu = !showMenu"
         class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-xs font-bold text-indigo-600 flex-shrink-0"
@@ -82,11 +85,9 @@
         <button class="w-8 h-8 flex items-center justify-center text-gray-400">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </button>
-        <!-- 유저 버튼 (모바일/태블릿) -->
         <button @click="showMenu = !showMenu"
           class="lg:hidden w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-xs font-bold text-indigo-600"
           x-text="user?.initial || '?'"></button>
-        <!-- 유저 팝업 (모바일/태블릿) -->
         <div x-show="showMenu" x-cloak @click.outside="showMenu = false"
              x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
              class="lg:hidden absolute top-10 right-0 bg-white rounded-2xl shadow-xl border border-gray-100 w-44 overflow-hidden z-50">
@@ -118,7 +119,7 @@
         </div>
       </div>
 
-      <!-- 선반 -->
+      <!-- 선반 목록 -->
       <template x-for="shelf in shelves" :key="shelf.id">
         <div class="mt-6">
           <div class="flex items-center justify-between px-4 mb-3">
@@ -128,10 +129,11 @@
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </button>
           </div>
-          <div class="flex gap-3 overflow-x-auto no-scrollbar px-4 pb-2">
+          <!-- 드래그 캐러셀 -->
+          <div class="carousel flex gap-3 overflow-x-auto px-4 pb-2">
             <template x-for="book in shelf.books" :key="book.id">
-              <div class="flex-none w-[88px] md:w-[104px] lg:w-[120px] cursor-pointer group">
-                <div class="w-full h-[120px] md:h-[140px] lg:h-[160px] rounded-xl mb-1.5 flex items-end p-2.5 shadow-sm transition group-hover:scale-105"
+              <div class="flex-none w-[88px] md:w-[104px] lg:w-[120px]">
+                <div class="w-full h-[120px] md:h-[140px] lg:h-[160px] rounded-xl mb-1.5 flex items-end p-2.5 shadow-sm"
                      :style="`background:${book.color}`">
                   <span class="text-white text-[10px] font-bold leading-tight drop-shadow" x-text="book.title"></span>
                 </div>
@@ -198,33 +200,85 @@
   </div>
 
 </div>
+
 <script>
+/* ── 드래그 캐러셀 ── */
+function initCarousels() {
+  document.querySelectorAll('.carousel').forEach(el => {
+    let down = false, startX = 0, scrollLeft = 0;
+    let velX = 0, prevX = 0, prevT = 0, raf = null;
+
+    el.addEventListener('mousedown', e => {
+      down = true;
+      startX = e.clientX;
+      scrollLeft = el.scrollLeft;
+      prevX = e.clientX; prevT = Date.now(); velX = 0;
+      cancelAnimationFrame(raf);
+      el.classList.add('dragging');
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (!down) return;
+      el.scrollLeft = scrollLeft - (e.clientX - startX);
+      const now = Date.now(), dt = Math.max(now - prevT, 1);
+      velX = (prevX - e.clientX) / dt * 14;
+      prevX = e.clientX; prevT = now;
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!down) return;
+      down = false;
+      el.classList.remove('dragging');
+      // 모멘텀 글라이드
+      const glide = () => {
+        if (Math.abs(velX) < 0.4) return;
+        el.scrollLeft += velX;
+        velX *= 0.91;
+        raf = requestAnimationFrame(glide);
+      };
+      glide();
+    });
+  });
+}
+
+document.addEventListener('alpine:initialized', () => {
+  // Alpine x-for 렌더링 완료 후 캐러셀 초기화
+  requestAnimationFrame(initCarousels);
+});
+
+/* ── 앱 데이터 ── */
 function app() {
   const C = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#f093fb,#f5576c)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)','linear-gradient(135deg,#a18cd1,#fbc2eb)','linear-gradient(135deg,#fccb90,#d57eeb)','linear-gradient(135deg,#a1c4fd,#c2e9fb)','linear-gradient(135deg,#fd7043,#ff8a65)','linear-gradient(135deg,#26c6da,#00838f)','linear-gradient(135deg,#66bb6a,#2e7d32)','linear-gradient(135deg,#ec407a,#880e4f)'];
-  const mk = (l) => l.map((b,i)=>({id:i,...b,color:C[i%C.length]}));
+  const mk = (l) => l.map((b,i) => ({id:i,...b,color:C[i%C.length]}));
   return {
     user: null, showMenu: false, selectedShelf: null,
-    init() { this.user = JSON.parse(localStorage.getItem('cr_user')||'null'); if(!this.user) window.location.href='login.html'; },
-    logout() { localStorage.removeItem('cr_user'); window.location.href='login.html'; },
+    init() {
+      this.user = JSON.parse(localStorage.getItem('cr_user')||'null');
+      if (!this.user) window.location.href = 'index.html';
+    },
+    logout() { localStorage.removeItem('cr_user'); window.location.href = 'index.html'; },
     openShelf(s) { this.selectedShelf = s; },
     shelves: [
       { id:1, title:'🔥 또래 친구들이 많이 읽은 책', books: mk([
         {title:"Charlotte's Web",author:'E.B. White',level:'Lv.3'},{title:'Magic Tree House',author:'M. Osborne',level:'Lv.2'},
         {title:'Wonder',author:'R.J. Palacio',level:'Lv.4'},{title:'Diary of a Wimpy Kid',author:'J. Kinney',level:'Lv.3'},
         {title:'Percy Jackson',author:'R. Riordan',level:'Lv.4'},{title:'The Giver',author:'L. Lowry',level:'Lv.5'},
-        {title:'Holes',author:'L. Sachar',level:'Lv.4'},{title:'Hatchet',author:'G. Paulsen',level:'Lv.4'}])},
+        {title:'Holes',author:'L. Sachar',level:'Lv.4'},{title:'Hatchet',author:'G. Paulsen',level:'Lv.4'},
+        {title:'Frindle',author:'A. Clements',level:'Lv.3'},{title:'Matilda',author:'R. Dahl',level:'Lv.3'}])},
       { id:2, title:'🚀 홍길동이 좋아하는 SF 소설', books: mk([
         {title:"Ender's Game",author:'O.S. Card',level:'Lv.5'},{title:'A Wrinkle in Time',author:"M. L'Engle",level:'Lv.4'},
         {title:'City of Ember',author:'J. DuPrau',level:'Lv.4'},{title:'Among the Hidden',author:'M.P. Haddix',level:'Lv.4'},
-        {title:'The Giver',author:'L. Lowry',level:'Lv.5'},{title:'Feed',author:'M.T. Anderson',level:'Lv.5'}])},
+        {title:'The Giver',author:'L. Lowry',level:'Lv.5'},{title:'Feed',author:'M.T. Anderson',level:'Lv.5'},
+        {title:'Fahrenheit 451',author:'R. Bradbury',level:'Lv.6'},{title:'The Maze Runner',author:'J. Dashner',level:'Lv.5'}])},
       { id:3, title:'📚 이번 주 인기 도서', books: mk([
         {title:'Harry Potter 1',author:'J.K. Rowling',level:'Lv.5'},{title:'Matilda',author:'R. Dahl',level:'Lv.3'},
         {title:'The BFG',author:'R. Dahl',level:'Lv.3'},{title:'Bridge to Terabithia',author:'K. Paterson',level:'Lv.4'},
-        {title:'The Lion, the Witch',author:'C.S. Lewis',level:'Lv.4'},{title:'Frindle',author:'A. Clements',level:'Lv.3'}])},
+        {title:'The Lion, the Witch',author:'C.S. Lewis',level:'Lv.4'},{title:'Stuart Little',author:'E.B. White',level:'Lv.3'},
+        {title:'Island of the Blue Dolphins',author:"S. O'Dell",level:'Lv.4'}])},
       { id:4, title:'🌱 내 수준에 딱 맞는 책 (Lv.3)', books: mk([
         {title:'Frindle',author:'A. Clements',level:'Lv.3'},{title:'The One and Only Ivan',author:'K. Applegate',level:'Lv.3'},
         {title:'Because of Winn-Dixie',author:'K. DiCamillo',level:'Lv.3'},{title:"My Father's Dragon",author:'R.S. Gannett',level:'Lv.2'},
-        {title:'Stuart Little',author:'E.B. White',level:'Lv.3'}])},
+        {title:'Stuart Little',author:'E.B. White',level:'Lv.3'},{title:'Nate the Great',author:'M.W. Sharmat',level:'Lv.1'}])},
     ]
   }
 }
