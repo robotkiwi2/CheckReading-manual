@@ -8,12 +8,12 @@
 * [자녀 프로필 등록](start/undefined-1.md)
 * [결제 및 포인트 구매](start/undefined-2.md)
 
-## 책 구매하기
+## 책 읽기
 
 * [책 구매하기](group-2/undefined.md)
 * [프로필에 책 할당하기](group-2/undefined-1.md)
 
-## Group 3
+## 책읽기 모니터링
 
 * [책 읽기](group-3/undefined.md)
 * [후기 쓰기](group-3/undefined-1.md)
