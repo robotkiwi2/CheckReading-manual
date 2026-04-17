@@ -10,7 +10,6 @@
 
 ## 책 읽기
 
-* [책 구매하기](group-2/book-purchase.md)
 * [프로필에 책 할당하기](group-2/book-assign.md)
 * [책 선택하기](group-2/book-select.md)
 * [시선 보정하기](group-2/eye-calibration.md)
@@ -22,6 +21,6 @@
 * [책 읽기](group-3/reading.md)
 * [읽기 상태 확인](group-1/reading-status.md)
 
-## Group 1
+## 읽기 결과 보기
 
 * [독서 수준 확인](group-1/reading-level.md)
