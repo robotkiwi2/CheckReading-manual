@@ -6,7 +6,12 @@
   <title>프로필 상세 - CheckReading</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <style> html,body{height:100%;} [x-cloak]{display:none!important;} </style>
+  <style>
+    html,body{height:100%;}
+    [x-cloak]{display:none!important;}
+    .badge-scroll::-webkit-scrollbar{display:none;}
+    .score-scroll::-webkit-scrollbar{display:none;}
+  </style>
 </head>
 <body class="bg-gray-200" style="height:100dvh;overflow:hidden;">
 <div class="h-full flex items-stretch justify-center bg-gray-200" x-data="app()" x-init="init()">
@@ -32,90 +37,184 @@
 
   <!-- 메인 -->
   <div class="flex-1 flex flex-col min-w-0 bg-gray-50 max-w-3xl">
+
+    <!-- 헤더 -->
     <header class="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
       <a href="profiles.html" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
       </a>
       <span class="font-bold text-gray-900 flex-1" x-text="profile?.name + ' 프로필'"></span>
-      <button class="text-sm text-indigo-500 font-medium">편집</button>
     </header>
 
     <main class="flex-1 overflow-y-auto min-h-0">
-      <!-- 프로필 헤더 -->
-      <div class="mx-4 mt-4 rounded-2xl p-6 text-white" :style="`background:${profile?.color}`">
-        <div class="flex items-center gap-4">
-          <div class="w-16 h-16 bg-white/25 rounded-full flex items-center justify-center">
-            <span class="text-3xl font-bold text-white" x-text="profile?.initial"></span>
+
+      <!-- ① 기본정보 영역 -->
+      <div class="mx-4 mt-4 rounded-2xl shadow-md overflow-hidden" :style="`background:${profile?.color}`">
+        <!-- 상단: 프로필 + 톱니(부모만) -->
+        <div class="px-5 pt-5 pb-3 relative">
+          <!-- 톱니 버튼 (부모만) -->
+          <button x-show="user?.type==='parent'" class="absolute top-4 right-4 w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </button>
+
+          <div class="flex items-start gap-4">
+            <!-- 프로필 사진 -->
+            <div class="w-16 h-16 bg-white/25 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-3xl font-bold text-white" x-text="profile?.initial"></span>
+            </div>
+            <!-- 정보 -->
+            <div class="flex-1 min-w-0 pt-1">
+              <h2 class="text-xl font-bold text-white" x-text="profile?.name"></h2>
+              <p class="text-white/80 text-sm mt-0.5" x-text="profile?.age + '세 · ' + (profile?.grade||'초3') + ' · ' + (profile?.gender||'남')"></p>
+              <p class="text-white/70 text-xs mt-0.5" x-text="profile?.level"></p>
+              <div class="flex items-center gap-3 mt-2">
+                <span class="flex items-center gap-1 text-white/80 text-xs">
+                  <svg class="w-3.5 h-3.5 text-red-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
+                  <span x-text="(profile?.favorites||23) + '명 즐겨찾기'"></span>
+                </span>
+                <span class="flex items-center gap-1 text-white/80 text-xs">
+                  <svg class="w-3.5 h-3.5 text-yellow-200" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  <span x-text="'총 ' + (profile?.totalScore||4820) + '점'"></span>
+                </span>
+              </div>
+            </div>
+            <!-- 등급 트로피 -->
+            <div class="flex flex-col items-center gap-1 pt-1 flex-shrink-0">
+              <svg class="w-10 h-10" :class="trophyColor(profile?.gradeLabel||'골드')" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 3a1 1 0 000 2H3.5A1.5 1.5 0 002 6.5v1A3.5 3.5 0 005.5 11H6a4 4 0 003 3.874V16H7a1 1 0 100 2h6a1 1 0 100-2h-2v-1.126A4 4 0 0014 11h.5A3.5 3.5 0 0018 7.5v-1A1.5 1.5 0 0016.5 5H15a1 1 0 000-2H5z" clip-rule="evenodd"/>
+              </svg>
+              <span class="text-white/90 text-[11px] font-semibold" x-text="profile?.gradeLabel||'골드'"></span>
+            </div>
           </div>
-          <div>
-            <h2 class="text-xl font-bold" x-text="profile?.name"></h2>
-            <p class="text-white/70 text-sm" x-text="profile?.age + '세 · ' + profile?.level"></p>
-            <p class="text-white/70 text-xs mt-1">2024년 3월 가입</p>
+        </div>
+
+        <!-- 뱃지 스트립 -->
+        <div class="px-4 pb-4">
+          <div class="badge-scroll flex gap-2 overflow-x-auto" style="scrollbar-width:none;">
+            <template x-for="badge in badges" :key="badge.id">
+              <div class="flex-shrink-0 flex flex-col items-center gap-1 bg-white/15 rounded-xl px-3 py-2 min-w-[56px]">
+                <span class="text-xl" x-text="badge.icon"></span>
+                <span class="text-white/80 text-[9px] text-center leading-tight" x-text="badge.label"></span>
+              </div>
+            </template>
           </div>
         </div>
       </div>
 
-      <!-- 통계 카드 -->
-      <div class="grid grid-cols-3 gap-3 mx-4 mt-4">
-        <div class="bg-white rounded-2xl p-4 text-center shadow-sm">
-          <p class="text-2xl font-bold text-indigo-600" x-text="profile?.done"></p>
-          <p class="text-xs text-gray-400 mt-1">읽은 책</p>
-        </div>
-        <div class="bg-white rounded-2xl p-4 text-center shadow-sm">
-          <p class="text-2xl font-bold text-green-500" x-text="profile?.reading"></p>
-          <p class="text-xs text-gray-400 mt-1">읽는 중</p>
-        </div>
-        <div class="bg-white rounded-2xl p-4 text-center shadow-sm">
-          <p class="text-2xl font-bold text-orange-400">14</p>
-          <p class="text-xs text-gray-400 mt-1">연속 읽기일</p>
-        </div>
-      </div>
-
-      <!-- 현재 읽고 있는 책 -->
+      <!-- ② 읽기점수 영역 -->
       <div class="mx-4 mt-5">
-        <h3 class="font-bold text-gray-800 text-sm mb-3">읽고 있는 책</h3>
-        <div class="flex flex-col gap-3">
-          <template x-for="book in currentBooks" :key="book.title">
-            <div class="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm">
-              <div class="w-12 h-16 rounded-xl flex-shrink-0 flex items-end p-1.5" :style="`background:${book.color}`">
-                <span class="text-white text-[9px] font-bold leading-tight" x-text="book.title"></span>
+        <h3 class="font-bold text-gray-800 text-sm mb-3">읽기 점수</h3>
+        <div class="score-scroll flex gap-3 overflow-x-auto pb-1" style="scrollbar-width:none;">
+          <!-- 누적 총점 -->
+          <div class="flex-shrink-0 bg-white rounded-2xl p-4 shadow-sm w-40">
+            <p class="text-[10px] text-gray-400 font-medium mb-2">누적 총점</p>
+            <p class="text-2xl font-bold text-indigo-600" x-text="scores.total.toLocaleString()"></p>
+            <p class="text-xs text-gray-400 mt-0.5">점</p>
+            <div class="mt-3 flex items-center gap-1.5">
+              <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-indigo-400 rounded-full" :style="`width:${scores.totalPct}%`"></div>
               </div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-sm text-gray-800 truncate" x-text="book.title"></p>
-                <p class="text-xs text-gray-400 mt-0.5" x-text="book.author"></p>
-                <div class="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div class="h-full bg-indigo-400 rounded-full transition-all" :style="`width:${book.progress}%`"></div>
-                </div>
-                <p class="text-[10px] text-indigo-500 mt-1" x-text="book.progress + '% 읽음'"></p>
-              </div>
+              <span class="text-[10px] text-indigo-500 font-semibold flex-shrink-0" x-text="'상위 ' + scores.totalPct + '%'"></span>
             </div>
-          </template>
+          </div>
+          <!-- 올해 -->
+          <div class="flex-shrink-0 bg-white rounded-2xl p-4 shadow-sm w-40">
+            <p class="text-[10px] text-gray-400 font-medium mb-2">올해 획득</p>
+            <p class="text-2xl font-bold text-green-500" x-text="scores.year.toLocaleString()"></p>
+            <p class="text-xs text-gray-400 mt-0.5">점</p>
+            <div class="mt-3 flex items-center gap-1.5">
+              <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-green-400 rounded-full" :style="`width:${scores.yearPct}%`"></div>
+              </div>
+              <span class="text-[10px] text-green-500 font-semibold flex-shrink-0" x-text="'상위 ' + scores.yearPct + '%'"></span>
+            </div>
+          </div>
+          <!-- 이번달 -->
+          <div class="flex-shrink-0 bg-white rounded-2xl p-4 shadow-sm w-40">
+            <p class="text-[10px] text-gray-400 font-medium mb-2">이번달 획득</p>
+            <p class="text-2xl font-bold text-orange-400" x-text="scores.month.toLocaleString()"></p>
+            <p class="text-xs text-gray-400 mt-0.5">점</p>
+            <div class="mt-3 flex items-center gap-1.5">
+              <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-orange-300 rounded-full" :style="`width:${scores.monthPct}%`"></div>
+              </div>
+              <span class="text-[10px] text-orange-400 font-semibold flex-shrink-0" x-text="'상위 ' + scores.monthPct + '%'"></span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 할당된 필독서 -->
-      <div class="mx-4 mt-5 mb-4">
+      <!-- ③ 월별 활동내역 영역 -->
+      <div class="mx-4 mt-5 mb-6">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="font-bold text-gray-800 text-sm">필독서</h3>
-          <button class="text-xs text-indigo-500 font-medium">+ 추가</button>
+          <h3 class="font-bold text-gray-800 text-sm">월별 활동내역</h3>
+          <div class="flex items-center gap-2">
+            <button @click="prevMonth()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <span class="text-sm font-semibold text-gray-700" x-text="calYear + '년 ' + (calMonth+1) + '월'"></span>
+            <button @click="nextMonth()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
         </div>
-        <div class="flex flex-col gap-3">
-          <template x-for="book in mustBooks" :key="book.title">
-            <div class="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm">
-              <div class="w-12 h-16 rounded-xl flex-shrink-0 flex items-end p-1.5" :style="`background:${book.color}`">
-                <span class="text-white text-[9px] font-bold leading-tight" x-text="book.title"></span>
+
+        <!-- 월간 요약 -->
+        <div class="flex gap-3 mb-4">
+          <div class="flex-1 bg-white rounded-2xl p-4 shadow-sm text-center">
+            <p class="text-[10px] text-gray-400 mb-1">이번달 획득점수</p>
+            <p class="text-xl font-bold text-indigo-600" x-text="monthSummary.score.toLocaleString() + '점'"></p>
+          </div>
+          <div class="flex-1 bg-white rounded-2xl p-4 shadow-sm text-center">
+            <p class="text-[10px] text-gray-400 mb-1">이번달 읽은 단어</p>
+            <p class="text-xl font-bold text-green-500" x-text="monthSummary.words.toLocaleString() + '개'"></p>
+          </div>
+        </div>
+
+        <!-- 달력 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <!-- 요일 헤더 -->
+          <div class="grid grid-cols-7 mb-2">
+            <template x-for="d in ['일','월','화','수','목','금','토']" :key="d">
+              <div class="text-center text-[10px] font-semibold"
+                   :class="d==='일' ? 'text-red-400' : d==='토' ? 'text-blue-400' : 'text-gray-400'"
+                   x-text="d"></div>
+            </template>
+          </div>
+          <!-- 날짜 셀 -->
+          <div class="grid grid-cols-7 gap-y-1">
+            <!-- 빈 칸 (월 시작 전) -->
+            <template x-for="_ in Array(calStartDay).fill(0)" :key="'e'+_">
+              <div></div>
+            </template>
+            <!-- 날짜 -->
+            <template x-for="day in calDays" :key="day">
+              <div class="flex items-center justify-center">
+                <button @click="goDay(day)"
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors"
+                        :class="dayClass(day)"
+                        x-text="day"></button>
               </div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-sm text-gray-800 truncate" x-text="book.title"></p>
-                <p class="text-xs text-gray-400" x-text="book.author"></p>
-              </div>
-              <span class="text-xs bg-orange-100 text-orange-500 px-2 py-0.5 rounded-full">필독</span>
+            </template>
+          </div>
+          <!-- 범례 -->
+          <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-50 justify-end">
+            <span class="text-[9px] text-gray-400">점수</span>
+            <div class="flex items-center gap-1">
+              <div class="w-3 h-3 rounded-full bg-gray-100"></div>
+              <div class="w-3 h-3 rounded-full bg-green-100"></div>
+              <div class="w-3 h-3 rounded-full bg-green-300"></div>
+              <div class="w-3 h-3 rounded-full bg-green-500"></div>
+              <div class="w-3 h-3 rounded-full bg-green-700"></div>
             </div>
-          </template>
+            <span class="text-[9px] text-gray-400">높음</span>
+          </div>
         </div>
       </div>
+
     </main>
 
+    <!-- 하단 탭바 (lg 미만) -->
     <nav class="lg:hidden flex-shrink-0 bg-white border-t border-gray-100 flex">
       <a href="profiles.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-indigo-600"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg><span class="text-[10px] font-semibold">프로필</span></a>
       <a href="chat.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-gray-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><span class="text-[10px]">소통</span></a>
@@ -125,35 +224,87 @@
     </nav>
   </div>
 </div>
+
 <script>
 function app() {
-  const bookColors = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)'];
-  const data = {
-    hong: {
-      currentBooks: [
-        {title:'Percy Jackson',author:'R. Riordan',progress:42,color:bookColors[0]},
-        {title:'Magic Tree House #5',author:'M. Osborne',progress:78,color:bookColors[1]},
-      ],
-      mustBooks: [{title:"Charlotte's Web",author:'E.B. White',color:bookColors[2]},{title:'The One and Only Ivan',author:'K. Applegate',color:bookColors[3]}]
-    },
-    chun: {
-      currentBooks: [
-        {title:'Wonder',author:'R.J. Palacio',progress:55,color:bookColors[0]},
-        {title:'Harry Potter 1',author:'J.K. Rowling',progress:30,color:bookColors[3]},
-      ],
-      mustBooks: [{title:'The Giver',author:'L. Lowry',color:bookColors[1]}]
-    }
+  const sampleDayScores = {
+    1:0, 2:45, 3:120, 4:0, 5:80, 6:200, 7:0,
+    8:60, 9:30, 10:150, 11:0, 12:90, 13:110, 14:75,
+    15:0, 16:0, 17:180, 18:0, 19:55, 20:230, 21:0,
+    22:40, 23:100, 24:160, 25:0, 26:70, 27:0, 28:50,
+    29:130, 30:0
   };
+
   return {
-    user: null, profile: null, currentBooks: [], mustBooks: [],
+    user: null, profile: null,
+    calYear: 2026, calMonth: 3,
+    calDays: [], calStartDay: 0,
+
+    badges: [
+      {id:1, icon:'📚', label:'다독왕'},
+      {id:2, icon:'🔥', label:'연속30일'},
+      {id:3, icon:'⚡', label:'스피드'},
+      {id:4, icon:'🌟', label:'우수독자'},
+      {id:5, icon:'🎯', label:'목표달성'},
+      {id:6, icon:'🦉', label:'야독가'},
+      {id:7, icon:'💎', label:'정확도99'},
+      {id:8, icon:'🏅', label:'월간1위'},
+    ],
+
+    scores: { total: 4820, totalPct: 12, year: 1340, yearPct: 18, month: 380, monthPct: 22 },
+    monthSummary: { score: 380, words: 12400 },
+    dayScores: sampleDayScores,
+
     init() {
-      this.user = JSON.parse(localStorage.getItem('cr_user')||'null');
-      if (!this.user) window.location.href = 'index.html';
-      this.profile = JSON.parse(localStorage.getItem('cr_profile')||'null');
-      if (!this.profile) window.location.href = 'profiles.html';
-      const d = data[this.profile.id] || data.hong;
-      this.currentBooks = d.currentBooks;
-      this.mustBooks = d.mustBooks;
+      this.user = JSON.parse(localStorage.getItem('cr_user') || 'null');
+      if (!this.user) { window.location.href = 'index.html'; return; }
+      this.profile = JSON.parse(localStorage.getItem('cr_profile') || 'null');
+      if (!this.profile) { window.location.href = 'profiles.html'; return; }
+      this.buildCalendar();
+    },
+
+    buildCalendar() {
+      const daysInMonth = new Date(this.calYear, this.calMonth + 1, 0).getDate();
+      this.calStartDay = new Date(this.calYear, this.calMonth, 1).getDay();
+      this.calDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    },
+
+    prevMonth() {
+      if (this.calMonth === 0) { this.calMonth = 11; this.calYear--; }
+      else this.calMonth--;
+      this.buildCalendar();
+    },
+    nextMonth() {
+      if (this.calMonth === 11) { this.calMonth = 0; this.calYear++; }
+      else this.calMonth++;
+      this.buildCalendar();
+    },
+
+    dayClass(day) {
+      const score = this.dayScores[day] || 0;
+      const today = new Date();
+      const isToday = day === today.getDate() && this.calMonth === today.getMonth() && this.calYear === today.getFullYear();
+      let bg = 'bg-gray-100 text-gray-400';
+      if (score > 0 && score <= 50)  bg = 'bg-green-100 text-green-700';
+      if (score > 50 && score <= 100) bg = 'bg-green-200 text-green-800';
+      if (score > 100 && score <= 150) bg = 'bg-green-400 text-white';
+      if (score > 150) bg = 'bg-green-600 text-white';
+      if (isToday) return bg + ' ring-2 ring-indigo-400 ring-offset-1';
+      return bg;
+    },
+
+    goDay(day) {
+      const score = this.dayScores[day] || 0;
+      if (score === 0) return;
+      localStorage.setItem('cr_day', JSON.stringify({ year: this.calYear, month: this.calMonth + 1, day }));
+      alert(`${this.calYear}년 ${this.calMonth+1}월 ${day}일 활동내역 페이지로 이동 (미구현)`);
+    },
+
+    trophyColor(grade) {
+      if (grade === '플래티넘') return 'text-cyan-300';
+      if (grade === '골드') return 'text-yellow-300';
+      if (grade === '실버') return 'text-gray-300';
+      return 'text-orange-300';
     }
   }
 }
