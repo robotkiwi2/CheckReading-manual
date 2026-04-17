@@ -397,7 +397,7 @@ function app() {
   const C = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#f093fb,#f5576c)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)','linear-gradient(135deg,#a18cd1,#fbc2eb)','linear-gradient(135deg,#fccb90,#d57eeb)','linear-gradient(135deg,#a1c4fd,#c2e9fb)','linear-gradient(135deg,#fd7043,#ff8a65)','linear-gradient(135deg,#26c6da,#00838f)','linear-gradient(135deg,#66bb6a,#2e7d32)','linear-gradient(135deg,#ec407a,#880e4f)'];
   const mk = (l) => l.map((b,i) => ({id:i,...b,color:C[i%C.length]}));
 
-  const minjun = { id:'minjun', name:'김민준', initial:'김', age:10, grade:'초4', gender:'남', level:'Lv.3', gradeLabel:'골드', favorites:18, totalScore:3240, color:'linear-gradient(135deg,#43e97b,#38f9d7)' };
+  const minjun = { id:'minjun', name:'김민준', initial:'김', age:10, grade:'초4', gender:'남', level:'Lv.3', gradeLabel:'골드', favorites:18, totalScore:3240, color:'linear-gradient(135deg,#43e97b,#38f9d7)', isOther:true };
 
   return {
     user: null, isParent: false, showMenu: false,
