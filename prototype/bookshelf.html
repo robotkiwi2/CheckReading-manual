@@ -11,6 +11,8 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     [x-cloak] { display: none !important; }
+    .drag-scroll { cursor: grab; user-select: none; }
+    .drag-scroll.grabbing { cursor: grabbing; }
   </style>
 </head>
 <body class="bg-gray-200" style="height:100dvh; overflow:hidden;">
@@ -63,7 +65,7 @@
       </div>
 
       <!-- 프로필 선택 바 (부모만) -->
-      <div x-show="isParent" class="flex overflow-x-auto no-scrollbar px-4 pb-3 gap-4 border-b border-gray-100">
+      <div x-show="isParent" class="flex overflow-x-auto no-scrollbar px-6 py-3 gap-8 border-b border-gray-100 justify-center">
         <template x-for="p in profiles" :key="p.id">
           <button @click="selectProfile(p)" class="flex flex-col items-center gap-1.5 flex-shrink-0">
             <div class="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-base transition-all"
@@ -92,7 +94,7 @@
     </header>
 
     <!-- 스크롤 콘텐츠 -->
-    <main class="flex-1 overflow-y-auto min-h-0 p-4">
+    <main x-ref="mainScroll" class="flex-1 overflow-y-auto min-h-0 p-4 drag-scroll">
       <template x-for="t in currentTabs" :key="t.id">
         <div x-show="activeTab===t.id">
           <div x-show="t.books.length===0" class="flex flex-col items-center justify-center py-20 text-gray-300">
@@ -246,10 +248,51 @@ function app() {
       if (!this.user) { window.location.href = 'index.html'; return; }
       this.isParent = this.user.type === 'parent';
       if (this.isParent) this.selectedProfile = this.profiles[0];
+      this.$nextTick(() => initDragScroll(this.$refs.mainScroll));
     },
     logout() { localStorage.removeItem('cr_user'); window.location.href = 'index.html'; },
     selectProfile(p) { this.selectedProfile = p; this.activeTab = 'reading'; },
   }
+}
+
+function initDragScroll(el) {
+  if (!el) return;
+  let startY = 0, scrollStart = 0, dragging = false, moved = false;
+  let velY = 0, prevY = 0, prevT = 0, raf = null;
+
+  el.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    cancelAnimationFrame(raf);
+    dragging = true; moved = false;
+    startY = e.clientY; scrollStart = el.scrollTop;
+    prevY = e.clientY; prevT = Date.now(); velY = 0;
+  });
+
+  el.addEventListener('click', e => {
+    if (moved) { e.stopPropagation(); e.preventDefault(); }
+  }, true);
+
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const dy = e.clientY - startY;
+    if (Math.abs(dy) > 4) { el.classList.add('grabbing'); moved = true; }
+    el.scrollTop = scrollStart - dy;
+    const now = Date.now(), dt = Math.max(now - prevT, 1);
+    velY = (prevY - e.clientY) / dt * 15;
+    prevY = e.clientY; prevT = now;
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    el.classList.remove('grabbing');
+    const glide = () => {
+      if (Math.abs(velY) < 0.3) return;
+      el.scrollTop += velY; velY *= 0.90;
+      raf = requestAnimationFrame(glide);
+    };
+    glide();
+  });
 }
 </script>
 </body>
