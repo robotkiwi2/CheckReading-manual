@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프로필 상세 - CheckReading</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style> html,body{height:100%;} [x-cloak]{display:none!important;} </style>
+</head>
+<body class="bg-gray-200" style="height:100dvh;overflow:hidden;">
+<div class="h-full flex items-stretch justify-center bg-gray-200" x-data="app()" x-init="init()">
+
+  <!-- 사이드바 (lg+) -->
+  <aside class="hidden lg:flex flex-col w-56 bg-white border-r border-gray-100 flex-shrink-0">
+    <div class="px-5 py-5 border-b border-gray-100 flex items-center gap-3">
+      <div class="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center"><span class="text-white text-xs font-bold">CR</span></div>
+      <span class="font-bold text-gray-900">CheckReading</span>
+    </div>
+    <nav class="flex-1 py-4 px-3 flex flex-col gap-1">
+      <a href="bookstore.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>서점</a>
+      <a href="bookshelf.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>책장</a>
+      <a href="profiles.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-50 text-indigo-600 font-semibold text-sm"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg>프로필</a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>읽기 결과</a>
+    </nav>
+    <div class="px-4 py-4 border-t border-gray-100 flex items-center gap-3">
+      <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-xs font-bold text-indigo-600" x-text="user?.initial||'?'"></div>
+      <div class="flex-1 min-w-0"><p class="text-sm font-semibold text-gray-800 truncate" x-text="user?.name"></p><p class="text-xs text-gray-400">부모</p></div>
+    </div>
+  </aside>
+
+  <!-- 메인 -->
+  <div class="flex-1 flex flex-col min-w-0 bg-gray-50 max-w-3xl">
+    <header class="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
+      <a href="profiles.html" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </a>
+      <span class="font-bold text-gray-900 flex-1" x-text="profile?.name + ' 프로필'"></span>
+      <button class="text-sm text-indigo-500 font-medium">편집</button>
+    </header>
+
+    <main class="flex-1 overflow-y-auto min-h-0">
+      <!-- 프로필 헤더 -->
+      <div class="mx-4 mt-4 rounded-2xl p-6 text-white" :style="`background:${profile?.color}`">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 bg-white/25 rounded-full flex items-center justify-center">
+            <span class="text-3xl font-bold text-white" x-text="profile?.initial"></span>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold" x-text="profile?.name"></h2>
+            <p class="text-white/70 text-sm" x-text="profile?.age + '세 · ' + profile?.level"></p>
+            <p class="text-white/70 text-xs mt-1">2024년 3월 가입</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 통계 카드 -->
+      <div class="grid grid-cols-3 gap-3 mx-4 mt-4">
+        <div class="bg-white rounded-2xl p-4 text-center shadow-sm">
+          <p class="text-2xl font-bold text-indigo-600" x-text="profile?.done"></p>
+          <p class="text-xs text-gray-400 mt-1">읽은 책</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 text-center shadow-sm">
+          <p class="text-2xl font-bold text-green-500" x-text="profile?.reading"></p>
+          <p class="text-xs text-gray-400 mt-1">읽는 중</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 text-center shadow-sm">
+          <p class="text-2xl font-bold text-orange-400">14</p>
+          <p class="text-xs text-gray-400 mt-1">연속 읽기일</p>
+        </div>
+      </div>
+
+      <!-- 현재 읽고 있는 책 -->
+      <div class="mx-4 mt-5">
+        <h3 class="font-bold text-gray-800 text-sm mb-3">읽고 있는 책</h3>
+        <div class="flex flex-col gap-3">
+          <template x-for="book in currentBooks" :key="book.title">
+            <div class="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm">
+              <div class="w-12 h-16 rounded-xl flex-shrink-0 flex items-end p-1.5" :style="`background:${book.color}`">
+                <span class="text-white text-[9px] font-bold leading-tight" x-text="book.title"></span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-sm text-gray-800 truncate" x-text="book.title"></p>
+                <p class="text-xs text-gray-400 mt-0.5" x-text="book.author"></p>
+                <div class="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-indigo-400 rounded-full transition-all" :style="`width:${book.progress}%`"></div>
+                </div>
+                <p class="text-[10px] text-indigo-500 mt-1" x-text="book.progress + '% 읽음'"></p>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- 할당된 필독서 -->
+      <div class="mx-4 mt-5 mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-bold text-gray-800 text-sm">필독서</h3>
+          <button class="text-xs text-indigo-500 font-medium">+ 추가</button>
+        </div>
+        <div class="flex flex-col gap-3">
+          <template x-for="book in mustBooks" :key="book.title">
+            <div class="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm">
+              <div class="w-12 h-16 rounded-xl flex-shrink-0 flex items-end p-1.5" :style="`background:${book.color}`">
+                <span class="text-white text-[9px] font-bold leading-tight" x-text="book.title"></span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-sm text-gray-800 truncate" x-text="book.title"></p>
+                <p class="text-xs text-gray-400" x-text="book.author"></p>
+              </div>
+              <span class="text-xs bg-orange-100 text-orange-500 px-2 py-0.5 rounded-full">필독</span>
+            </div>
+          </template>
+        </div>
+      </div>
+    </main>
+
+    <nav class="lg:hidden flex-shrink-0 bg-white border-t border-gray-100 flex">
+      <a href="bookstore.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-gray-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span class="text-[10px]">서점</span></a>
+      <a href="bookshelf.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-gray-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg><span class="text-[10px]">책장</span></a>
+      <a href="profiles.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-indigo-600"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg><span class="text-[10px] font-semibold">프로필</span></a>
+      <a href="#" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-gray-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><span class="text-[10px]">결과</span></a>
+    </nav>
+  </div>
+</div>
+<script>
+function app() {
+  const bookColors = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)'];
+  const data = {
+    hong: {
+      currentBooks: [
+        {title:'Percy Jackson',author:'R. Riordan',progress:42,color:bookColors[0]},
+        {title:'Magic Tree House #5',author:'M. Osborne',progress:78,color:bookColors[1]},
+      ],
+      mustBooks: [{title:"Charlotte's Web",author:'E.B. White',color:bookColors[2]},{title:'The One and Only Ivan',author:'K. Applegate',color:bookColors[3]}]
+    },
+    chun: {
+      currentBooks: [
+        {title:'Wonder',author:'R.J. Palacio',progress:55,color:bookColors[0]},
+        {title:'Harry Potter 1',author:'J.K. Rowling',progress:30,color:bookColors[3]},
+      ],
+      mustBooks: [{title:'The Giver',author:'L. Lowry',color:bookColors[1]}]
+    }
+  };
+  return {
+    user: null, profile: null, currentBooks: [], mustBooks: [],
+    init() {
+      this.user = JSON.parse(localStorage.getItem('cr_user')||'null');
+      if (!this.user) window.location.href = 'index.html';
+      this.profile = JSON.parse(localStorage.getItem('cr_profile')||'null');
+      if (!this.profile) window.location.href = 'profiles.html';
+      const d = data[this.profile.id] || data.hong;
+      this.currentBooks = d.currentBooks;
+      this.mustBooks = d.mustBooks;
+    }
+  }
+}
+</script>
+</body>
+</html>
