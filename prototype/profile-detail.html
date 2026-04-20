@@ -156,6 +156,18 @@
             <div x-show="chartTab==='score'" class="flex items-baseline gap-2">
               <span class="text-xl font-bold text-indigo-600" x-text="chartSummary.main"></span>
               <span class="text-xs text-gray-400" x-text="chartSummary.sub"></span>
+              <button @click="scoreTooltip=!scoreTooltip"
+                      class="w-4 h-4 rounded-full bg-gray-200 text-gray-500 text-[10px] font-bold flex items-center justify-center hover:bg-indigo-100 hover:text-indigo-600 transition-colors flex-shrink-0 mb-0.5">i</button>
+            </div>
+            <!-- 읽기 점수 산출 방식 툴팁 -->
+            <div x-show="chartTab==='score' && scoreTooltip"
+                 x-cloak
+                 @click.outside="scoreTooltip=false"
+                 class="mt-2 mb-1 bg-indigo-50 border border-indigo-100 rounded-xl px-3.5 py-3 text-xs text-gray-600 leading-relaxed">
+              <p class="font-semibold text-indigo-700 mb-1.5">읽기 점수 산출 방식</p>
+              <p class="mb-1"><span class="font-medium text-gray-800">기본 점수</span> = 읽은 단어수 × 책 레벨 가중치 × 시선상태 가중치</p>
+              <p class="mb-2"><span class="font-medium text-gray-800">최종 점수</span> = 기본 점수 + 퀴즈 보너스 + 읽기속도 보너스</p>
+              <p class="text-gray-400 text-[11px]">퀴즈·속도 보너스는 기본 점수의 30% 이내로 제한됩니다.</p>
             </div>
             <div x-show="chartTab==='eye'" class="flex flex-wrap gap-3">
               <div class="flex items-center gap-1.5">
@@ -634,7 +646,7 @@ function app() {
     monthSummary: { score:380, words:12400 },
     dayScores: {},
 
-    chartTab: 'score', chartRange: 'bimonth', chartOffset: 0,
+    chartTab: 'score', chartRange: 'bimonth', chartOffset: 0, scoreTooltip: false,
     chartTouchX: 0,
 
     get chartSummary() {
