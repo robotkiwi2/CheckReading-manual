@@ -304,7 +304,7 @@
         </div>
 
         <!-- 결제 내역 -->
-        <div class="mx-4 mt-5 mb-8">
+        <div class="mx-4 mt-5">
           <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">결제 내역</p>
           <div class="bg-white rounded-2xl shadow-sm divide-y divide-gray-50">
             <template x-for="h in payHistory" :key="h.date">
@@ -317,6 +317,29 @@
               </div>
             </template>
           </div>
+        </div>
+
+        <!-- 약관 / 로그아웃 / 탈퇴 -->
+        <div class="mx-4 mt-5">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">기타</p>
+          <div class="bg-white rounded-2xl shadow-sm divide-y divide-gray-50">
+            <button @click="showTerms=true" class="w-full flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 transition-colors">
+              <span class="text-sm text-gray-700">이용약관</span>
+              <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <button @click="showPrivacy=true" class="w-full flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 transition-colors">
+              <span class="text-sm text-gray-700">개인정보 처리방침</span>
+              <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <button @click="showLogoutConfirm=true" class="w-full flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 transition-colors">
+              <span class="text-sm text-gray-700">로그아웃</span>
+              <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="mx-4 mt-3 mb-10">
+          <button @click="showDeleteConfirm=true" class="w-full py-3 text-xs text-gray-300 hover:text-red-400 transition-colors">회원 탈퇴</button>
         </div>
 
       </div><!-- /부모 콘텐츠 -->
@@ -343,6 +366,122 @@
           <button @click="showCancelConfirm=false" class="flex-1 py-3.5 text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">취소</button>
           <div class="w-px bg-gray-100"></div>
           <button @click="showCancelConfirm=false" class="flex-1 py-3.5 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors">중단하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 이용약관 시트 -->
+    <div x-show="showTerms" x-cloak
+         class="fixed inset-0 bg-black/40 z-40 flex items-end justify-center"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         @click.self="showTerms=false">
+      <div class="w-full max-w-3xl bg-white rounded-t-3xl flex flex-col" style="height:88dvh;"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
+        <div class="flex-shrink-0 flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <div class="flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-gray-100">
+          <h3 class="font-bold text-gray-900">이용약관</h3>
+          <button @click="showTerms=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto min-h-0 px-5 py-5 text-sm text-gray-600 leading-relaxed space-y-4">
+          <p class="font-bold text-gray-800">제1조 (목적)</p>
+          <p>본 약관은 리더스아이(이하 "회사")가 제공하는 CheckReading 서비스(이하 "서비스")의 이용 조건 및 절차, 기타 필요한 사항을 규정함을 목적으로 합니다.</p>
+          <p class="font-bold text-gray-800">제2조 (이용 계약의 성립)</p>
+          <p>이용 계약은 이용자가 본 약관에 동의하고 서비스 가입을 완료한 때에 성립합니다. 회사는 서비스 가입 신청에 대하여 원칙적으로 승낙하되, 아래 각 호에 해당하는 경우 승낙을 거부하거나 사후에 이용 계약을 해지할 수 있습니다.</p>
+          <p class="font-bold text-gray-800">제3조 (서비스의 제공)</p>
+          <p>회사는 다음과 같은 서비스를 제공합니다. ① 영어 원서 독서 관리 및 읽기 인증 서비스 ② 독서 이력 및 점수 관리 서비스 ③ 부모-자녀 독서 현황 공유 서비스 ④ 기타 회사가 추가 개발하거나 제휴를 통해 제공하는 서비스</p>
+          <p class="font-bold text-gray-800">제4조 (서비스 이용 요금)</p>
+          <p>서비스는 월간 구독(10,000원/월) 및 연간 구독(100,000원/년) 방식으로 제공됩니다. 구독료는 등록된 결제 수단으로 자동 청구되며, 결제일로부터 해당 기간 동안 서비스가 제공됩니다.</p>
+          <p class="font-bold text-gray-800">제5조 (환불 정책)</p>
+          <p>구독 시작 후 7일 이내에 서비스를 이용하지 않은 경우 전액 환불이 가능합니다. 7일 이후에는 잔여 기간에 대한 비례 환불이 가능합니다. 환불 요청은 고객센터를 통해 접수하시기 바랍니다.</p>
+          <p class="font-bold text-gray-800">제6조 (개인정보 보호)</p>
+          <p>회사는 관련 법령이 정하는 바에 따라 이용자의 개인정보를 보호하며, 개인정보의 수집·이용·제공에 관한 사항은 개인정보 처리방침에 따릅니다.</p>
+          <p class="text-gray-400 text-xs mt-6">최종 개정일: 2026년 1월 1일</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 개인정보 처리방침 시트 -->
+    <div x-show="showPrivacy" x-cloak
+         class="fixed inset-0 bg-black/40 z-40 flex items-end justify-center"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         @click.self="showPrivacy=false">
+      <div class="w-full max-w-3xl bg-white rounded-t-3xl flex flex-col" style="height:88dvh;"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
+        <div class="flex-shrink-0 flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <div class="flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-gray-100">
+          <h3 class="font-bold text-gray-900">개인정보 처리방침</h3>
+          <button @click="showPrivacy=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto min-h-0 px-5 py-5 text-sm text-gray-600 leading-relaxed space-y-4">
+          <p class="font-bold text-gray-800">1. 수집하는 개인정보 항목</p>
+          <p>회사는 서비스 제공을 위해 다음과 같은 개인정보를 수집합니다.</p>
+          <ul class="list-disc pl-4 space-y-1 text-gray-500">
+            <li>필수 항목: 이름(닉네임), 이메일 주소, 소셜 로그인 식별자</li>
+            <li>자동 수집: 서비스 이용 기록, 접속 로그, 기기 정보</li>
+            <li>결제 시: 결제 수단 정보(카드 번호 끝 4자리), 결제 이력</li>
+          </ul>
+          <p class="font-bold text-gray-800">2. 개인정보의 수집 및 이용 목적</p>
+          <p>① 서비스 제공 및 계약 이행 ② 회원 관리 및 본인 확인 ③ 서비스 개선 및 신규 서비스 개발 ④ 법령상 의무 이행</p>
+          <p class="font-bold text-gray-800">3. 개인정보의 보유 및 이용 기간</p>
+          <p>회원 탈퇴 시까지 보유하며, 탈퇴 후에는 즉시 파기합니다. 단, 관련 법령에 의거하여 일정 기간 보존이 필요한 경우 해당 기간 동안 보관합니다.</p>
+          <p class="font-bold text-gray-800">4. 개인정보의 제3자 제공</p>
+          <p>회사는 원칙적으로 이용자의 개인정보를 외부에 제공하지 않습니다. 다만 이용자의 동의가 있거나 법령에 의해 요구되는 경우에는 예외로 합니다.</p>
+          <p class="font-bold text-gray-800">5. 개인정보 보호책임자</p>
+          <p>성명: 리더스아이 개인정보보호팀<br>이메일: privacy@readerseye.com<br>전화: 02-0000-0000</p>
+          <p class="text-gray-400 text-xs mt-6">최종 개정일: 2026년 1월 1일</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 로그아웃 확인 모달 -->
+    <div x-show="showLogoutConfirm" x-cloak
+         class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-6"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         @click.self="showLogoutConfirm=false">
+      <div class="w-full max-w-xs bg-white rounded-2xl shadow-2xl overflow-hidden"
+           x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+           x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
+        <div class="p-6 text-center">
+          <h3 class="font-bold text-gray-900 text-base mb-1">로그아웃</h3>
+          <p class="text-sm text-gray-400">정말 로그아웃 하시겠어요?</p>
+        </div>
+        <div class="flex border-t border-gray-100">
+          <button @click="showLogoutConfirm=false" class="flex-1 py-3.5 text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">취소</button>
+          <div class="w-px bg-gray-100"></div>
+          <button @click="doLogout()" class="flex-1 py-3.5 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition-colors">로그아웃</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 회원 탈퇴 확인 모달 -->
+    <div x-show="showDeleteConfirm" x-cloak
+         class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-6"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         @click.self="showDeleteConfirm=false">
+      <div class="w-full max-w-xs bg-white rounded-2xl shadow-2xl overflow-hidden"
+           x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+           x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
+        <div class="p-6">
+          <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          </div>
+          <h3 class="text-center font-bold text-gray-900 text-base mb-2">정말 탈퇴하시겠어요?</h3>
+          <p class="text-center text-xs text-gray-400 leading-relaxed">모든 독서 기록과 자녀 프로필이<br>영구적으로 삭제되며 복구할 수 없습니다.</p>
+        </div>
+        <div class="flex border-t border-gray-100">
+          <button @click="showDeleteConfirm=false" class="flex-1 py-3.5 text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">취소</button>
+          <div class="w-px bg-gray-100"></div>
+          <button @click="doDelete()" class="flex-1 py-3.5 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors">탈퇴하기</button>
         </div>
       </div>
     </div>
@@ -499,6 +638,7 @@ function app() {
     daySheet: false, selectedDay: { label: '' },
     showEditSheet: false, editName: '',
     cardMenuOpen: false, showCancelConfirm: false,
+    showTerms: false, showPrivacy: false, showLogoutConfirm: false, showDeleteConfirm: false,
     payHistory: [
       { date: '2026.04.20', plan: '월간 구독', amount: 10000 },
       { date: '2026.03.20', plan: '월간 구독', amount: 10000 },
@@ -578,6 +718,8 @@ function app() {
 
     openEdit() { this.editName = this.user?.name || ''; this.showEditSheet = true; },
     saveEdit() { if (this.editName.trim()) { this.user.name = this.editName.trim(); } this.showEditSheet = false; },
+    doLogout() { localStorage.removeItem('cr_user'); localStorage.removeItem('cr_profile'); window.location.href = 'index.html'; },
+    doDelete() { localStorage.clear(); window.location.href = 'index.html'; },
 
     trophyColor(grade) {
       if (grade === '플래티넘') return 'text-cyan-300';
