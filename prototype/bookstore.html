@@ -50,7 +50,10 @@
         <span class="font-bold text-gray-900">서점</span>
       </div>
       <div class="flex items-center gap-2 relative">
-        <button class="w-8 h-8 flex items-center justify-center text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></button>
+        <button @click="searchPanel=true" class="flex items-center gap-1 px-2.5 py-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <span class="text-xs font-semibold">탐색</span>
+        </button>
         <button @click="showMenu=!showMenu" class="lg:hidden w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-xs font-bold text-indigo-600" x-text="user?.initial||'?'"></button>
         <div x-show="showMenu" x-cloak @click.outside="showMenu=false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="lg:hidden absolute top-10 right-0 bg-white rounded-2xl shadow-xl border border-gray-100 w-44 overflow-hidden z-50">
           <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs text-gray-400" x-text="isParent?'부모':'학생'"></p><p class="text-sm font-semibold text-gray-800" x-text="user?.name"></p></div>
@@ -133,6 +136,94 @@
       </template>
       <div class="h-4"></div>
     </main>
+
+    <!-- 탐색 패널 -->
+    <div x-show="searchPanel" x-cloak
+         x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+         x-transition:leave="transition ease-in duration-200 transform" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
+         class="absolute inset-0 bg-gray-50 z-[15] flex flex-col">
+
+      <!-- 헤더 -->
+      <div class="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
+        <button @click="closeSearch()" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <span class="font-bold text-gray-900">책 찾기</span>
+      </div>
+
+      <!-- 검색창 -->
+      <div class="flex-shrink-0 bg-white px-4 py-3 border-b border-gray-100">
+        <div class="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5">
+          <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input x-model="searchQuery" type="text" placeholder="제목, 작가 검색..."
+                 class="flex-1 bg-transparent text-sm outline-none placeholder-gray-400" autocomplete="off">
+          <button x-show="searchQuery" @click="searchQuery=''" class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-600 flex-shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 콘텐츠: 검색 결과 OR 장르 선반 -->
+      <div class="flex-1 overflow-y-auto min-h-0">
+
+        <!-- 검색 결과 -->
+        <template x-if="searchQuery.trim()">
+          <div class="p-4">
+            <p class="text-xs text-gray-500 mb-3"
+               x-text="'&quot;' + searchQuery + '&quot; 검색 결과 ' + searchResults.length + '권'"></p>
+            <template x-if="searchResults.length > 0">
+              <div class="grid grid-cols-3 md:grid-cols-4 gap-3">
+                <template x-for="book in searchResults" :key="book.id">
+                  <div class="cursor-pointer" @click="openBook(book)">
+                    <div class="w-full aspect-[3/4] rounded-xl mb-1.5 flex items-end p-2 shadow-sm" :style="`background:${book.color}`">
+                      <span class="text-white text-[10px] font-bold leading-tight drop-shadow" x-text="book.title"></span>
+                    </div>
+                    <p class="text-[11px] text-gray-700 font-medium leading-tight truncate" x-text="book.title"></p>
+                    <p class="text-[10px] text-gray-400 truncate" x-text="book.author"></p>
+                    <span class="inline-block text-[10px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-md mt-0.5" x-text="book.level"></span>
+                  </div>
+                </template>
+              </div>
+            </template>
+            <template x-if="searchResults.length === 0">
+              <div class="text-center py-16">
+                <p class="text-3xl mb-3">📚</p>
+                <p class="text-sm text-gray-500">검색 결과가 없어요</p>
+                <p class="text-xs text-gray-400 mt-1">다른 제목이나 작가명으로 검색해 보세요</p>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <!-- 장르별 선반 -->
+        <template x-if="!searchQuery.trim()">
+          <div>
+            <template x-for="genre in genres" :key="genre.id">
+              <div class="mt-5">
+                <div class="flex items-center justify-between px-4 mb-3">
+                  <h3 class="font-bold text-gray-800 text-sm" x-text="genre.label"></h3>
+                  <button @click="openShelf(genre)" class="text-xs text-indigo-500 font-medium flex items-center gap-0.5">전체보기<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+                </div>
+                <div class="carousel flex gap-3 px-4 pb-2">
+                  <template x-for="book in genre.books" :key="book.id">
+                    <div class="flex-none w-[88px] md:w-[104px]" @click="openBook(book)">
+                      <div class="relative w-full h-[120px] md:h-[140px] rounded-xl mb-1.5 flex items-end p-2.5 shadow-sm cursor-pointer" :style="`background:${book.color}`">
+                        <span class="text-white text-[10px] font-bold leading-tight drop-shadow" x-text="book.title"></span>
+                      </div>
+                      <p class="text-[11px] text-gray-700 font-medium leading-tight truncate" x-text="book.title"></p>
+                      <p class="text-[10px] text-gray-400 truncate" x-text="book.author"></p>
+                      <span class="inline-block text-[10px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-md mt-0.5" x-text="book.level"></span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </template>
+            <div class="h-6"></div>
+          </div>
+        </template>
+
+      </div>
+    </div>
 
     <!-- 전체보기 패널 -->
     <div x-show="selectedShelf" x-cloak
@@ -424,6 +515,7 @@ function app() {
     user: null, isParent: false, showMenu: false,
     selectedShelf: null, selectedBook: null, bookDetailTab: 'toc',
     reviewModal: false, selectedReview: null,
+    searchPanel: false, searchQuery: '',
 
     toc: [
       {n:1,t:'The Worst Birthday',p:1},{n:2,t:'Vanished into Thin Air',p:14},
@@ -465,13 +557,109 @@ function app() {
       {id:'s8',title:'Wonder',author:'R.J. Palacio',level:'Lv.4',color:'linear-gradient(135deg,#26c6da,#00838f)'},
     ],
 
+    genres: [
+      { id:'g1', label:'🏰 판타지', books: mk([
+        {title:'Harry Potter 1',        author:'J.K. Rowling',   level:'Lv.5'},
+        {title:'Percy Jackson',          author:'R. Riordan',     level:'Lv.4'},
+        {title:'The Lion, the Witch',    author:'C.S. Lewis',     level:'Lv.4'},
+        {title:'A Wrinkle in Time',      author:"M. L'Engle",    level:'Lv.4'},
+        {title:'The Giver',              author:'L. Lowry',       level:'Lv.5'},
+        {title:'City of Ember',          author:'J. DuPrau',      level:'Lv.4'},
+        {title:'The Phantom Tollbooth',  author:'N. Juster',      level:'Lv.4'},
+        {title:'Eragon',                 author:'C. Paolini',     level:'Lv.5'},
+      ])},
+      { id:'g2', label:'🔎 미스터리', books: mk([
+        {title:'Encyclopedia Brown',     author:'D.J. Sobol',          level:'Lv.2'},
+        {title:'A to Z Mysteries',       author:'R. Roy',              level:'Lv.2'},
+        {title:'Chasing Vermeer',        author:'B. Balliett',         level:'Lv.4'},
+        {title:'The Westing Game',       author:'E. Raskin',           level:'Lv.5'},
+        {title:'From the Mixed-Up Files',author:'E.L. Konigsburg',     level:'Lv.4'},
+        {title:'Holes',                  author:'L. Sachar',           level:'Lv.4'},
+        {title:'The 39 Clues',           author:'R. Riordan',          level:'Lv.4'},
+        {title:'Cam Jansen',             author:'D.A. Adler',          level:'Lv.2'},
+      ])},
+      { id:'g3', label:'🚀 SF', books: mk([
+        {title:"Ender's Game",           author:'O.S. Card',       level:'Lv.5'},
+        {title:'The Maze Runner',        author:'J. Dashner',      level:'Lv.5'},
+        {title:'Among the Hidden',       author:'M.P. Haddix',     level:'Lv.4'},
+        {title:'The House of Scorpion',  author:'N. Farmer',       level:'Lv.5'},
+        {title:'City of Ember',          author:'J. DuPrau',       level:'Lv.4'},
+        {title:'A Wrinkle in Time',      author:"M. L'Engle",     level:'Lv.4'},
+        {title:'Fahrenheit 451',         author:'R. Bradbury',     level:'Lv.5'},
+        {title:'The Giver',              author:'L. Lowry',        level:'Lv.5'},
+      ])},
+      { id:'g4', label:'💌 성장 소설', books: mk([
+        {title:'Wonder',                 author:'R.J. Palacio',   level:'Lv.4'},
+        {title:'Bridge to Terabithia',   author:'K. Paterson',    level:'Lv.4'},
+        {title:"Charlotte's Web",        author:'E.B. White',     level:'Lv.3'},
+        {title:'Because of Winn-Dixie',  author:'K. DiCamillo',   level:'Lv.3'},
+        {title:'The One and Only Ivan',  author:'K. Applegate',   level:'Lv.3'},
+        {title:'Tuck Everlasting',       author:'N. Babbitt',     level:'Lv.4'},
+        {title:'Number the Stars',       author:'L. Lowry',       level:'Lv.4'},
+        {title:'Island of Blue Dolphins',author:"S. O'Dell",      level:'Lv.4'},
+      ])},
+      { id:'g5', label:'😂 유머', books: mk([
+        {title:'Diary of a Wimpy Kid',   author:'J. Kinney',      level:'Lv.3'},
+        {title:'Big Nate',               author:'L. Peirce',      level:'Lv.2'},
+        {title:'Matilda',                author:'R. Dahl',         level:'Lv.3'},
+        {title:'The BFG',                author:'R. Dahl',         level:'Lv.3'},
+        {title:'Frindle',                author:'A. Clements',    level:'Lv.3'},
+        {title:'Captain Underpants',     author:'D. Pilkey',      level:'Lv.2'},
+        {title:"My Father's Dragon",     author:'R.S. Gannett',   level:'Lv.2'},
+        {title:'Bunnicula',              author:'D. Howe',         level:'Lv.3'},
+      ])},
+      { id:'g6', label:'📖 고전', books: mk([
+        {title:'Little Women',           author:'L.M. Alcott',        level:'Lv.4'},
+        {title:'Anne of Green Gables',   author:'L.M. Montgomery',   level:'Lv.4'},
+        {title:'Treasure Island',        author:'R.L. Stevenson',    level:'Lv.5'},
+        {title:'The Call of the Wild',   author:'J. London',          level:'Lv.4'},
+        {title:'A Little Princess',      author:'F.H. Burnett',       level:'Lv.3'},
+        {title:'The Secret Garden',      author:'F.H. Burnett',       level:'Lv.4'},
+        {title:'Pollyanna',              author:'E.H. Porter',        level:'Lv.3'},
+        {title:'Little House Prairie',   author:'L.I. Wilder',        level:'Lv.3'},
+      ])},
+      { id:'g7', label:'🌍 역사', books: mk([
+        {title:'Number the Stars',       author:'L. Lowry',            level:'Lv.4'},
+        {title:'Roll of Thunder',        author:'M.D. Taylor',         level:'Lv.5'},
+        {title:'Johnny Tremain',         author:'E. Forbes',           level:'Lv.5'},
+        {title:'Witch of Blackbird Pond',author:'E.G. Speare',        level:'Lv.5'},
+        {title:'Sarah, Plain and Tall',  author:'P. MacLachlan',      level:'Lv.3'},
+        {title:'Bud, Not Buddy',         author:'C.P. Curtis',         level:'Lv.4'},
+        {title:'My Side of Mountain',    author:'J.C. George',         level:'Lv.4'},
+        {title:'Caddie Woodlawn',        author:'C.R. Brink',          level:'Lv.4'},
+      ])},
+      { id:'g8', label:'🐾 동물', books: mk([
+        {title:"Charlotte's Web",        author:'E.B. White',      level:'Lv.3'},
+        {title:'The One and Only Ivan',  author:'K. Applegate',   level:'Lv.3'},
+        {title:'Because of Winn-Dixie',  author:'K. DiCamillo',   level:'Lv.3'},
+        {title:'The Call of the Wild',   author:'J. London',       level:'Lv.4'},
+        {title:'Black Beauty',           author:'A. Sewell',       level:'Lv.4'},
+        {title:'Lassie Come-Home',       author:'E.K. Knight',     level:'Lv.4'},
+        {title:'My Side of Mountain',    author:'J.C. George',     level:'Lv.4'},
+        {title:'Island of Blue Dolphins',author:"S. O'Dell",       level:'Lv.4'},
+      ])},
+    ],
+
+    get searchResults() {
+      const q = this.searchQuery.trim().toLowerCase();
+      if (!q) return [];
+      const seen = new Set();
+      return this.genres.flatMap(g => g.books).filter(b => {
+        if (seen.has(b.title)) return false;
+        seen.add(b.title);
+        return b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q);
+      });
+    },
+
     init() {
       this.user = JSON.parse(localStorage.getItem('cr_user')||'null');
       if (!this.user) { window.location.href = 'index.html'; return; }
       this.isParent = this.user.type === 'parent';
       this.$nextTick(() => initCarousels());
+      this.$watch('searchPanel', v => { if (v) this.$nextTick(() => initCarousels()); });
     },
     logout() { localStorage.removeItem('cr_user'); window.location.href = 'index.html'; },
+    closeSearch() { this.searchPanel = false; this.searchQuery = ''; this.selectedShelf = null; },
     openShelf(s) { this.selectedBook = null; this.selectedShelf = s; },
     openBook(b) { this.selectedBook = b; this.bookDetailTab = 'toc'; this.reviewModal = false; },
     openReader(chapter) {
