@@ -828,6 +828,11 @@ function app() {
       this.user = JSON.parse(localStorage.getItem('cr_user') || 'null');
       if (!this.user) { window.location.href = 'index.html'; return; }
       this.isParent = this.user.type === 'parent';
+      if (!this.isParent) {
+        localStorage.removeItem('cr_profile');
+        window.location.href = 'profile-detail.html';
+        return;
+      }
       const idx = ((this.user.name || '').charCodeAt(0) || 0) % profileColors.length;
       this.profile = {
         name: this.user.name,
