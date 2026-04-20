@@ -2,11 +2,11 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>책장 - CheckReading</title>
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="CheckReading">
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="theme-color" content="#1d4ed8">
@@ -313,7 +313,7 @@
     </div>
 
     <!-- 하단 탭바 (lg 미만) -->
-    <nav x-show="!selectMode" class="lg:hidden flex-shrink-0 bg-white border-t border-gray-100 flex" style="padding-bottom: env(safe-area-inset-bottom)">
+    <nav x-show="!selectMode" class="lg:hidden flex-shrink-0 bg-white border-t border-gray-100 flex">
       <a x-show="isParent" href="profiles.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg><span class="text-xs">프로필</span></a>
       <a href="chat.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><span class="text-xs">소통</span></a>
       <a href="bookstore.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg><span class="text-xs">서점</span></a>
