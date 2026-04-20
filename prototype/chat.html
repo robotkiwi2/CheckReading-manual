@@ -126,6 +126,32 @@
             </div>
           </div>
 
+          <!-- 리포트 알림 카드 -->
+          <div x-show="msg.type==='report'" class="flex justify-center">
+            <button @click="goToReport(msg)"
+                    class="w-full bg-white rounded-2xl shadow-sm p-4 text-left border border-indigo-100 hover:bg-indigo-50 active:bg-indigo-100 transition-colors">
+              <div class="flex items-center gap-2.5 mb-2.5">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+                     :style="`background:${msg.profileColor}`" x-text="msg.profileInitial"></div>
+                <div class="min-w-0">
+                  <p class="text-xs font-bold text-indigo-600">📊 주간 리포트 도착</p>
+                  <p class="text-[10px] text-gray-400 truncate" x-text="msg.profileName + ' · ' + msg.week + ' (' + msg.period + ')'"></p>
+                </div>
+              </div>
+              <p class="text-xs text-gray-600 mb-3 leading-relaxed" x-text="msg.summary"></p>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-sm font-bold text-gray-800" x-text="msg.score.toLocaleString() + '점'"></span>
+                  <span class="text-xs font-semibold"
+                        :class="msg.scoreDiff >= 0 ? 'text-green-500' : 'text-red-400'"
+                        x-text="(msg.scoreDiff >= 0 ? '▲' : '▼') + Math.abs(msg.scoreDiff) + '점'"></span>
+                </div>
+                <span class="text-xs text-indigo-500 font-semibold">리포트 보기 →</span>
+              </div>
+              <p class="text-[10px] text-gray-400 mt-2 text-right" x-text="msg.time"></p>
+            </button>
+          </div>
+
           <!-- 내 메시지 (오른쪽) -->
           <div x-show="msg.type==='me'" class="flex items-end gap-2 justify-end">
             <div class="max-w-[70%]">
@@ -202,13 +228,30 @@ function app() {
       },
       {
         id: 'system', name: '시스템 알림', initial: '📢', color: profileColors.system,
-        unread: 1, time: '오늘',
-        lastMsg: '홍길동이 이번 주 목표를 달성했습니다!',
+        unread: 2, time: '오늘 오전 8:00',
+        lastMsg: '📊 주간 리포트가 도착했어요',
         messages: [
-          {id:1, type:'date',   text:'오늘'},
+          {id:1, type:'date',   text:'2026년 4월 13일'},
           {id:2, type:'system', text:'홍길동이 이번 주 목표를 달성했습니다! 🎉'},
           {id:3, type:'system', text:'성춘향이 필독서 Wonder를 시작했습니다'},
           {id:4, type:'system', text:'홍길동 연속 읽기 14일째 🔥'},
+          {id:5, type:'date',   text:'오늘'},
+          {
+            id:6, type:'report',
+            profileId:'hong', profileName:'홍길동',
+            profileColor:'linear-gradient(135deg,#667eea,#764ba2)', profileInitial:'홍',
+            week:'4월 4주', period:'4/14~20',
+            summary:'목요일 집중도가 이번 주 최고였어요. 전주보다 총점 42점 상승!',
+            score:745, scoreDiff:+42, time:'오전 8:00',
+          },
+          {
+            id:7, type:'report',
+            profileId:'chun', profileName:'성춘향',
+            profileColor:'linear-gradient(135deg,#f093fb,#f5576c)', profileInitial:'성',
+            week:'4월 4주', period:'4/14~20',
+            summary:'이번 주 Charlotte\'s Web 완독! 연속 5일 독서 달성했어요.',
+            score:703, scoreDiff:-15, time:'오전 8:01',
+          },
         ]
       },
     ],
@@ -227,6 +270,18 @@ function app() {
         if (el) el.scrollTop = el.scrollHeight;
       });
     },
+    goToReport(msg) {
+      const profileMap = {
+        hong: { name:'홍길동', initial:'홍', color:'linear-gradient(135deg,#667eea,#764ba2)', age:10, grade:'초4', gender:'남', level:'Lexile 650L', gradeLabel:'골드', favorites:23, totalScore:4820 },
+        chun: { name:'성춘향', initial:'성', color:'linear-gradient(135deg,#f093fb,#f5576c)', age:9,  grade:'초3', gender:'여', level:'Lexile 520L', gradeLabel:'실버', favorites:15, totalScore:3210 },
+      };
+      const profile = profileMap[msg.profileId];
+      if (!profile) return;
+      localStorage.setItem('cr_profile', JSON.stringify(profile));
+      localStorage.setItem('cr_openReport', '1');
+      window.location.href = 'profile-detail.html';
+    },
+
     sendMsg() {
       const text = this.inputMsg.trim();
       if (!text || !this.activeRoom) return;

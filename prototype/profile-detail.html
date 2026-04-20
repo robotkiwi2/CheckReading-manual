@@ -944,6 +944,10 @@ function app() {
       this.$watch('chartTab',    () => { this.chartOffset = 0; this.$nextTick(() => this.renderChart()); });
       this.$watch('chartRange',  () => { this.chartOffset = 0; this.$nextTick(() => this.renderChart()); });
       this.$watch('chartOffset', () => this.$nextTick(() => this.renderChart()));
+      if (localStorage.getItem('cr_openReport')) {
+        localStorage.removeItem('cr_openReport');
+        this.$nextTick(() => { this.selectedReport = this.reports[0]; this.reportSheet = true; });
+      }
     },
 
     buildCalendar() {
