@@ -94,37 +94,46 @@
       </div>
 
       <template x-for="shelf in shelves" :key="shelf.id">
-        <div class="mt-6">
-          <div class="flex items-center justify-between px-4 mb-3">
-            <template x-if="shelf.profile">
-              <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm" :style="`background:${shelf.profile.color}`" x-text="shelf.profile.initial"></div>
-                <h3 class="font-bold text-gray-800 text-sm" x-text="shelf.title"></h3>
-              </div>
-            </template>
-            <template x-if="!shelf.profile">
-              <h3 class="font-bold text-gray-800 text-sm" x-text="shelf.title"></h3>
-            </template>
-            <button @click="openShelf(shelf)" class="text-xs text-indigo-500 font-medium flex items-center gap-0.5">전체보기<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+        <div>
+          <!-- 프로필 그룹 구분 헤더 -->
+          <div x-show="shelf.type==='section'" class="mt-8 mb-1 mx-4 flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm" :style="`background:${shelf.color}`" x-text="shelf.initial"></div>
+            <span class="text-sm font-bold text-gray-700" x-text="shelf.name + '을 위한 추천'"></span>
+            <div class="flex-1 h-px bg-gray-200"></div>
           </div>
-          <div class="carousel flex gap-3 px-4 pb-2">
-            <template x-for="book in shelf.books" :key="book.id">
-              <div class="flex-none w-[88px] md:w-[104px] lg:w-[120px]" @click="openBook(book)">
-                <div class="relative w-full h-[120px] md:h-[140px] lg:h-[160px] rounded-xl mb-1.5 flex items-end p-2.5 shadow-sm" :style="`background:${book.color}`">
-                  <span class="text-white text-[10px] font-bold leading-tight drop-shadow" x-text="book.title"></span>
-                  <div x-show="book.likedBy && book.likedBy.length" class="absolute top-1.5 right-1.5 flex flex-col gap-0.5">
-                    <template x-for="pid in (book.likedBy||[])" :key="pid">
-                      <div class="w-4 h-4 rounded-full flex items-center justify-center shadow" :style="`background:${profileColors[pid]||'#aaa'}`">
-                        <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                      </div>
-                    </template>
-                  </div>
+          <!-- 일반 선반 -->
+          <div x-show="shelf.type!=='section'" class="mt-5">
+            <div class="flex items-center justify-between px-4 mb-3">
+              <template x-if="shelf.profile">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm" :style="`background:${shelf.profile.color}`" x-text="shelf.profile.initial"></div>
+                  <h3 class="font-bold text-gray-800 text-sm" x-text="shelf.title"></h3>
                 </div>
-                <p class="text-[11px] text-gray-700 font-medium leading-tight truncate" x-text="book.title"></p>
-                <p class="text-[10px] text-gray-400 truncate" x-text="book.author"></p>
-                <span class="inline-block text-[10px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-md mt-0.5" x-text="book.level"></span>
-              </div>
-            </template>
+              </template>
+              <template x-if="!shelf.profile">
+                <h3 class="font-bold text-gray-800 text-sm" x-text="shelf.title"></h3>
+              </template>
+              <button @click="openShelf(shelf)" class="text-xs text-indigo-500 font-medium flex items-center gap-0.5">전체보기<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+            </div>
+            <div class="carousel flex gap-3 px-4 pb-2">
+              <template x-for="book in shelf.books" :key="book.id">
+                <div class="flex-none w-[88px] md:w-[104px] lg:w-[120px]" @click="openBook(book)">
+                  <div class="relative w-full h-[120px] md:h-[140px] lg:h-[160px] rounded-xl mb-1.5 flex items-end p-2.5 shadow-sm" :style="`background:${book.color}`">
+                    <span class="text-white text-[10px] font-bold leading-tight drop-shadow" x-text="book.title"></span>
+                    <div x-show="book.likedBy && book.likedBy.length" class="absolute top-1.5 right-1.5 flex flex-col gap-0.5">
+                      <template x-for="pid in (book.likedBy||[])" :key="pid">
+                        <div class="w-4 h-4 rounded-full flex items-center justify-center shadow" :style="`background:${profileColors[pid]||'#aaa'}`">
+                          <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                  <p class="text-[11px] text-gray-700 font-medium leading-tight truncate" x-text="book.title"></p>
+                  <p class="text-[10px] text-gray-400 truncate" x-text="book.author"></p>
+                  <span class="inline-block text-[10px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-md mt-0.5" x-text="book.level"></span>
+                </div>
+              </template>
+            </div>
           </div>
         </div>
       </template>
@@ -482,47 +491,87 @@ function app() {
     },
 
     shelves: [
-      { id:1, title:'🔥 또래 친구들이 많이 읽은 책', books: mk([
-        {title:"Charlotte's Web",author:'E.B. White',level:'Lv.3',likedBy:['chun']},
-        {title:'Magic Tree House',author:'M. Osborne',level:'Lv.2',likedBy:['hong','chun']},
-        {title:'Wonder',author:'R.J. Palacio',level:'Lv.4',likedBy:['chun']},
+      // ── 홍길동 그룹 ──
+      { id:'sh', type:'section', name:'홍길동', initial:'홍', color:'linear-gradient(135deg,#667eea,#764ba2)' },
+      { id:'h1', title:'홍길동 또래 (초3·Lv.3) 친구들이 많이 읽은 책',
+        profile: { id:'hong', initial:'홍', name:'홍길동', color:'linear-gradient(135deg,#667eea,#764ba2)' },
+        books: mk([
+        {title:"Charlotte's Web",author:'E.B. White',level:'Lv.3',likedBy:['hong']},
+        {title:'Magic Tree House',author:'M. Osborne',level:'Lv.2',likedBy:['hong']},
         {title:'Diary of a Wimpy Kid',author:'J. Kinney',level:'Lv.3',likedBy:['hong']},
-        {title:'Percy Jackson',author:'R. Riordan',level:'Lv.4'},
-        {title:'The Giver',author:'L. Lowry',level:'Lv.5',likedBy:['hong']},
-        {title:'Holes',author:'L. Sachar',level:'Lv.4'},
-        {title:'Hatchet',author:'G. Paulsen',level:'Lv.4',likedBy:['hong']},
         {title:'Frindle',author:'A. Clements',level:'Lv.3'},
-        {title:'Matilda',author:'R. Dahl',level:'Lv.3',likedBy:['chun']}])},
-      { id:2, title:'홍길동이 좋아하는 SF 소설',
+        {title:'The One and Only Ivan',author:'K. Applegate',level:'Lv.3'},
+        {title:'Because of Winn-Dixie',author:'K. DiCamillo',level:'Lv.3'},
+        {title:'Nate the Great',author:'M.W. Sharmat',level:'Lv.1'},
+        {title:'The Boxcar Children',author:'G.C. Warner',level:'Lv.3'}])},
+      { id:'h2', title:'홍길동이 좋아하는 SF · 판타지',
         profile: { id:'hong', initial:'홍', name:'홍길동', color:'linear-gradient(135deg,#667eea,#764ba2)' },
         books: mk([
         {title:"Ender's Game",author:'O.S. Card',level:'Lv.5',likedBy:['hong']},
         {title:'A Wrinkle in Time',author:"M. L'Engle",level:'Lv.4',likedBy:['hong']},
+        {title:'Percy Jackson',author:'R. Riordan',level:'Lv.4',likedBy:['hong']},
         {title:'City of Ember',author:'J. DuPrau',level:'Lv.4'},
-        {title:'Among the Hidden',author:'M.P. Haddix',level:'Lv.4',likedBy:['hong']},
+        {title:'Harry Potter 1',author:'J.K. Rowling',level:'Lv.5',likedBy:['hong']},
         {title:'The Giver',author:'L. Lowry',level:'Lv.5'},
-        {title:'Feed',author:'M.T. Anderson',level:'Lv.5'},
-        {title:'Fahrenheit 451',author:'R. Bradbury',level:'Lv.6'},
-        {title:'The Maze Runner',author:'J. Dashner',level:'Lv.5',likedBy:['hong']}])},
-      { id:5, title:'성춘향이 좋아하는 로맨스 & 성장 소설',
+        {title:'The Maze Runner',author:'J. Dashner',level:'Lv.5',likedBy:['hong']},
+        {title:'Among the Hidden',author:'M.P. Haddix',level:'Lv.4'}])},
+      { id:'h3', title:'홍길동이 좋아하는 추리 소설',
+        profile: { id:'hong', initial:'홍', name:'홍길동', color:'linear-gradient(135deg,#667eea,#764ba2)' },
+        books: mk([
+        {title:'Encyclopedia Brown',author:'D.J. Sobol',level:'Lv.2',likedBy:['hong']},
+        {title:'A to Z Mysteries',author:'R. Roy',level:'Lv.2'},
+        {title:'Cam Jansen',author:'D.A. Adler',level:'Lv.2'},
+        {title:'Chasing Vermeer',author:'B. Balliett',level:'Lv.4',likedBy:['hong']},
+        {title:'The Westing Game',author:'E. Raskin',level:'Lv.5'},
+        {title:'From the Mixed-Up Files',author:'E.L. Konigsburg',level:'Lv.4'},
+        {title:'Bunnicula',author:'D. Howe',level:'Lv.3'},
+        {title:'Hatchet',author:'G. Paulsen',level:'Lv.4'}])},
+
+      // ── 성춘향 그룹 ──
+      { id:'sc', type:'section', name:'성춘향', initial:'성', color:'linear-gradient(135deg,#f093fb,#f5576c)' },
+      { id:'c1', title:'성춘향 또래 (초5·Lv.4) 친구들이 많이 읽은 책',
+        profile: { id:'chun', initial:'성', name:'성춘향', color:'linear-gradient(135deg,#f093fb,#f5576c)' },
+        books: mk([
+        {title:'Wonder',author:'R.J. Palacio',level:'Lv.4',likedBy:['chun']},
+        {title:'Bridge to Terabithia',author:'K. Paterson',level:'Lv.4'},
+        {title:'Holes',author:'L. Sachar',level:'Lv.4',likedBy:['chun']},
+        {title:'The Lion, the Witch',author:'C.S. Lewis',level:'Lv.4'},
+        {title:'Number the Stars',author:'L. Lowry',level:'Lv.4',likedBy:['chun']},
+        {title:'Island of Blue Dolphins',author:'S. O\'Dell',level:'Lv.4'},
+        {title:'Matilda',author:'R. Dahl',level:'Lv.3',likedBy:['chun']},
+        {title:'The Secret Garden',author:'F.H. Burnett',level:'Lv.4',likedBy:['chun']}])},
+      { id:'c2', title:'성춘향이 좋아하는 로맨스 & 성장 소설',
         profile: { id:'chun', initial:'성', name:'성춘향', color:'linear-gradient(135deg,#f093fb,#f5576c)' },
         books: mk([
         {title:'Little Women',author:'L.M. Alcott',level:'Lv.4',likedBy:['chun']},
         {title:'Anne of Green Gables',author:'L.M. Montgomery',level:'Lv.4',likedBy:['chun']},
-        {title:'The Secret Garden',author:'F.H. Burnett',level:'Lv.4',likedBy:['chun']},
         {title:'A Little Princess',author:'F.H. Burnett',level:'Lv.3',likedBy:['chun']},
         {title:'Pollyanna',author:'E.H. Porter',level:'Lv.3'},
+        {title:'Daddy-Long-Legs',author:'J. Webster',level:'Lv.4',likedBy:['chun']},
         {title:'Rebecca of Sunnybrook',author:'K.D. Wiggin',level:'Lv.4'},
         {title:'Five Little Peppers',author:'M.S. Hopkins',level:'Lv.3'},
-        {title:'Daddy-Long-Legs',author:'J. Webster',level:'Lv.4',likedBy:['chun']}])},
-      { id:3, title:'📚 이번 주 인기 도서', books: mk([
+        {title:'Emily of New Moon',author:'L.M. Montgomery',level:'Lv.4'}])},
+      { id:'c3', title:'성춘향이 좋아하는 역사 & 고전 소설',
+        profile: { id:'chun', initial:'성', name:'성춘향', color:'linear-gradient(135deg,#f093fb,#f5576c)' },
+        books: mk([
+        {title:'Little House on the Prairie',author:'L.I. Wilder',level:'Lv.3',likedBy:['chun']},
+        {title:'Johnny Tremain',author:'E. Forbes',level:'Lv.5'},
+        {title:'Sarah, Plain and Tall',author:'P. MacLachlan',level:'Lv.3'},
+        {title:'Roll of Thunder',author:'M.D. Taylor',level:'Lv.5',likedBy:['chun']},
+        {title:'The Witch of Blackbird Pond',author:'E.G. Speare',level:'Lv.5'},
+        {title:'My Side of the Mountain',author:'J.C. George',level:'Lv.4'},
+        {title:'Treasure Island',author:'R.L. Stevenson',level:'Lv.5'},
+        {title:'The Call of the Wild',author:'J. London',level:'Lv.4'}])},
+
+      // ── 공통 선반 ──
+      { id:'common1', title:'📚 이번 주 인기 도서', books: mk([
         {title:'Harry Potter 1',author:'J.K. Rowling',level:'Lv.5',likedBy:['hong','chun']},
         {title:'Matilda',author:'R. Dahl',level:'Lv.3',likedBy:['chun']},
         {title:'The BFG',author:'R. Dahl',level:'Lv.3'},
-        {title:'Bridge to Terabithia',author:'K. Paterson',level:'Lv.4'},
+        {title:'Wonder',author:'R.J. Palacio',level:'Lv.4',likedBy:['chun']},
         {title:'The Lion, the Witch',author:'C.S. Lewis',level:'Lv.4',likedBy:['hong']},
-        {title:'Stuart Little',author:'E.B. White',level:'Lv.3'}])},
-      { id:4, title:'🌱 내 수준에 딱 맞는 책 (Lv.3)', books: mk([
+        {title:'Percy Jackson',author:'R. Riordan',level:'Lv.4',likedBy:['hong']}])},
+      { id:'common2', title:'🌱 수준별 추천 (Lv.3)', books: mk([
         {title:'Frindle',author:'A. Clements',level:'Lv.3'},
         {title:'The One and Only Ivan',author:'K. Applegate',level:'Lv.3',likedBy:['chun']},
         {title:'Because of Winn-Dixie',author:'K. DiCamillo',level:'Lv.3'},
