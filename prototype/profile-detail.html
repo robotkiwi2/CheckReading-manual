@@ -245,6 +245,39 @@
           </div>
         </div>
       </div>
+
+      <!-- ④ 주간 리포트 -->
+      <div class="mx-4 mt-5 mb-8">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-bold text-gray-800 text-sm">주간 리포트</h3>
+          <span class="text-[11px] text-gray-400" x-text="reports.length + '개'"></span>
+        </div>
+        <div class="flex flex-col gap-2.5">
+          <template x-for="r in reports" :key="r.id">
+            <button @click="openReport(r)"
+                    class="w-full bg-white rounded-2xl shadow-sm px-4 py-3.5 flex items-center gap-3 text-left hover:bg-gray-50 active:bg-gray-100 transition-colors">
+              <div class="flex-shrink-0 w-12 h-12 rounded-xl flex flex-col items-center justify-center"
+                   :class="r.isNew ? 'bg-indigo-50' : 'bg-gray-50'">
+                <span class="text-[9px] font-semibold leading-tight" :class="r.isNew ? 'text-indigo-400' : 'text-gray-400'" x-text="r.month"></span>
+                <span class="text-[12px] font-bold leading-tight" :class="r.isNew ? 'text-indigo-600' : 'text-gray-600'" x-text="r.weekNum"></span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5 mb-0.5">
+                  <span class="text-[10px] text-gray-400" x-text="r.period"></span>
+                  <span x-show="r.isNew" class="px-1.5 py-0.5 bg-indigo-500 text-white text-[9px] font-bold rounded-full leading-none">NEW</span>
+                </div>
+                <p class="text-xs font-medium text-gray-700 truncate" x-text="r.summary"></p>
+              </div>
+              <div class="flex-shrink-0 text-right mr-1">
+                <p class="text-sm font-bold text-gray-800" x-text="r.score.toLocaleString() + '점'"></p>
+                <p class="text-[10px] font-semibold" :class="r.scoreDiff >= 0 ? 'text-green-500' : 'text-red-400'"
+                   x-text="(r.scoreDiff >= 0 ? '+' : '') + r.scoreDiff + '점'"></p>
+              </div>
+              <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </template>
+        </div>
+      </div>
     </main>
 
     <!-- 일별 읽기내역 모달 -->
@@ -280,6 +313,119 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 주간 리포트 상세 패널 -->
+    <div x-show="reportSheet" x-cloak
+         class="fixed inset-0 bg-black/40 z-50 flex items-end justify-center"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+      <div class="w-full max-w-3xl bg-white rounded-t-3xl flex flex-col"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
+           style="height:92dvh;">
+        <div class="flex-shrink-0 flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <div class="flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-gray-100">
+          <div>
+            <p class="font-bold text-gray-900 text-base" x-text="selectedReport?.month + ' ' + selectedReport?.weekNum + ' 리포트'"></p>
+            <p class="text-xs text-gray-400 mt-0.5" x-text="selectedReport?.period"></p>
+          </div>
+          <button @click="reportSheet=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+        </div>
+        <div class="flex-1 overflow-y-auto min-h-0">
+          <template x-if="selectedReport">
+
+            <div class="px-5 py-5 flex flex-col gap-5">
+
+              <!-- AI 총평 -->
+              <div class="bg-indigo-50 rounded-2xl p-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-base">✨</span>
+                  <p class="text-xs font-bold text-indigo-700">이번 주 총평</p>
+                </div>
+                <p class="text-sm text-indigo-900 leading-relaxed" x-text="selectedReport.aiComment"></p>
+              </div>
+
+              <!-- 지표 변화 -->
+              <div>
+                <p class="text-xs font-bold text-gray-500 mb-2.5">전주 대비</p>
+                <div class="grid grid-cols-3 gap-2.5">
+                  <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
+                    <p class="text-[10px] text-gray-400 mb-1">읽기 점수</p>
+                    <p class="text-base font-bold text-gray-800" x-text="selectedReport.score.toLocaleString()"></p>
+                    <p class="text-[11px] font-semibold mt-0.5"
+                       :class="selectedReport.scoreDiff >= 0 ? 'text-green-500' : 'text-red-400'"
+                       x-text="(selectedReport.scoreDiff >= 0 ? '▲' : '▼') + Math.abs(selectedReport.scoreDiff)"></p>
+                  </div>
+                  <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
+                    <p class="text-[10px] text-gray-400 mb-1">시선 집중</p>
+                    <p class="text-base font-bold text-gray-800" x-text="selectedReport.eyeReading + '%'"></p>
+                    <p class="text-[11px] font-semibold mt-0.5"
+                       :class="selectedReport.eyeDiff >= 0 ? 'text-green-500' : 'text-red-400'"
+                       x-text="(selectedReport.eyeDiff >= 0 ? '▲' : '▼') + Math.abs(selectedReport.eyeDiff) + '%'"></p>
+                  </div>
+                  <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
+                    <p class="text-[10px] text-gray-400 mb-1">집중도</p>
+                    <p class="text-base font-bold text-gray-800" x-text="selectedReport.focus + '%'"></p>
+                    <p class="text-[11px] font-semibold mt-0.5"
+                       :class="selectedReport.focusDiff >= 0 ? 'text-green-500' : 'text-red-400'"
+                       x-text="(selectedReport.focusDiff >= 0 ? '▲' : '▼') + Math.abs(selectedReport.focusDiff) + '%'"></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 읽은 책 -->
+              <div>
+                <p class="text-xs font-bold text-gray-500 mb-2.5">읽은 책</p>
+                <div class="flex flex-col gap-2.5">
+                  <template x-for="(book, i) in selectedReport.books" :key="i">
+                    <div class="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+                      <div class="w-10 h-14 rounded-xl flex-shrink-0 flex items-end p-1"
+                           :style="`background:${book.color}`">
+                        <span class="text-white text-[8px] font-bold leading-tight" x-text="book.title"></span>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-sm text-gray-800" x-text="book.title"></p>
+                        <p class="text-xs text-gray-400" x-text="book.author"></p>
+                        <div class="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div class="h-full bg-indigo-400 rounded-full transition-all" :style="`width:${book.progress}%`"></div>
+                        </div>
+                        <div class="flex items-center justify-between mt-0.5">
+                          <p class="text-[10px] text-indigo-500" x-text="book.progress + '%'"></p>
+                          <p class="text-[10px] text-gray-400" x-text="'+' + book.score + '점'"></p>
+                        </div>
+                      </div>
+                      <span x-show="book.progress===100" class="flex-shrink-0 text-base">🏁</span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+              <!-- 독서 요일 패턴 -->
+              <div class="bg-white rounded-2xl p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                  <p class="text-xs font-bold text-gray-500">독서 요일</p>
+                  <p class="text-[11px] text-gray-400">가장 집중한 날 <span class="font-semibold text-gray-700" x-text="selectedReport.bestDay"></span></p>
+                </div>
+                <div class="flex justify-between">
+                  <template x-for="(day, i) in ['월','화','수','목','금','토','일']" :key="i">
+                    <div class="flex flex-col items-center gap-1.5">
+                      <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-colors"
+                           :class="selectedReport.readDays[i]
+                             ? (selectedReport.bestDayIndex === i ? 'bg-indigo-500 text-white' : 'bg-indigo-100 text-indigo-600')
+                             : 'bg-gray-100 text-gray-300'">
+                        <span x-text="day"></span>
+                      </div>
+                      <div class="w-1.5 h-1.5 rounded-full" :class="selectedReport.readDays[i] ? 'bg-indigo-400' : 'bg-gray-200'"></div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -633,6 +779,7 @@ function app() {
     calYear: 2026, calMonth: 3,
     calDays: [], calStartDay: 0,
     daySheet: false, selectedDay: { label: '' },
+    reportSheet: false, selectedReport: null,
     settingsPanel: false, settingsSub: '', deleteConfirm: false,
     selectedColor: '', selectedGrade: '초4', selectedGender: '남',
 
@@ -642,6 +789,53 @@ function app() {
       {id:5,icon:'🎯',label:'목표달성'},{id:6,icon:'🦉',label:'야독가'},
       {id:7,icon:'💎',label:'정확도99'},{id:8,icon:'🏅',label:'월간1위'},
     ],
+    reports: [
+      { id:1, month:'4월', weekNum:'4주', period:'4/14~20', isNew:true,
+        summary:'목요일 집중도가 이번 주 최고였어요',
+        score:745, scoreDiff:+42, eyeReading:68, eyeDiff:+3, focus:78, focusDiff:+5,
+        bestDay:'목요일', bestDayIndex:3,
+        readDays:[true,true,false,true,true,true,false],
+        books:[
+          { title:'Percy Jackson', author:'R. Riordan', progress:68, score:450, color:'linear-gradient(135deg,#667eea,#764ba2)' },
+          { title:'Magic Tree House #5', author:'M. Osborne', progress:92, score:295, color:'linear-gradient(135deg,#43e97b,#38f9d7)' },
+        ],
+        aiComment:'이번 주는 목요일과 금요일에 집중도가 특히 높았어요. Percy Jackson을 꾸준히 읽으며 주 4회 독서 습관을 잘 유지했고, Magic Tree House #5를 거의 완독에 가깝게 읽었네요. 전주보다 총점이 42점 올랐고, 시선 집중도도 5% 향상됐어요. 다음 주도 이 페이스를 유지해 보아요! 🎉',
+      },
+      { id:2, month:'4월', weekNum:'3주', period:'4/7~13', isNew:false,
+        summary:'연속 5일 독서, 이번 달 최고 스트릭!',
+        score:703, scoreDiff:-15, eyeReading:65, eyeDiff:-2, focus:73, focusDiff:+2,
+        bestDay:'화요일', bestDayIndex:1,
+        readDays:[true,true,true,false,true,true,false],
+        books:[
+          { title:'Percy Jackson', author:'R. Riordan', progress:45, score:380, color:'linear-gradient(135deg,#667eea,#764ba2)' },
+          { title:"Charlotte's Web", author:'E.B. White', progress:100, score:323, color:'linear-gradient(135deg,#f093fb,#f5576c)' },
+        ],
+        aiComment:"이번 주는 Charlotte's Web을 완독했어요! 5일 연속 독서로 이번 달 최장 스트릭을 기록했네요. 총점은 지난주보다 15점 낮지만, 완독 보너스를 감안하면 실질적으로는 탄탄한 한 주였어요.",
+      },
+      { id:3, month:'4월', weekNum:'2주', period:'3/31~4/6', isNew:false,
+        summary:'읽기 집중도 이번 달 최고 기록!',
+        score:718, scoreDiff:+28, eyeReading:67, eyeDiff:+4, focus:71, focusDiff:+6,
+        bestDay:'수요일', bestDayIndex:2,
+        readDays:[false,true,true,true,false,true,true],
+        books:[
+          { title:"Charlotte's Web", author:'E.B. White', progress:72, score:390, color:'linear-gradient(135deg,#f093fb,#f5576c)' },
+          { title:'The BFG', author:'R. Dahl', progress:30, score:328, color:'linear-gradient(135deg,#4facfe,#00f2fe)' },
+        ],
+        aiComment:'이번 주는 시선 집중도가 71%로 이번 달 최고치를 기록했어요. 특히 수요일 세션에서 집중도가 82%까지 올랐는데, 아주 훌륭해요. The BFG를 새로 시작하며 책 선택의 폭도 넓어지고 있어요.',
+      },
+      { id:4, month:'4월', weekNum:'1주', period:'3/24~30', isNew:false,
+        summary:'Percy Jackson 시작! 새 책 적응기',
+        score:690, scoreDiff:+10, eyeReading:63, eyeDiff:+1, focus:65, focusDiff:-3,
+        bestDay:'토요일', bestDayIndex:5,
+        readDays:[false,true,false,true,false,true,true],
+        books:[
+          { title:'Percy Jackson', author:'R. Riordan', progress:18, score:350, color:'linear-gradient(135deg,#667eea,#764ba2)' },
+          { title:'Diary of Wimpy Kid', author:'J. Kinney', progress:100, score:340, color:'linear-gradient(135deg,#fa709a,#fee140)' },
+        ],
+        aiComment:'Diary of a Wimpy Kid을 완독하고 Percy Jackson을 새로 시작한 주였어요. 새 책 초반이라 집중도가 살짝 낮아졌지만 자연스러운 적응 과정이에요. 주말에 집중해서 읽는 패턴이 보이는데, 평일에도 조금씩 읽어보는 건 어떨까요?',
+      },
+    ],
+
     scores: { total:4820, totalPct:12, year:1340, yearPct:18, month:380, monthPct:22 },
     monthSummary: { score:380, words:12400 },
     dayScores: {},
@@ -852,6 +1046,8 @@ function app() {
         });
       }
     },
+
+    openReport(r) { this.selectedReport = r; this.reportSheet = true; r.isNew = false; },
 
     openSub(id) { this.settingsSub = id; },
     deleteProfile() { localStorage.removeItem('cr_profile'); window.location.href = 'profiles.html'; },
