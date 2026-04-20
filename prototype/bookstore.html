@@ -266,7 +266,7 @@
       <div class="flex-shrink-0 flex items-center gap-2 px-4 py-3 border-b border-gray-100">
         <button @click="selectedBook=null" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full flex-shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
         <span class="font-bold text-gray-900 text-sm flex-1 truncate" x-text="selectedBook?.title"></span>
-        <button class="w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-50 rounded-full flex-shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
+        <button x-show="!isParent" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-50 rounded-full flex-shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
       </div>
 
       <!-- 스크롤 본문 -->
