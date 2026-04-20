@@ -100,7 +100,7 @@
                   <!-- 3개 스탯 -->
                   <div class="flex gap-2 mb-3">
                     <div class="flex-1 bg-white/15 rounded-xl px-2 py-2 text-center">
-                      <p class="text-white font-bold text-lg leading-tight" x-text="p.today.score"></p>
+                      <p class="text-white font-bold text-lg leading-tight" x-text="p.today.goalScore ? p.today.score + '/' + p.today.goalScore : p.today.score"></p>
                       <p class="text-white/55 text-[10px] mt-0.5">읽기점수</p>
                     </div>
                     <div class="flex-1 bg-white/15 rounded-xl px-2 py-2 text-center">
@@ -411,11 +411,11 @@ function app() {
       { id:'hong', name:'홍길동', initial:'홍', age:9,  level:'Lv.3', reading:3, done:12,
         color:'linear-gradient(135deg,#667eea,#764ba2)', accent:'#667eea',
         online: true,
-        today: { score:124, time:42, words:1840, eye:{ reading:65, scanning:22, lost:13 } } },
+        today: { score:124, goalScore:300, time:42, words:1840, eye:{ reading:65, scanning:22, lost:13 } } },
       { id:'chun', name:'성춘향', initial:'성', age:11, level:'Lv.4', reading:2, done:8,
         color:'linear-gradient(135deg,#f093fb,#f5576c)', accent:'#f093fb',
         online: false,
-        today: { score:87, time:28, words:1120, eye:{ reading:72, scanning:20, lost:8 } } },
+        today: { score:87, goalScore:250, time:28, words:1120, eye:{ reading:72, scanning:20, lost:8 } } },
     ],
     favorites: [
       { id:'f1', studentName:'김민준', parentName:'김철수 부모님', initial:'김', age:10, gender:'남', grade:'골드', color:'linear-gradient(135deg,#43e97b,#38f9d7)' },

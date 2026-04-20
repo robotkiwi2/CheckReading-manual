@@ -86,7 +86,8 @@
               </div>
             </div>
             <!-- 등급 트로피 (아래쪽 정렬) -->
-            <div class="flex flex-col items-center gap-1 flex-shrink-0 self-end pb-1">
+            <div class="flex flex-col items-center gap-1 flex-shrink-0 self-end pb-1 cursor-pointer active:opacity-70"
+                 @click="gradeModal=true">
               <svg class="w-10 h-10" :class="trophyColor(profile?.gradeLabel||'골드')" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M5 3a1 1 0 000 2H3.5A1.5 1.5 0 002 6.5v1A3.5 3.5 0 005.5 11H6a4 4 0 003 3.874V16H7a1 1 0 100 2h6a1 1 0 100-2h-2v-1.126A4 4 0 0014 11h.5A3.5 3.5 0 0018 7.5v-1A1.5 1.5 0 0016.5 5H15a1 1 0 000-2H5z" clip-rule="evenodd"/>
               </svg>
@@ -98,7 +99,8 @@
         <div class="px-4 pb-4">
           <div class="badge-scroll flex gap-2 overflow-x-auto" style="scrollbar-width:none;">
             <template x-for="badge in badges" :key="badge.id">
-              <div class="flex-shrink-0 flex flex-col items-center gap-1 bg-white/15 rounded-xl px-3 py-2 min-w-[56px]">
+              <div class="flex-shrink-0 flex flex-col items-center gap-1 bg-white/15 rounded-xl px-3 py-2 min-w-[56px] cursor-pointer active:opacity-70"
+                   @click="selectedBadge=badge; badgeModal=true">
                 <span class="text-xl" x-text="badge.icon"></span>
                 <span class="text-white/80 text-[9px] text-center leading-tight" x-text="badge.label"></span>
               </div>
@@ -697,6 +699,65 @@
       </div>
     </div>
 
+    <!-- 뱃지 모달 -->
+    <div x-show="badgeModal" x-cloak @click.self="badgeModal=false"
+         class="absolute inset-0 bg-black/50 z-50 flex items-end"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+      <div class="w-full bg-white rounded-t-3xl px-5 pt-4 pb-8"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
+        <div class="flex justify-center mb-4"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <div class="flex items-center gap-4 mb-4">
+          <span class="text-4xl" x-text="selectedBadge?.icon"></span>
+          <div>
+            <p class="font-bold text-gray-900 text-lg" x-text="selectedBadge?.label"></p>
+            <p class="text-xs text-indigo-500 font-medium mt-0.5" x-text="selectedBadge?.acquiredAt + ' 획득'"></p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 leading-relaxed mb-4" x-text="selectedBadge?.desc"></p>
+        <div class="bg-gray-50 rounded-xl px-4 py-3">
+          <p class="text-[11px] text-gray-400 font-semibold uppercase tracking-widest mb-1">획득 조건</p>
+          <p class="text-sm text-gray-700" x-text="selectedBadge?.condition"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 등급 모달 -->
+    <div x-show="gradeModal" x-cloak @click.self="gradeModal=false"
+         class="absolute inset-0 bg-black/50 z-50 flex items-end"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+      <div class="w-full bg-white rounded-t-3xl px-5 pt-4 pb-8"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
+        <div class="flex justify-center mb-4"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <template x-if="grades.find(g=>g.label===(profile?.gradeLabel||'골드'))">
+          <div x-data="{ g: grades.find(g=>g.label===(profile?.gradeLabel||'골드')) }">
+            <div class="flex items-center gap-3 mb-4">
+              <svg class="w-10 h-10 flex-shrink-0" :class="trophyColor(g.label)" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 3a1 1 0 000 2H3.5A1.5 1.5 0 002 6.5v1A3.5 3.5 0 005.5 11H6a4 4 0 003 3.874V16H7a1 1 0 100 2h6a1 1 0 100-2h-2v-1.126A4 4 0 0014 11h.5A3.5 3.5 0 0018 7.5v-1A1.5 1.5 0 0016.5 5H15a1 1 0 000-2H5z" clip-rule="evenodd"/>
+              </svg>
+              <div>
+                <p class="font-bold text-gray-900 text-lg" x-text="g.label + ' 등급'"></p>
+                <p class="text-sm text-gray-500 mt-0.5" x-text="g.desc"></p>
+              </div>
+            </div>
+            <div class="bg-gray-50 rounded-xl px-4 py-3 mb-3">
+              <p class="text-[11px] text-gray-400 font-semibold uppercase tracking-widest mb-1">달성 조건</p>
+              <p class="text-sm text-gray-700" x-text="g.condition"></p>
+            </div>
+            <template x-if="g.next">
+              <div class="bg-indigo-50 rounded-xl px-4 py-3">
+                <p class="text-[11px] text-indigo-400 font-semibold uppercase tracking-widest mb-1">다음 등급</p>
+                <p class="text-sm text-gray-700"><span class="font-semibold" x-text="g.next"></span>까지 <span x-text="g.nextCondition"></span></p>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+
     <!-- 하단 탭바 (lg 미만) -->
     <nav class="lg:hidden flex-shrink-0 bg-white border-t border-gray-100 flex">
       <a href="profiles.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-indigo-600"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg><span class="text-[10px] font-semibold">프로필</span></a>
@@ -784,10 +845,14 @@ function app() {
     selectedColor: '', selectedGrade: '초4', selectedGender: '남',
 
     badges: [
-      {id:1,icon:'📚',label:'다독왕'},{id:2,icon:'🔥',label:'연속30일'},
-      {id:3,icon:'⚡',label:'스피드'},{id:4,icon:'🌟',label:'우수독자'},
-      {id:5,icon:'🎯',label:'목표달성'},{id:6,icon:'🦉',label:'야독가'},
-      {id:7,icon:'💎',label:'정확도99'},{id:8,icon:'🏅',label:'월간1위'},
+      {id:1,icon:'📚',label:'다독왕',      desc:'한 달 동안 가장 많은 책을 읽은 독자에게 수여',       condition:'월 5권 이상 완독', acquiredAt:'2026.03.31'},
+      {id:2,icon:'🔥',label:'연속30일',    desc:'30일 연속 하루도 빠짐없이 독서한 기록',              condition:'30일 연속 읽기 세션 완료', acquiredAt:'2026.04.01'},
+      {id:3,icon:'⚡',label:'스피드',      desc:'나이·레벨 대비 빠른 읽기 속도를 꾸준히 유지',        condition:'적정 읽기 속도 상위 10% 2주 이상', acquiredAt:'2026.02.14'},
+      {id:4,icon:'🌟',label:'우수독자',    desc:'읽기 점수, 집중도, 완독률 모두 우수한 독자',          condition:'3개 지표 상위 20% 동시 달성', acquiredAt:'2026.03.15'},
+      {id:5,icon:'🎯',label:'목표달성',    desc:'설정한 일일 읽기 목표를 연속 7일 달성',               condition:'일일 목표 점수 7일 연속 달성', acquiredAt:'2026.04.07'},
+      {id:6,icon:'🦉',label:'야독가',      desc:'저녁 9시 이후 꾸준히 독서하는 습관을 가진 독자',     condition:'오후 9시 이후 독서 세션 10회 이상', acquiredAt:'2026.01.20'},
+      {id:7,icon:'💎',label:'정확도99',    desc:'독서 퀴즈에서 99% 이상 정답률 달성',                 condition:'퀴즈 정답률 99% 이상 (10회 이상 응시)', acquiredAt:'2026.03.28'},
+      {id:8,icon:'🏅',label:'월간1위',     desc:'이번 달 우리 가족 중 읽기 점수 1위',                  condition:'가족 내 월간 읽기 점수 1위', acquiredAt:'2026.04.01'},
     ],
     reports: [
       { id:1, month:'4월', weekNum:'4주', period:'4/14~20', isNew:true,
@@ -841,6 +906,13 @@ function app() {
     dayScores: {},
 
     chartTab: 'score', chartRange: 'bimonth', chartOffset: 0, scoreTooltip: false,
+    badgeModal: false, selectedBadge: null, gradeModal: false,
+    grades: [
+      { label:'브론즈',  color:'text-orange-400', desc:'독서를 시작한 새내기 독자', condition:'누적 읽기 점수 500점 이상', next:'실버', nextCondition:'누적 2,000점' },
+      { label:'실버',    color:'text-gray-300',   desc:'꾸준한 독서 습관이 자리잡힌 독자', condition:'누적 읽기 점수 2,000점 이상', next:'골드', nextCondition:'누적 5,000점' },
+      { label:'골드',    color:'text-yellow-300', desc:'높은 집중도와 독서량을 갖춘 우수 독자', condition:'누적 읽기 점수 5,000점 이상', next:'플래티넘', nextCondition:'누적 15,000점' },
+      { label:'플래티넘',color:'text-cyan-300',   desc:'최상위 독서 능력을 갖춘 엘리트 독자', condition:'누적 읽기 점수 15,000점 이상', next:null, nextCondition:null },
+    ],
     chartTouchX: 0,
 
     get chartSummary() {
