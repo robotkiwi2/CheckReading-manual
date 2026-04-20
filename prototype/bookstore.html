@@ -95,12 +95,7 @@
 
       <template x-for="shelf in shelves" :key="shelf.id">
         <div>
-          <!-- 프로필 그룹 구분 헤더 -->
-          <div x-show="shelf.type==='section'" class="mt-8 mb-1 mx-4 flex items-center gap-2.5">
-            <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm" :style="`background:${shelf.color}`" x-text="shelf.initial"></div>
-            <span class="text-sm font-bold text-gray-700" x-text="shelf.name + '을 위한 추천'"></span>
-          </div>
-          <!-- 일반 선반 -->
+          <!-- 선반 -->
           <div x-show="shelf.type!=='section'" class="mt-5">
             <div class="flex items-center justify-between px-4 mb-3">
               <template x-if="shelf.profile">
@@ -490,8 +485,6 @@ function app() {
     },
 
     shelves: [
-      // ── 홍길동 그룹 ──
-      { id:'sh', type:'section', name:'홍길동', initial:'홍', color:'linear-gradient(135deg,#667eea,#764ba2)' },
       { id:'h1', title:'홍길동 또래 (초3·Lv.3) 친구들이 많이 읽은 책',
         profile: { id:'hong', initial:'홍', name:'홍길동', color:'linear-gradient(135deg,#667eea,#764ba2)' },
         books: mk([
@@ -526,8 +519,6 @@ function app() {
         {title:'Bunnicula',author:'D. Howe',level:'Lv.3'},
         {title:'Hatchet',author:'G. Paulsen',level:'Lv.4'}])},
 
-      // ── 성춘향 그룹 ──
-      { id:'sc', type:'section', name:'성춘향', initial:'성', color:'linear-gradient(135deg,#f093fb,#f5576c)' },
       { id:'c1', title:'성춘향 또래 (초5·Lv.4) 친구들이 많이 읽은 책',
         profile: { id:'chun', initial:'성', name:'성춘향', color:'linear-gradient(135deg,#f093fb,#f5576c)' },
         books: mk([
