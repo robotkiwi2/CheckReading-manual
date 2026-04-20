@@ -7,26 +7,243 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
-    html,body{height:100%;}
-    [x-cloak]{display:none!important;}
-    .reading-text { font-family: Georgia, 'Noto Serif KR', serif; line-height: 2; }
-    .scroll-area::-webkit-scrollbar { display: none; }
-    .scroll-area { -ms-overflow-style: none; scrollbar-width: none; }
-    input[type=range] { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; background: #e5e7eb; outline: none; }
-    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #4f46e5; cursor: pointer; }
-    input[type=range]::-webkit-slider-runnable-track { border-radius: 2px; }
+    html,body { height:100%; }
+    [x-cloak] { display:none!important; }
+    .reading-text { font-family: Georgia,'Noto Serif KR',serif; line-height:2; }
+    .scroll-area::-webkit-scrollbar { display:none; }
+    .scroll-area { -ms-overflow-style:none; scrollbar-width:none; }
+    input[type=range] { -webkit-appearance:none; appearance:none; height:4px; border-radius:2px; background:#e5e7eb; outline:none; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:#4f46e5; cursor:pointer; }
+
+    /* 캘리브레이션 점 맥동 */
+    @keyframes calib-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.7), 0 0 0 0 rgba(99,102,241,0.4); }
+      60%      { box-shadow: 0 0 0 12px rgba(99,102,241,0), 0 0 0 24px rgba(99,102,241,0); }
+    }
+    .calib-dot { animation: calib-pulse 1.4s ease-out infinite; }
+
+    /* 카메라 얼굴 타원 점선 */
+    @keyframes dash-spin { to { stroke-dashoffset: -60; } }
+    .oval-dash { animation: dash-spin 3s linear infinite; }
   </style>
 </head>
 <body class="bg-[#faf9f7]" style="height:100dvh;overflow:hidden;">
 <div class="h-full relative select-none overflow-hidden"
-     x-data="reader()" x-init="init()"
-     @click="toggleUI()"
-     @keydown.escape.window="showMore=false">
+     x-data="reader()" x-init="init()">
 
-  <!-- ══════════════════════════════════
-       TOP BAR (오버레이)
-  ══════════════════════════════════ -->
-  <div x-show="showUI" x-cloak
+
+  <!-- ══════════════════════════════════════════════════════
+       PHASE 1 : 얼굴 확인
+  ══════════════════════════════════════════════════════ -->
+  <div x-show="phase==='face'" x-cloak
+       class="absolute inset-0 z-50 bg-black flex flex-col">
+
+    <!-- 헤더 -->
+    <div class="flex-shrink-0 flex items-center gap-3 px-4 pt-12 pb-4">
+      <button @click="cancelReader()"
+              class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+      <div>
+        <p class="text-white font-bold">얼굴 확인</p>
+        <p class="text-white/50 text-xs mt-0.5">카메라에 얼굴이 잘 보이는지 확인하세요</p>
+      </div>
+    </div>
+
+    <!-- 카메라 + 타원 가이드 -->
+    <div class="flex-1 relative flex items-center justify-center min-h-0">
+      <video x-ref="faceVideo" autoplay playsinline muted
+             class="absolute inset-0 w-full h-full object-cover opacity-80"></video>
+
+      <!-- 타원 오버레이 -->
+      <div class="absolute inset-0 pointer-events-none"
+           style="background:radial-gradient(ellipse 52% 62% at 50% 48%, transparent 99%, rgba(0,0,0,0.75) 100%)"></div>
+
+      <!-- SVG 타원 테두리 -->
+      <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <ellipse cx="50" cy="48" rx="26" ry="32"
+                 fill="none"
+                 :stroke="faceOk ? '#4ade80' : '#6366f1'"
+                 stroke-width="0.6"
+                 stroke-dasharray="6 3"
+                 class="oval-dash"
+                 style="transition:stroke 0.5s"/>
+      </svg>
+
+      <!-- 얼굴 감지 상태 -->
+      <div class="absolute bottom-1/4 left-0 right-0 flex flex-col items-center gap-2 pointer-events-none">
+        <div x-show="!faceOk" class="bg-black/50 px-4 py-2 rounded-full flex items-center gap-2">
+          <span class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
+          <span class="text-white text-sm">얼굴을 타원 안에 맞춰주세요</span>
+        </div>
+        <div x-show="faceOk" x-cloak class="bg-green-500/80 px-4 py-2 rounded-full flex items-center gap-2">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-white text-sm font-semibold">얼굴 감지됨</span>
+        </div>
+      </div>
+
+      <!-- 카메라 오류 -->
+      <div x-show="faceError" class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gray-900">
+        <svg class="w-12 h-12 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M4 6h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"/>
+        </svg>
+        <p class="text-white/50 text-sm text-center px-8" x-text="faceError"></p>
+        <button @click="startFaceCheck()" class="mt-2 px-5 py-2 bg-white/10 text-white text-sm rounded-xl">다시 시도</button>
+      </div>
+    </div>
+
+    <!-- 하단 버튼 -->
+    <div class="flex-shrink-0 px-5 pb-10 pt-4 flex flex-col gap-3">
+      <button @click="confirmFace()"
+              :disabled="!faceOk"
+              class="w-full py-3.5 rounded-2xl text-sm font-bold transition-all"
+              :class="faceOk
+                ? 'bg-indigo-600 text-white shadow-lg active:scale-95'
+                : 'bg-white/10 text-white/30 cursor-not-allowed'">
+        확인 → 시선 보정 시작
+      </button>
+      <button @click="skipCalib()"
+              class="text-center text-white/40 text-xs py-1">
+        보정 건너뛰기 (시선 추적 비활성)
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════
+       PHASE 2 : 1점 간이 캘리브레이션 오버레이
+  ══════════════════════════════════════════════════════ -->
+  <div x-show="phase==='calib1'" x-cloak
+       class="absolute inset-0 z-50 flex flex-col items-center justify-center"
+       style="background:rgba(0,0,0,0.72); backdrop-filter:blur(6px)">
+
+    <p class="text-white/60 text-sm mb-10">화면 중앙의 점을 바라봐 주세요</p>
+
+    <!-- SVG 진행 원 + 중앙 점 -->
+    <div class="relative flex items-center justify-center" style="width:96px;height:96px">
+      <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 96 96">
+        <circle cx="48" cy="48" r="42" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="5"/>
+        <circle cx="48" cy="48" r="42" fill="none" stroke="#6366f1" stroke-width="5"
+                stroke-linecap="round"
+                :stroke-dasharray="263.9"
+                :stroke-dashoffset="263.9 * (1 - calib1Progress/100)"
+                style="transition:stroke-dashoffset 0.1s linear"/>
+      </svg>
+      <!-- 중앙 점 -->
+      <div class="w-5 h-5 rounded-full bg-indigo-400 calib-dot"></div>
+    </div>
+
+    <p class="text-white/40 text-xs mt-8"
+       x-text="calib1Progress < 100 ? Math.ceil((100-calib1Progress)/33) + '초' : '완료!'"></p>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════
+       PHASE 3 : 5점 정밀 캘리브레이션 전체화면
+  ══════════════════════════════════════════════════════ -->
+  <div x-show="phase==='calib5'" x-cloak
+       class="absolute inset-0 z-50 bg-gray-950 flex flex-col">
+
+    <!-- 상단 -->
+    <div class="flex-shrink-0 px-5 pt-12 pb-4 flex items-center gap-3">
+      <button @click="cancelCalib5()"
+              class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/60">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+      <div class="flex-1">
+        <p class="text-white font-bold text-sm">5점 정밀 보정</p>
+        <p class="text-white/40 text-xs mt-0.5">점이 나타나면 자연스럽게 바라봐 주세요</p>
+      </div>
+      <span class="text-white/40 text-sm font-semibold" x-text="(calib5Step+1)+' / 5'"></span>
+    </div>
+
+    <!-- 진행 바 -->
+    <div class="flex-shrink-0 h-0.5 bg-white/10 mx-5 rounded-full overflow-hidden">
+      <div class="h-full bg-indigo-500 rounded-full transition-all duration-500"
+           :style="`width:${(calib5Step/5)*100 + (calib5Progress/5)}%`"></div>
+    </div>
+
+    <!-- 점 영역 -->
+    <div class="flex-1 relative" x-ref="calib5Area">
+      <template x-for="(pt, idx) in calib5Points" :key="idx">
+        <div class="absolute flex items-center justify-center"
+             :style="`left:${pt.x}%; top:${pt.y}%; transform:translate(-50%,-50%)`">
+
+          <!-- 비활성 -->
+          <div x-show="idx > calib5Step"
+               class="w-3 h-3 rounded-full bg-white/15"></div>
+
+          <!-- 완료 -->
+          <div x-show="idx < calib5Step"
+               class="w-3 h-3 rounded-full bg-indigo-400 flex items-center justify-center">
+            <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+
+          <!-- 현재 활성 -->
+          <div x-show="idx === calib5Step" class="relative flex items-center justify-center"
+               style="width:72px;height:72px">
+            <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 72 72">
+              <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(99,102,241,0.2)" stroke-width="4"/>
+              <circle cx="36" cy="36" r="30" fill="none" stroke="#818cf8" stroke-width="4"
+                      stroke-linecap="round"
+                      :stroke-dasharray="188.5"
+                      :stroke-dashoffset="188.5 * (1 - calib5Progress/100)"
+                      style="transition:stroke-dashoffset 0.08s linear"/>
+            </svg>
+            <div class="w-4 h-4 rounded-full bg-indigo-400 calib-dot"></div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- 하단 안내 -->
+    <div class="flex-shrink-0 pb-12 text-center">
+      <p class="text-white/30 text-xs">눈을 크게 뜨고 점을 자연스럽게 바라봐 주세요</p>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════
+       READING PHASE — 정밀 보정 권고 배너
+  ══════════════════════════════════════════════════════ -->
+  <div x-show="precisionBanner && phase==='reading'" x-cloak
+       class="absolute top-0 left-0 right-0 z-40 px-4 pt-14 pb-3"
+       style="background:linear-gradient(to bottom,rgba(0,0,0,0.6),transparent)"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0 -translate-y-2"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100 translate-y-0"
+       x-transition:leave-end="opacity-0 -translate-y-2">
+    <div class="bg-amber-500/90 backdrop-blur-sm rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg">
+      <svg class="w-5 h-5 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <p class="text-white text-xs font-medium flex-1">시선 감지 품질이 낮아졌습니다</p>
+      <button @click="startCalib5FromBanner()"
+              class="bg-white text-amber-600 text-xs font-bold px-3 py-1.5 rounded-xl flex-shrink-0">
+        재보정
+      </button>
+      <button @click="precisionBanner=false"
+              class="text-white/70 text-xs flex-shrink-0">
+        나중에
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════
+       READING — TOP BAR
+  ══════════════════════════════════════════════════════ -->
+  <div x-show="showUI && phase==='reading'" x-cloak
        class="absolute top-0 left-0 right-0 z-30 pointer-events-none"
        style="background:linear-gradient(to bottom,rgba(0,0,0,0.55) 0%,transparent 100%)"
        x-transition:enter="transition ease-out duration-200"
@@ -44,7 +261,7 @@
       </button>
       <div class="flex-1 min-w-0 text-center px-2">
         <p class="text-white font-semibold text-sm truncate" x-text="chapters[cur].title"></p>
-        <p class="text-white/60 text-xs mt-0.5" x-text="'Ch.' + (cur+1) + ' / ' + chapters.length"></p>
+        <p class="text-white/60 text-xs mt-0.5" x-text="'Ch.'+(cur+1)+' / '+chapters.length"></p>
       </div>
       <button @click.stop="settingsOpen=!settingsOpen"
               class="w-9 h-9 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors flex-shrink-0">
@@ -56,20 +273,25 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════
-       READING TEXT AREA
-  ══════════════════════════════════ -->
-  <div class="absolute inset-0 overflow-y-auto scroll-area" x-ref="textArea" @scroll.passive="onScroll()">
+
+  <!-- ══════════════════════════════════════════════════════
+       READING — TEXT AREA
+  ══════════════════════════════════════════════════════ -->
+  <div class="absolute inset-0 overflow-y-auto scroll-area"
+       x-ref="textArea"
+       @scroll.passive="onScroll()"
+       @click="phase==='reading' && toggleUI()">
     <div class="px-6 pt-28 pb-56 max-w-xl mx-auto">
       <h2 class="text-lg font-bold text-gray-900 mb-6 reading-text" x-text="chapters[cur].title"></h2>
       <div class="reading-text text-gray-800 space-y-5" x-html="chapters[cur].body"></div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════
-       BOTTOM CONTROLLER (오버레이)
-  ══════════════════════════════════ -->
-  <div x-show="showUI" x-cloak
+
+  <!-- ══════════════════════════════════════════════════════
+       READING — BOTTOM CONTROLLER
+  ══════════════════════════════════════════════════════ -->
+  <div x-show="showUI && phase==='reading'" x-cloak
        class="absolute bottom-0 left-0 right-0 z-30"
        x-transition:enter="transition ease-out duration-200"
        x-transition:enter-start="opacity-0 translate-y-1"
@@ -78,7 +300,7 @@
        x-transition:leave-start="opacity-100 translate-y-0"
        x-transition:leave-end="opacity-0 translate-y-1">
 
-    <!-- 더보기 패널 (위로 슬라이드업) -->
+    <!-- 더보기 패널 -->
     <div x-show="showMore" x-cloak
          class="bg-white/97 backdrop-blur-sm border-t border-gray-200 px-4 pt-4 pb-3"
          x-transition:enter="transition ease-out duration-250"
@@ -88,31 +310,25 @@
          x-transition:leave-start="translate-y-0 opacity-100"
          x-transition:leave-end="translate-y-full opacity-0"
          @click.stop>
-      <!-- 속도 -->
       <div class="mb-4">
         <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mb-2">재생 속도</p>
         <div class="flex gap-1.5">
           <template x-for="s in speeds" :key="s">
             <button @click="speed=s"
                     class="flex-1 py-2 rounded-xl text-xs font-bold border-2 transition-colors"
-                    :class="speed===s
-                      ? 'bg-indigo-600 text-white border-indigo-600'
-                      : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'">
+                    :class="speed===s ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200'">
               <span x-text="s+'x'"></span>
             </button>
           </template>
         </div>
       </div>
-      <!-- 기능 토글 -->
       <div>
         <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mb-2">기능</p>
         <div class="flex gap-2">
           <template x-for="f in features" :key="f.id">
             <button @click="f.on=!f.on"
                     class="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl border-2 transition-colors"
-                    :class="f.on
-                      ? 'bg-indigo-50 border-indigo-400 text-indigo-600'
-                      : 'bg-white border-gray-200 text-gray-400 hover:border-gray-300'">
+                    :class="f.on ? 'bg-indigo-50 border-indigo-400 text-indigo-600' : 'bg-white border-gray-200 text-gray-400'">
               <span class="text-xl leading-none" x-text="f.icon"></span>
               <span class="text-[10px] font-semibold leading-none" x-text="f.label"></span>
             </button>
@@ -123,74 +339,48 @@
 
     <!-- 메인 컨트롤러 -->
     <div class="bg-white/97 backdrop-blur-sm border-t border-gray-200 px-4 pt-3 pb-8" @click.stop>
-      <!-- 진행 슬라이더 -->
       <div class="flex items-center gap-2 mb-3">
-        <input type="range" min="0" max="100" step="0.1"
-               :value="progress"
+        <input type="range" min="0" max="100" step="0.1" :value="progress"
                @input.stop="seekTo($event.target.value)"
-               class="flex-1 cursor-pointer"
-               style="accent-color:#4f46e5">
+               class="flex-1 cursor-pointer" style="accent-color:#4f46e5">
         <span class="text-xs text-gray-400 font-semibold w-9 text-right flex-shrink-0"
               x-text="Math.round(progress)+'%'"></span>
       </div>
-
-      <!-- 버튼 행 -->
       <div class="flex items-center justify-between">
-        <!-- 이전 챕터 -->
-        <button @click.stop="prevChapter()"
-                :disabled="cur===0"
+        <button @click.stop="prevChapter()" :disabled="cur===0"
                 class="w-10 h-10 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 disabled:opacity-25 transition-colors">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/>
-          </svg>
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
         </button>
-        <!-- 뒤로(한 단락) -->
         <button @click.stop="skipBack()"
                 class="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 transition-colors">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M11.5 12 6 8v8l5.5-4zm.5 0 5.5 4V8L12 12z"/>
-          </svg>
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.5 12 6 8v8l5.5-4zm.5 0 5.5 4V8L12 12z"/></svg>
         </button>
-        <!-- 재생/중지 -->
         <button @click.stop="togglePlay()"
                 class="w-14 h-14 flex items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 active:scale-95 transition-all">
-          <svg x-show="!playing" class="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M8 5v14l11-7z"/>
-          </svg>
-          <svg x-show="playing" class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-          </svg>
+          <svg x-show="!playing" class="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <svg x-show="playing" class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
         </button>
-        <!-- 앞으로(한 단락) -->
         <button @click.stop="skipForward()"
                 class="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 transition-colors">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12.5 12 18 8v8l-5.5-4zM12 12 6.5 16V8L12 12z"/>
-          </svg>
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.5 12 18 8v8l-5.5-4zM12 12 6.5 16V8L12 12z"/></svg>
         </button>
-        <!-- 다음 챕터 -->
-        <button @click.stop="nextChapter()"
-                :disabled="cur===chapters.length-1"
+        <button @click.stop="nextChapter()" :disabled="cur===chapters.length-1"
                 class="w-10 h-10 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 disabled:opacity-25 transition-colors">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-          </svg>
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
         </button>
-        <!-- 더보기 -->
         <button @click.stop="showMore=!showMore"
                 class="w-10 h-10 flex items-center justify-center rounded-full transition-colors"
                 :class="showMore ? 'bg-indigo-100 text-indigo-600' : 'text-gray-400 hover:bg-gray-100'">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-          </svg>
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════
+
+  <!-- ══════════════════════════════════════════════════════
        뷰어 설정 패널 (우측 슬라이드인)
-  ══════════════════════════════════ -->
+  ══════════════════════════════════════════════════════ -->
   <div x-show="settingsOpen" x-cloak
        class="absolute inset-0 z-40 flex"
        @click.self="settingsOpen=false">
@@ -210,19 +400,15 @@
         <span class="font-bold text-gray-900">뷰어 설정</span>
       </div>
       <div class="flex-1 overflow-y-auto px-4 py-5 space-y-6">
-        <!-- 글자 크기 -->
         <div>
           <p class="text-xs text-gray-400 font-semibold uppercase tracking-widest mb-3">글자 크기</p>
           <div class="flex items-center gap-3">
             <button @click="fontSize=Math.max(14,fontSize-2)" class="w-9 h-9 rounded-xl border-2 border-gray-200 text-gray-500 font-bold text-lg hover:border-indigo-300">A</button>
-            <div class="flex-1 h-1 bg-gray-200 rounded-full relative">
-              <div class="h-full bg-indigo-500 rounded-full" :style="`width:${(fontSize-14)/14*100}%`"></div>
-            </div>
+            <div class="flex-1 h-1 bg-gray-200 rounded-full"><div class="h-full bg-indigo-500 rounded-full" :style="`width:${(fontSize-14)/14*100}%`"></div></div>
             <button @click="fontSize=Math.min(28,fontSize+2)" class="w-9 h-9 rounded-xl border-2 border-gray-200 text-gray-700 font-bold text-xl hover:border-indigo-300">A</button>
           </div>
           <p class="text-center text-xs text-gray-400 mt-2" x-text="fontSize+'px'"></p>
         </div>
-        <!-- 배경 -->
         <div>
           <p class="text-xs text-gray-400 font-semibold uppercase tracking-widest mb-3">배경</p>
           <div class="flex gap-2">
@@ -231,29 +417,38 @@
                       class="flex-1 h-12 rounded-xl border-2 transition-colors flex items-center justify-center text-xs font-medium"
                       :style="`background:${bg.bg}; color:${bg.text}`"
                       :class="selectedBg.id===bg.id ? 'border-indigo-400' : 'border-gray-200'"
-                      x-text="bg.label">
-              </button>
+                      x-text="bg.label"></button>
             </template>
           </div>
         </div>
-        <!-- 줄간격 -->
         <div>
           <p class="text-xs text-gray-400 font-semibold uppercase tracking-widest mb-3">줄 간격</p>
           <div class="flex gap-2">
             <template x-for="lh in lineHeights" :key="lh.id">
               <button @click="lineHeight=lh"
                       class="flex-1 py-2 rounded-xl border-2 transition-colors text-xs font-semibold"
-                      :class="lineHeight.id===lh.id ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'"
-                      x-text="lh.label">
-              </button>
+                      :class="lineHeight.id===lh.id ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200'"
+                      x-text="lh.label"></button>
             </template>
           </div>
+        </div>
+        <!-- 시선 보정 재실행 -->
+        <div>
+          <p class="text-xs text-gray-400 font-semibold uppercase tracking-widest mb-3">시선 추적</p>
+          <button @click="settingsOpen=false; startCalib5FromBanner()"
+                  class="w-full py-3 rounded-xl border-2 border-indigo-200 text-indigo-600 text-sm font-semibold hover:bg-indigo-50 transition-colors">
+            5점 정밀 보정 다시 하기
+          </button>
+          <button @click="settingsOpen=false; startCalib1()"
+                  class="w-full mt-2 py-3 rounded-xl border-2 border-gray-200 text-gray-600 text-sm font-semibold hover:bg-gray-50 transition-colors">
+            1점 간이 보정 다시 하기
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-</div>
+</div><!-- end root -->
 
 <script>
 function reader() {
@@ -268,8 +463,8 @@ function reader() {
 <p>My name is Percy Jackson. I'm twelve years old. Until a few months ago, I was a boarding student at Yancy Academy, a private school for troubled kids in upstate New York.</p>
 <p>Am I a troubled kid? Yeah. You could say that.</p>
 <p>I could start anywhere. I could start the night our sixth-grade class went on a field trip to Manhattan — twenty-eight kids and two teachers going to the Metropolitan Museum of Art to look at ancient Greek and Roman stuff.</p>
-<p>I'm not going to, though. I'm going to start right before I got expelled — or before I was asked to leave, as the principal put it. My expelled usually referred to stuff like drugs or weapons. I hadn't done anything like that. I'd just had an accident. Several accidents, in fact. Entirely not my fault.</p>
-<p>But the headmaster called it a "pattern of disruptive behavior," and since it was my sixth school in six years, I didn't have much of a case.</p>`
+<p>I'm not going to, though. I'm going to start right before I got expelled. My name is Percy Jackson. I'm twelve years old. Until a few months ago, I was a boarding student at Yancy Academy, a private school for troubled kids in upstate New York. Am I a troubled kid? Yeah. You could say that.</p>
+<p>I could start anywhere. But I'm going to start right before I got expelled — or before I was asked to leave, as the principal put it. Expelled usually referred to stuff like drugs or weapons. I hadn't done anything like that. I'd just had an accident. Several accidents, in fact. Entirely not my fault.</p>`
     },
     {
       title: 'Ch.2 Vanished into Thin Air',
@@ -291,9 +486,7 @@ function reader() {
 <p>"Three," Grover told him. "Please."</p>
 <p>Charon raised an eyebrow. "You got the coin?"</p>
 <p>I reached for my pocket. Annabeth grabbed my arm. "Don't," she warned. "Just watch."</p>
-<p>Grover reached under his shirt collar and produced a golden coin — a drachma, Greek currency. He offered it to Charon, who examined it with those claw-hands before tucking it away with a grunt of approval.</p>
-<p>"Go on through," he said, waving us forward. "And don't touch anything. And don't make eye contact with the spirits."</p>
-<p>We crossed the river on Charon's ferry — a battered black boat that somehow held all three of us without sinking. The far bank was dark, shrouded in mist.</p>`
+<p>Grover reached under his shirt collar and produced a golden coin — a drachma, Greek currency. He offered it to Charon, who examined it with those claw-hands before tucking it away with a grunt of approval.</p>`
     },
     {
       title: 'Ch.4 My Mother Teaches Me Bullfighting',
@@ -311,75 +504,240 @@ function reader() {
     },
   ];
 
+  const calib5Points = [
+    { x: 15, y: 18 },
+    { x: 85, y: 18 },
+    { x: 50, y: 50 },
+    { x: 15, y: 82 },
+    { x: 85, y: 82 },
+  ];
+
   return {
-    cur: 0,
+    /* ── 공통 ── */
+    phase: 'face',   // 'face' | 'calib1' | 'calib5' | 'reading'
     chapters,
+
+    /* ── 얼굴 확인 ── */
+    faceOk: false,
+    faceError: null,
+    _faceStream: null,
+    _faceTimer: null,
+
+    /* ── 1점 캘리브레이션 ── */
+    calib1Progress: 0,
+    _calib1Timer: null,
+    _pendingChapter: null,  // 챕터 이동 후 처리할 챕터 번호
+
+    /* ── 5점 캘리브레이션 ── */
+    calib5Points,
+    calib5Step: 0,
+    calib5Progress: 0,
+    _calib5Timer: null,
+    _calib5FromBanner: false,
+
+    /* ── 읽기 ── */
+    cur: 0,
     progress: 0,
     playing: false,
     showUI: true,
     showMore: false,
     settingsOpen: false,
+    precisionBanner: false,
     _playTimer: null,
     _uiTimer: null,
+    _precisionTimer: null,
 
     speed: 1,
     speeds: [0.5, 0.75, 1, 1.25, 1.5, 2],
-
     features: [
-      { id: 'audio',   icon: '🔊', label: '오디오',   on: false },
-      { id: 'pointer', icon: '👆', label: '포인터',   on: false },
-      { id: 'chunk',   icon: '✂️',  label: '끊어읽기', on: false },
-      { id: 'gaze',    icon: '👁',  label: '시선',     on: false },
+      { id:'audio',   icon:'🔊', label:'오디오',   on:false },
+      { id:'pointer', icon:'👆', label:'포인터',   on:false },
+      { id:'chunk',   icon:'✂️',  label:'끊어읽기', on:false },
+      { id:'gaze',    icon:'👁',  label:'시선',     on:true  },
     ],
-
     fontSize: 17,
-    lineHeight: { id: 'normal', label: '보통', value: '2' },
+    lineHeight: { id:'normal', label:'보통', value:'2' },
     lineHeights: [
-      { id: 'tight',  label: '좁게',  value: '1.6' },
-      { id: 'normal', label: '보통',  value: '2' },
-      { id: 'wide',   label: '넓게',  value: '2.5' },
+      { id:'tight',  label:'좁게', value:'1.6' },
+      { id:'normal', label:'보통', value:'2'   },
+      { id:'wide',   label:'넓게', value:'2.5' },
     ],
-    selectedBg: { id: 'paper', label: '종이', bg: '#faf9f7', text: '#1f2937' },
+    selectedBg: { id:'paper', label:'종이', bg:'#faf9f7', text:'#1f2937' },
     bgOptions: [
-      { id: 'paper', label: '종이', bg: '#faf9f7', text: '#1f2937' },
-      { id: 'white', label: '흰색', bg: '#ffffff', text: '#1f2937' },
-      { id: 'sepia', label: '세피아', bg: '#f5ede0', text: '#4a3728' },
-      { id: 'dark',  label: '다크',  bg: '#1a1a2e', text: '#e2e8f0' },
+      { id:'paper', label:'종이',  bg:'#faf9f7', text:'#1f2937' },
+      { id:'white', label:'흰색',  bg:'#ffffff', text:'#1f2937' },
+      { id:'sepia', label:'세피아',bg:'#f5ede0', text:'#4a3728' },
+      { id:'dark',  label:'다크',  bg:'#1a1a2e', text:'#e2e8f0' },
     ],
 
+    /* ════════════════════════════════
+       INIT
+    ════════════════════════════════ */
     init() {
-      // 저장된 챕터 번호로 시작
       const savedCh = parseInt(localStorage.getItem('cr_reader_chapter') || '0');
       this.cur = Math.min(savedCh, this.chapters.length - 1);
-      // 본문 폰트 크기·배경 적용
-      this.$watch('fontSize', v => this.applyStyles());
-      this.$watch('lineHeight', v => this.applyStyles());
-      this.$watch('selectedBg', v => this.applyStyles());
+      this.$watch('fontSize',    () => this.applyStyles());
+      this.$watch('lineHeight',  () => this.applyStyles());
+      this.$watch('selectedBg',  () => this.applyStyles());
       this.applyStyles();
-      // UI 자동 숨김 타이머
-      this.resetUITimer();
+      this.startFaceCheck();
     },
 
     applyStyles() {
       document.body.style.background = this.selectedBg.bg;
-      const textEls = document.querySelectorAll('.reading-text');
-      textEls.forEach(el => {
-        el.style.fontSize = this.fontSize + 'px';
+      document.querySelectorAll('.reading-text').forEach(el => {
+        el.style.fontSize   = this.fontSize + 'px';
         el.style.lineHeight = this.lineHeight.value;
-        el.style.color = this.selectedBg.text;
+        el.style.color      = this.selectedBg.text;
       });
+    },
+
+    /* ════════════════════════════════
+       PHASE: 얼굴 확인
+    ════════════════════════════════ */
+    async startFaceCheck() {
+      this.phase     = 'face';
+      this.faceOk    = false;
+      this.faceError = null;
+      await this.$nextTick();
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'user' }, audio:false });
+        this._faceStream = stream;
+        this.$refs.faceVideo.srcObject = stream;
+        // 1.8초 후 얼굴 감지 시뮬레이션
+        this._faceTimer = setTimeout(() => { this.faceOk = true; }, 1800);
+      } catch(e) {
+        this.faceError = e.name === 'NotAllowedError'
+          ? '카메라 권한이 필요합니다.\n브라우저 설정에서 허용해주세요.'
+          : '카메라를 사용할 수 없습니다.';
+      }
+    },
+
+    stopFaceCamera() {
+      clearTimeout(this._faceTimer);
+      if (this._faceStream) {
+        this._faceStream.getTracks().forEach(t => t.stop());
+        this._faceStream = null;
+      }
+    },
+
+    confirmFace() {
+      if (!this.faceOk) return;
+      this.stopFaceCamera();
+      this.startCalib1();
+    },
+
+    skipCalib() {
+      this.stopFaceCamera();
+      this.features.find(f => f.id === 'gaze').on = false;
+      this.enterReading();
+    },
+
+    cancelReader() {
+      this.stopFaceCamera();
+      this.goBack();
+    },
+
+    /* ════════════════════════════════
+       PHASE: 1점 간이 캘리브레이션
+    ════════════════════════════════ */
+    startCalib1() {
+      this.phase          = 'calib1';
+      this.calib1Progress = 0;
+      clearInterval(this._calib1Timer);
+      // 3초 (50ms 틱 × 60회 = 3000ms)
+      this._calib1Timer = setInterval(() => {
+        this.calib1Progress += 100 / 60;
+        if (this.calib1Progress >= 100) {
+          this.calib1Progress = 100;
+          clearInterval(this._calib1Timer);
+          setTimeout(() => this.finishCalib1(), 400);
+        }
+      }, 50);
+    },
+
+    finishCalib1() {
+      if (this._pendingChapter !== null) {
+        // 챕터 이동 후 재보정이었던 경우
+        this.cur = this._pendingChapter;
+        this._pendingChapter = null;
+        this.$nextTick(() => { this.$refs.textArea.scrollTop = 0; this.progress = 0; });
+      }
+      this.enterReading();
+    },
+
+    /* ════════════════════════════════
+       PHASE: 5점 정밀 캘리브레이션
+    ════════════════════════════════ */
+    startCalib5FromBanner() {
+      this.precisionBanner    = false;
+      this._calib5FromBanner  = true;
+      this.phase              = 'calib5';
+      this.calib5Step         = 0;
+      this.calib5Progress     = 0;
+      this.runCalib5Step();
+    },
+
+    cancelCalib5() {
+      clearInterval(this._calib5Timer);
+      if (this._calib5FromBanner) {
+        this._calib5FromBanner = false;
+        this.enterReading();
+      } else {
+        // 초기 캘리에서 취소 → 1점으로 대체
+        this.startCalib1();
+      }
+    },
+
+    runCalib5Step() {
+      this.calib5Progress = 0;
+      clearInterval(this._calib5Timer);
+      // 점당 2.5초 (40ms 틱 × ~62회)
+      this._calib5Timer = setInterval(() => {
+        this.calib5Progress += 100 / 62;
+        if (this.calib5Progress >= 100) {
+          this.calib5Progress = 100;
+          clearInterval(this._calib5Timer);
+          setTimeout(() => {
+            if (this.calib5Step < 4) {
+              this.calib5Step++;
+              this.runCalib5Step();
+            } else {
+              this.finishCalib5();
+            }
+          }, 300);
+        }
+      }, 40);
+    },
+
+    finishCalib5() {
+      this._calib5FromBanner = false;
+      this.enterReading();
+    },
+
+    /* ════════════════════════════════
+       PHASE: 읽기
+    ════════════════════════════════ */
+    enterReading() {
+      this.phase  = 'reading';
+      this.showUI = true;
+      this.applyStyles();
+      // 25초 후 정밀 보정 권고 시뮬레이션
+      clearTimeout(this._precisionTimer);
+      this._precisionTimer = setTimeout(() => {
+        if (this.phase === 'reading') this.precisionBanner = true;
+      }, 25000);
     },
 
     toggleUI() {
       if (this.settingsOpen) { this.settingsOpen = false; return; }
-      if (this.showMore) { this.showMore = false; return; }
+      if (this.showMore)     { this.showMore = false; return; }
       this.showUI = !this.showUI;
       if (this.showUI) this.resetUITimer();
     },
 
     resetUITimer() {
       clearTimeout(this._uiTimer);
-      // 5초 후 UI 자동 숨김 (재생 중일 때만)
       if (this.playing) {
         this._uiTimer = setTimeout(() => { this.showUI = false; }, 5000);
       }
@@ -387,13 +745,8 @@ function reader() {
 
     togglePlay() {
       this.playing = !this.playing;
-      if (this.playing) {
-        this.startAutoScroll();
-        this.resetUITimer();
-      } else {
-        clearInterval(this._playTimer);
-        clearTimeout(this._uiTimer);
-      }
+      if (this.playing) { this.startAutoScroll(); this.resetUITimer(); }
+      else { clearInterval(this._playTimer); clearTimeout(this._uiTimer); }
     },
 
     startAutoScroll() {
@@ -403,13 +756,11 @@ function reader() {
         if (!el) return;
         const scrollable = el.scrollHeight - el.clientHeight;
         if (scrollable <= 0) return;
-        // 속도에 비례한 스크롤 (기본 1px/tick @ 60ms)
         el.scrollTop += this.speed * 0.8;
         if (el.scrollTop >= scrollable - 1) {
-          // 챕터 끝 — 자동 다음 챕터
           clearInterval(this._playTimer);
           if (this.cur < this.chapters.length - 1) {
-            setTimeout(() => { this.nextChapter(); this.startAutoScroll(); }, 800);
+            setTimeout(() => { this.nextChapter(); }, 800);
           } else {
             this.playing = false;
           }
@@ -420,43 +771,38 @@ function reader() {
     onScroll() {
       const el = this.$refs.textArea;
       if (!el) return;
-      const scrollable = el.scrollHeight - el.clientHeight;
-      this.progress = scrollable > 0 ? (el.scrollTop / scrollable) * 100 : 0;
+      const s = el.scrollHeight - el.clientHeight;
+      this.progress = s > 0 ? (el.scrollTop / s) * 100 : 0;
     },
 
     seekTo(val) {
       const el = this.$refs.textArea;
       if (!el) return;
       this.progress = parseFloat(val);
-      const scrollable = el.scrollHeight - el.clientHeight;
-      el.scrollTop = (this.progress / 100) * scrollable;
+      el.scrollTop  = (this.progress / 100) * (el.scrollHeight - el.clientHeight);
     },
 
-    skipBack() {
-      const el = this.$refs.textArea;
-      el.scrollBy({ top: -el.clientHeight * 0.8, behavior: 'smooth' });
-    },
-
-    skipForward() {
-      const el = this.$refs.textArea;
-      el.scrollBy({ top: el.clientHeight * 0.8, behavior: 'smooth' });
-    },
+    skipBack()    { this.$refs.textArea.scrollBy({ top: -this.$refs.textArea.clientHeight * 0.8, behavior:'smooth' }); },
+    skipForward() { this.$refs.textArea.scrollBy({ top:  this.$refs.textArea.clientHeight * 0.8, behavior:'smooth' }); },
 
     prevChapter() {
       if (this.cur === 0) return;
-      this.cur--;
-      this.$nextTick(() => { this.$refs.textArea.scrollTop = 0; this.progress = 0; });
+      clearInterval(this._playTimer);
+      this._pendingChapter = this.cur - 1;
+      this.startCalib1();
     },
 
     nextChapter() {
       if (this.cur === this.chapters.length - 1) return;
-      this.cur++;
-      this.$nextTick(() => { this.$refs.textArea.scrollTop = 0; this.progress = 0; });
+      clearInterval(this._playTimer);
+      this._pendingChapter = this.cur + 1;
+      this.startCalib1();
     },
 
     goBack() {
       clearInterval(this._playTimer);
-      history.length > 1 ? history.back() : window.location.href = 'bookstore.html';
+      clearTimeout(this._precisionTimer);
+      history.length > 1 ? history.back() : (window.location.href = 'bookstore.html');
     },
   };
 }
