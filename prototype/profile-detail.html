@@ -468,6 +468,53 @@
           </div>
         </div>
 
+        <!-- 알림 설정 -->
+        <div x-show="settingsSub==='notify'">
+          <p class="text-sm text-gray-500 mb-4">알림을 받을 조건과 시간을 설정하세요</p>
+          <div class="flex flex-col gap-4">
+            <template x-for="group in notifyGroups" :key="group.label">
+              <div>
+                <p class="text-[11px] text-gray-400 font-semibold uppercase tracking-widest px-1 mb-1.5" x-text="group.label"></p>
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden divide-y divide-gray-50">
+                  <template x-for="item in group.items" :key="item.id">
+                    <div>
+                      <!-- 메인 행 -->
+                      <div class="flex items-center gap-3 px-4 py-3.5">
+                        <span class="text-xl flex-shrink-0" x-text="item.icon"></span>
+                        <div class="flex-1 min-w-0">
+                          <p class="text-sm font-medium text-gray-800" x-text="item.label"></p>
+                          <p class="text-xs text-gray-400 mt-0.5 leading-tight" x-text="item.desc"></p>
+                        </div>
+                        <!-- 토글 -->
+                        <button @click="item.on=!item.on"
+                                class="relative w-11 h-6 rounded-full transition-colors flex-shrink-0"
+                                :class="item.on ? 'bg-indigo-500' : 'bg-gray-200'">
+                          <span class="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
+                                :class="item.on ? 'translate-x-5' : 'translate-x-0.5'"></span>
+                        </button>
+                      </div>
+                      <!-- 값 선택 (옵션 있고 ON일 때) -->
+                      <div x-show="item.on && item.options && item.options.length"
+                           x-cloak
+                           class="px-4 pb-3 flex flex-wrap gap-1.5">
+                        <template x-for="opt in (item.options||[])" :key="opt">
+                          <button @click="item.value=opt"
+                                  class="px-3 py-1 rounded-lg text-xs font-semibold border transition-colors"
+                                  :class="item.value===opt
+                                    ? 'bg-indigo-600 text-white border-indigo-600'
+                                    : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-indigo-300'">
+                            <span x-text="opt + (item.unit||'')"></span>
+                          </button>
+                        </template>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
         <!-- 읽기탐지 설정 -->
         <div x-show="settingsSub==='readdetect'">
           <p class="text-sm text-gray-500 mb-4">읽기 탐지 관련 설정을 조정하세요</p>
@@ -653,6 +700,29 @@ function app() {
       {id:4,label:'새로운 장르 탐색',desc:'가끔 다른 장르도 추천',on:false},
       {id:5,label:'선생님 큐레이션',desc:'담당 선생님이 직접 선별한 목록 포함',on:true},
     ],
+    notifyGroups: [
+      { label:'읽기 이벤트', items: [
+        { id:'n1', icon:'📖', label:'읽기 시작',   desc:'자녀가 책 읽기를 시작하면 알림', on:true,  value:null },
+        { id:'n2', icon:'✅', label:'읽기 완료',   desc:'챕터 또는 책을 완독하면 알림',   on:true,  value:null },
+      ]},
+      { label:'중단 감지', items: [
+        { id:'n3', icon:'⏸', label:'읽기 중단',   desc:'읽다가 멈춘 채 일정 시간 이상 경과 시', on:true, value:5,  unit:'분', options:[3,5,10,15,20] },
+      ]},
+      { label:'시선 상태', items: [
+        { id:'n4', icon:'👁', label:'Reading 비율 저하', desc:'집중 읽기 비율이 기준 이하로 떨어질 때', on:true, value:50, unit:'%', options:[30,40,50,60,70] },
+        { id:'n5', icon:'🚨', label:'Lost 비율 급증',    desc:'시선 이탈 비율이 기준 이상 높아질 때',  on:true, value:30, unit:'%', options:[20,30,40,50] },
+      ]},
+      { label:'목표 & 습관', items: [
+        { id:'n6', icon:'🎯', label:'오늘 목표 달성',    desc:'일일 읽기 목표 달성 시 칭찬 알림',           on:true,  value:null },
+        { id:'n7', icon:'🌙', label:'저녁 리마인더',     desc:'오늘 아직 읽지 않았을 때 독서 유도 알림',    on:true,  value:'20:00', unit:'', options:['18:00','19:00','20:00','21:00','22:00'] },
+        { id:'n8', icon:'📊', label:'주간 리포트',       desc:'매주 읽기 현황 요약 리포트 전송 (일요일)',    on:true,  value:null },
+      ]},
+      { label:'서비스', items: [
+        { id:'n9',  icon:'📚', label:'새 책 추천', desc:'맞춤 신규 도서가 추가되면 알림',     on:false, value:null },
+        { id:'n10', icon:'🏆', label:'레벨 업',    desc:'자녀 읽기 레벨이 올라갈 때 알림',   on:true,  value:null },
+      ]},
+    ],
+
     detectSettings: [
       {id:1,label:'자동 읽기 시작 감지',desc:'앱을 열면 읽기 세션 자동 시작',on:true},
       {id:2,label:'페이지 이탈 감지',desc:'오래 멈추면 일시정지 알림',on:true},
