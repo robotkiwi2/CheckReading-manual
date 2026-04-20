@@ -10,7 +10,6 @@
     html,body{height:100%;}
     [x-cloak]{display:none!important;}
     .badge-scroll::-webkit-scrollbar{display:none;}
-    .score-scroll::-webkit-scrollbar{display:none;}
   </style>
 </head>
 <body class="bg-gray-200" style="height:100dvh;overflow:hidden;">
@@ -36,20 +35,26 @@
   </aside>
 
   <!-- 메인 -->
-  <div class="flex-1 flex flex-col min-w-0 bg-gray-50 max-w-3xl">
+  <div class="flex-1 flex flex-col min-w-0 bg-gray-50 max-w-3xl relative overflow-hidden">
 
     <!-- 헤더 -->
-    <header class="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
-      <a href="profiles.html" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full">
+    <header class="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 z-10">
+      <a href="profiles.html" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full flex-shrink-0">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
       </a>
       <span class="font-bold text-gray-900 flex-1" x-text="profile?.name + ' 프로필'"></span>
+      <!-- 하트 (타인 프로필) -->
       <button x-show="profile?.isOther" @click="favorited=!favorited"
               class="w-8 h-8 flex items-center justify-center rounded-full transition-colors"
               :class="favorited ? 'text-red-400' : 'text-gray-300'">
-        <svg class="w-5 h-5 transition-all" :fill="favorited ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5" :fill="favorited ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
         </svg>
+      </button>
+      <!-- 톱니 (내 자녀, 부모만) -->
+      <button x-show="!profile?.isOther && user?.type==='parent'" @click="settingsPanel=true"
+              class="w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-100 rounded-full transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       </button>
     </header>
 
@@ -57,20 +62,14 @@
 
       <!-- ① 기본정보 영역 -->
       <div class="mx-4 mt-4 rounded-2xl shadow-md overflow-hidden" :style="`background:${profile?.color}`">
-        <!-- 상단: 프로필 + 톱니(부모만) -->
-        <div class="px-5 pt-5 pb-3 relative">
-          <!-- 톱니 버튼 (부모만) -->
-          <button x-show="user?.type==='parent'" class="absolute top-4 right-4 w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors">
-            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          </button>
-
+        <div class="px-5 pt-5 pb-3">
           <div class="flex items-start gap-4">
             <!-- 프로필 사진 -->
             <div class="w-16 h-16 bg-white/25 rounded-full flex items-center justify-center flex-shrink-0">
               <span class="text-3xl font-bold text-white" x-text="profile?.initial"></span>
             </div>
             <!-- 정보 -->
-            <div class="flex-1 min-w-0 pt-1">
+            <div class="flex-1 min-w-0 pt-0.5">
               <h2 class="text-xl font-bold text-white" x-text="profile?.name"></h2>
               <p class="text-white/80 text-sm mt-0.5" x-text="profile?.age + '세 · ' + (profile?.grade||'초3') + ' · ' + (profile?.gender||'남')"></p>
               <p class="text-white/70 text-xs mt-0.5" x-text="profile?.level"></p>
@@ -85,8 +84,8 @@
                 </span>
               </div>
             </div>
-            <!-- 등급 트로피 -->
-            <div class="flex flex-col items-center gap-1 pt-1 flex-shrink-0">
+            <!-- 등급 트로피 (아래쪽 정렬) -->
+            <div class="flex flex-col items-center gap-1 flex-shrink-0 self-end pb-1">
               <svg class="w-10 h-10" :class="trophyColor(profile?.gradeLabel||'골드')" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M5 3a1 1 0 000 2H3.5A1.5 1.5 0 002 6.5v1A3.5 3.5 0 005.5 11H6a4 4 0 003 3.874V16H7a1 1 0 100 2h6a1 1 0 100-2h-2v-1.126A4 4 0 0014 11h.5A3.5 3.5 0 0018 7.5v-1A1.5 1.5 0 0016.5 5H15a1 1 0 000-2H5z" clip-rule="evenodd"/>
               </svg>
@@ -94,7 +93,6 @@
             </div>
           </div>
         </div>
-
         <!-- 뱃지 스트립 -->
         <div class="px-4 pb-4">
           <div class="badge-scroll flex gap-2 overflow-x-auto" style="scrollbar-width:none;">
@@ -112,39 +110,30 @@
       <div class="mx-4 mt-5">
         <h3 class="font-bold text-gray-800 text-sm mb-3">읽기 점수</h3>
         <div class="flex gap-2">
-          <!-- 누적 총점 -->
           <div class="flex-1 bg-white rounded-2xl px-3 py-3 shadow-sm min-w-0">
             <p class="text-[9px] text-gray-400 font-medium mb-1.5">누적 총점</p>
             <p class="text-lg font-bold text-indigo-600 leading-none" x-text="scores.total.toLocaleString()"></p>
             <p class="text-[10px] text-gray-400 mt-0.5">점</p>
             <div class="mt-2 flex items-center gap-1">
-              <div class="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
-                <div class="h-full bg-indigo-400 rounded-full" :style="`width:${scores.totalPct}%`"></div>
-              </div>
+              <div class="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-indigo-400 rounded-full" :style="`width:${scores.totalPct}%`"></div></div>
               <span class="text-[9px] text-indigo-500 font-semibold flex-shrink-0" x-text="'상위' + scores.totalPct + '%'"></span>
             </div>
           </div>
-          <!-- 올해 -->
           <div class="flex-1 bg-white rounded-2xl px-3 py-3 shadow-sm min-w-0">
             <p class="text-[9px] text-gray-400 font-medium mb-1.5">올해 획득</p>
             <p class="text-lg font-bold text-green-500 leading-none" x-text="scores.year.toLocaleString()"></p>
             <p class="text-[10px] text-gray-400 mt-0.5">점</p>
             <div class="mt-2 flex items-center gap-1">
-              <div class="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
-                <div class="h-full bg-green-400 rounded-full" :style="`width:${scores.yearPct}%`"></div>
-              </div>
+              <div class="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-green-400 rounded-full" :style="`width:${scores.yearPct}%`"></div></div>
               <span class="text-[9px] text-green-500 font-semibold flex-shrink-0" x-text="'상위' + scores.yearPct + '%'"></span>
             </div>
           </div>
-          <!-- 이번달 -->
           <div class="flex-1 bg-white rounded-2xl px-3 py-3 shadow-sm min-w-0">
             <p class="text-[9px] text-gray-400 font-medium mb-1.5">이번달 획득</p>
             <p class="text-lg font-bold text-orange-400 leading-none" x-text="scores.month.toLocaleString()"></p>
             <p class="text-[10px] text-gray-400 mt-0.5">점</p>
             <div class="mt-2 flex items-center gap-1">
-              <div class="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden">
-                <div class="h-full bg-orange-300 rounded-full" :style="`width:${scores.monthPct}%`"></div>
-              </div>
+              <div class="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-orange-300 rounded-full" :style="`width:${scores.monthPct}%`"></div></div>
               <span class="text-[9px] text-orange-400 font-semibold flex-shrink-0" x-text="'상위' + scores.monthPct + '%'"></span>
             </div>
           </div>
@@ -156,17 +145,11 @@
         <div class="flex items-center justify-between mb-3">
           <h3 class="font-bold text-gray-800 text-sm">월별 활동내역</h3>
           <div class="flex items-center gap-2">
-            <button @click="prevMonth()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            </button>
+            <button @click="prevMonth()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
             <span class="text-sm font-semibold text-gray-700" x-text="calYear + '년 ' + (calMonth+1) + '월'"></span>
-            <button @click="nextMonth()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            </button>
+            <button @click="nextMonth()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
           </div>
         </div>
-
-        <!-- 월간 요약 -->
         <div class="flex gap-3 mb-4">
           <div class="flex-1 bg-white rounded-2xl p-4 shadow-sm text-center">
             <p class="text-[10px] text-gray-400 mb-1">획득점수</p>
@@ -177,34 +160,20 @@
             <p class="text-xl font-bold text-green-500" x-text="monthSummary.words.toLocaleString() + '개'"></p>
           </div>
         </div>
-
-        <!-- 달력 -->
         <div class="bg-white rounded-2xl p-4 shadow-sm">
-          <!-- 요일 헤더 -->
           <div class="grid grid-cols-7 mb-2">
             <template x-for="d in ['일','월','화','수','목','금','토']" :key="d">
-              <div class="text-center text-[10px] font-semibold"
-                   :class="d==='일' ? 'text-red-400' : d==='토' ? 'text-blue-400' : 'text-gray-400'"
-                   x-text="d"></div>
+              <div class="text-center text-[10px] font-semibold" :class="d==='일'?'text-red-400':d==='토'?'text-blue-400':'text-gray-400'" x-text="d"></div>
             </template>
           </div>
-          <!-- 날짜 셀 -->
           <div class="grid grid-cols-7 gap-y-1">
-            <!-- 빈 칸 (월 시작 전) -->
-            <template x-for="_ in Array(calStartDay).fill(0)" :key="'e'+_">
-              <div></div>
-            </template>
-            <!-- 날짜 -->
+            <template x-for="_ in Array(calStartDay).fill(0)" :key="'e'+_"><div></div></template>
             <template x-for="day in calDays" :key="day">
               <div class="flex items-center justify-center">
-                <button @click="goDay(day)"
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors"
-                        :class="dayClass(day)"
-                        x-text="day"></button>
+                <button @click="goDay(day)" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors" :class="dayClass(day)" x-text="day"></button>
               </div>
             </template>
           </div>
-          <!-- 범례 -->
           <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-50 justify-end">
             <span class="text-[9px] text-gray-400">점수</span>
             <div class="flex items-center gap-1">
@@ -218,7 +187,6 @@
           </div>
         </div>
       </div>
-
     </main>
 
     <!-- 일별 읽기내역 모달 -->
@@ -230,65 +198,231 @@
            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
            style="height:92dvh;">
-        <!-- 핸들 -->
         <div class="flex-shrink-0 flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
-        <!-- 헤더 -->
         <div class="flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-gray-100">
           <h3 class="font-bold text-gray-900 text-base" x-text="selectedDay.label + ' 읽기 내역'"></h3>
-          <button @click="daySheet=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
+          <button @click="daySheet=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
         </div>
-        <!-- 스크롤 영역 -->
         <div class="flex-1 overflow-y-auto min-h-0">
-        <!-- 요약 -->
-        <div class="flex gap-3 px-5 py-4">
-          <div class="flex-1 bg-indigo-50 rounded-2xl p-3 text-center">
-            <p class="text-[10px] text-indigo-400 mb-0.5">획득 점수</p>
-            <p class="text-lg font-bold text-indigo-600">230점</p>
+          <div class="flex gap-3 px-5 py-4">
+            <div class="flex-1 bg-indigo-50 rounded-2xl p-3 text-center"><p class="text-[10px] text-indigo-400 mb-0.5">획득 점수</p><p class="text-lg font-bold text-indigo-600">230점</p></div>
+            <div class="flex-1 bg-green-50 rounded-2xl p-3 text-center"><p class="text-[10px] text-green-400 mb-0.5">읽은 단어</p><p class="text-lg font-bold text-green-600">1,840개</p></div>
+            <div class="flex-1 bg-orange-50 rounded-2xl p-3 text-center"><p class="text-[10px] text-orange-400 mb-0.5">읽은 시간</p><p class="text-lg font-bold text-orange-500">42분</p></div>
           </div>
-          <div class="flex-1 bg-green-50 rounded-2xl p-3 text-center">
-            <p class="text-[10px] text-green-400 mb-0.5">읽은 단어</p>
-            <p class="text-lg font-bold text-green-600">1,840개</p>
-          </div>
-          <div class="flex-1 bg-orange-50 rounded-2xl p-3 text-center">
-            <p class="text-[10px] text-orange-400 mb-0.5">읽은 시간</p>
-            <p class="text-lg font-bold text-orange-500">42분</p>
-          </div>
-        </div>
-        <!-- 읽은 책 목록 -->
-        <div class="px-5 pb-6">
-          <p class="text-xs font-semibold text-gray-500 mb-3">읽은 책</p>
-          <div class="flex flex-col gap-3">
-            <div class="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
-              <div class="w-10 h-14 rounded-xl flex-shrink-0 flex items-end p-1" style="background:linear-gradient(135deg,#667eea,#764ba2)">
-                <span class="text-white text-[8px] font-bold leading-tight">Percy Jackson</span>
+          <div class="px-5 pb-6">
+            <p class="text-xs font-semibold text-gray-500 mb-3">읽은 책</p>
+            <div class="flex flex-col gap-3">
+              <div class="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+                <div class="w-10 h-14 rounded-xl flex-shrink-0 flex items-end p-1" style="background:linear-gradient(135deg,#667eea,#764ba2)"><span class="text-white text-[8px] font-bold leading-tight">Percy Jackson</span></div>
+                <div class="flex-1 min-w-0"><p class="font-semibold text-sm text-gray-800">Percy Jackson</p><p class="text-xs text-gray-400">R. Riordan</p><div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-indigo-400 rounded-full" style="width:68%"></div></div><p class="text-[10px] text-indigo-500 mt-0.5">68% · +150점</p></div>
               </div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-sm text-gray-800">Percy Jackson</p>
-                <p class="text-xs text-gray-400">R. Riordan</p>
-                <div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden">
-                  <div class="h-full bg-indigo-400 rounded-full" style="width:68%"></div>
-                </div>
-                <p class="text-[10px] text-indigo-500 mt-0.5">68% · +150점</p>
-              </div>
-            </div>
-            <div class="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
-              <div class="w-10 h-14 rounded-xl flex-shrink-0 flex items-end p-1" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">
-                <span class="text-white text-[8px] font-bold leading-tight">Magic Tree</span>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-sm text-gray-800">Magic Tree House #5</p>
-                <p class="text-xs text-gray-400">M. Osborne</p>
-                <div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden">
-                  <div class="h-full bg-green-400 rounded-full" style="width:92%"></div>
-                </div>
-                <p class="text-[10px] text-green-500 mt-0.5">92% · +80점</p>
+              <div class="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+                <div class="w-10 h-14 rounded-xl flex-shrink-0 flex items-end p-1" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><span class="text-white text-[8px] font-bold leading-tight">Magic Tree</span></div>
+                <div class="flex-1 min-w-0"><p class="font-semibold text-sm text-gray-800">Magic Tree House #5</p><p class="text-xs text-gray-400">M. Osborne</p><div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-green-400 rounded-full" style="width:92%"></div></div><p class="text-[10px] text-green-500 mt-0.5">92% · +80점</p></div>
               </div>
             </div>
           </div>
         </div>
-        </div><!-- 스크롤 영역 끝 -->
+      </div>
+    </div>
+
+    <!-- ===== 프로필 수정 설정 패널 (우측 슬라이드) ===== -->
+    <div x-show="settingsPanel" x-cloak
+         class="absolute inset-0 bg-white z-30 flex flex-col"
+         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+      <div class="flex-shrink-0 flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+        <button @click="settingsPanel=false; settingsSub=''" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <span class="font-bold text-gray-900">프로필 수정</span>
+      </div>
+      <div class="flex-1 overflow-y-auto min-h-0">
+        <!-- 프로필 미리보기 -->
+        <div class="flex flex-col items-center py-6" :style="`background:${profile?.color}`">
+          <div class="w-20 h-20 bg-white/25 rounded-full flex items-center justify-center mb-2">
+            <span class="text-4xl font-bold text-white" x-text="profile?.initial"></span>
+          </div>
+          <p class="text-white font-bold text-base" x-text="profile?.name"></p>
+        </div>
+        <!-- 설정 메뉴 목록 -->
+        <div class="bg-white divide-y divide-gray-50">
+          <template x-for="item in settingsItems" :key="item.id">
+            <button @click="openSub(item.id)"
+                    class="w-full flex items-center gap-3 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors text-left">
+              <span class="text-xl w-7 text-center flex-shrink-0" x-text="item.icon"></span>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-800" x-text="item.label"></p>
+                <p class="text-xs text-gray-400 mt-0.5" x-text="item.desc"></p>
+              </div>
+              <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 설정 서브 패널 (더 우측에서 슬라이드) ===== -->
+    <div x-show="settingsSub" x-cloak
+         class="absolute inset-0 bg-white z-40 flex flex-col"
+         x-transition:enter="transition ease-out duration-250" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+      <div class="flex-shrink-0 flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+        <button @click="settingsSub=''" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <span class="font-bold text-gray-900" x-text="currentSubLabel()"></span>
+      </div>
+      <div class="flex-1 overflow-y-auto min-h-0 p-5">
+
+        <!-- 사진 교체 -->
+        <div x-show="settingsSub==='photo'">
+          <p class="text-sm text-gray-500 mb-4">배경 색상을 선택하세요</p>
+          <div class="grid grid-cols-4 gap-3">
+            <template x-for="c in avatarColors" :key="c">
+              <button @click="selectedColor=c"
+                      class="aspect-square rounded-2xl flex items-center justify-center text-2xl font-bold text-white shadow-sm transition-transform hover:scale-105"
+                      :style="`background:${c}`"
+                      :class="selectedColor===c ? 'ring-4 ring-indigo-400 ring-offset-2' : ''"
+                      x-text="profile?.initial"></button>
+            </template>
+          </div>
+          <button class="mt-6 w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-bold">저장</button>
+        </div>
+
+        <!-- 닉네임 변경 -->
+        <div x-show="settingsSub==='nickname'">
+          <label class="block text-xs font-semibold text-gray-500 mb-1.5">닉네임</label>
+          <input type="text" :value="profile?.name" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="닉네임을 입력하세요">
+          <p class="text-xs text-gray-400 mt-2">2~10자, 한글/영문/숫자 사용 가능</p>
+          <button class="mt-6 w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-bold">저장</button>
+        </div>
+
+        <!-- 비밀번호 변경 -->
+        <div x-show="settingsSub==='password'" class="flex flex-col gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5">현재 비밀번호</label>
+            <input type="password" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="현재 비밀번호">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5">새 비밀번호</label>
+            <input type="password" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="새 비밀번호 (6자 이상)">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5">새 비밀번호 확인</label>
+            <input type="password" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="새 비밀번호 재입력">
+          </div>
+          <button class="mt-2 w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-bold">변경</button>
+        </div>
+
+        <!-- 생년월 변경 -->
+        <div x-show="settingsSub==='birth'">
+          <p class="text-sm text-gray-500 mb-4">생년월을 선택하세요</p>
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-gray-500 mb-1.5">년도</label>
+              <select class="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <template x-for="y in years" :key="y"><option x-text="y + '년'" :selected="y===2016"></option></template>
+              </select>
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-gray-500 mb-1.5">월</label>
+              <select class="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <template x-for="m in 12" :key="m"><option x-text="m + '월'" :selected="m===3"></option></template>
+              </select>
+            </div>
+          </div>
+          <button class="mt-6 w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-bold">저장</button>
+        </div>
+
+        <!-- 학년 -->
+        <div x-show="settingsSub==='grade'">
+          <p class="text-sm text-gray-500 mb-4">학년을 선택하세요</p>
+          <div class="grid grid-cols-3 gap-2">
+            <template x-for="g in grades" :key="g">
+              <button @click="selectedGrade=g"
+                      class="py-3 rounded-xl text-sm font-medium border transition-colors"
+                      :class="selectedGrade===g ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-200 hover:border-indigo-300'"
+                      x-text="g"></button>
+            </template>
+          </div>
+          <button class="mt-6 w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-bold">저장</button>
+        </div>
+
+        <!-- 성별 -->
+        <div x-show="settingsSub==='gender'">
+          <p class="text-sm text-gray-500 mb-4">성별을 선택하세요</p>
+          <div class="flex gap-3">
+            <button @click="selectedGender='남'"
+                    class="flex-1 py-5 rounded-2xl text-lg font-bold border-2 transition-colors flex flex-col items-center gap-2"
+                    :class="selectedGender==='남' ? 'bg-blue-50 border-blue-400 text-blue-600' : 'bg-white border-gray-200 text-gray-400'">
+              👦<span class="text-sm">남자</span>
+            </button>
+            <button @click="selectedGender='여'"
+                    class="flex-1 py-5 rounded-2xl text-lg font-bold border-2 transition-colors flex flex-col items-center gap-2"
+                    :class="selectedGender==='여' ? 'bg-pink-50 border-pink-400 text-pink-600' : 'bg-white border-gray-200 text-gray-400'">
+              👧<span class="text-sm">여자</span>
+            </button>
+          </div>
+          <button class="mt-6 w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-bold">저장</button>
+        </div>
+
+        <!-- 선호책 설정 -->
+        <div x-show="settingsSub==='prefbook'">
+          <p class="text-sm text-gray-500 mb-4">좋아하는 장르를 선택하세요 (복수 선택 가능)</p>
+          <div class="flex flex-wrap gap-2">
+            <template x-for="g in genres" :key="g.id">
+              <button @click="g.on=!g.on"
+                      class="px-4 py-2 rounded-full text-sm font-medium border-2 transition-colors"
+                      :class="g.on ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300'"
+                      x-text="g.label"></button>
+            </template>
+          </div>
+          <button class="mt-6 w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-bold">저장</button>
+        </div>
+
+        <!-- 책추천 설정 -->
+        <div x-show="settingsSub==='recommend'">
+          <p class="text-sm text-gray-500 mb-4">책 추천 방식을 설정하세요</p>
+          <div class="bg-white rounded-2xl divide-y divide-gray-50 shadow-sm">
+            <template x-for="r in recommendSettings" :key="r.id">
+              <div class="flex items-center justify-between px-4 py-4">
+                <div>
+                  <p class="text-sm font-medium text-gray-800" x-text="r.label"></p>
+                  <p class="text-xs text-gray-400 mt-0.5" x-text="r.desc"></p>
+                </div>
+                <button @click="r.on=!r.on"
+                        class="relative w-11 h-6 rounded-full transition-colors flex-shrink-0"
+                        :class="r.on ? 'bg-indigo-500' : 'bg-gray-200'">
+                  <span class="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
+                        :class="r.on ? 'translate-x-5.5' : 'translate-x-0.5'"></span>
+                </button>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- 읽기탐지 설정 -->
+        <div x-show="settingsSub==='readdetect'">
+          <p class="text-sm text-gray-500 mb-4">읽기 탐지 관련 설정을 조정하세요</p>
+          <div class="bg-white rounded-2xl divide-y divide-gray-50 shadow-sm">
+            <template x-for="r in detectSettings" :key="r.id">
+              <div class="flex items-center justify-between px-4 py-4">
+                <div>
+                  <p class="text-sm font-medium text-gray-800" x-text="r.label"></p>
+                  <p class="text-xs text-gray-400 mt-0.5" x-text="r.desc"></p>
+                </div>
+                <button @click="r.on=!r.on"
+                        class="relative w-11 h-6 rounded-full transition-colors flex-shrink-0"
+                        :class="r.on ? 'bg-indigo-500' : 'bg-gray-200'">
+                  <span class="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
+                        :class="r.on ? 'translate-x-5.5' : 'translate-x-0.5'"></span>
+                </button>
+              </div>
+            </template>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -306,86 +440,127 @@
 <script>
 function app() {
   const monthData = {
-    '2026-3': { score: 380,  words: 12400, days: {2:45,3:120,5:80,6:200,8:60,9:30,10:150,12:90,13:110,14:75,17:180,19:55,20:230,22:40,23:100,24:160,26:70,28:50,29:130} },
-    '2026-2': { score: 510,  words: 16200, days: {1:80,3:140,5:60,7:200,9:90,11:170,13:50,15:220,17:30,19:110,21:180,23:70,25:150,27:90} },
-    '2026-1': { score: 290,  words: 9100,  days: {4:70,6:130,10:50,14:180,18:90,22:110,26:40,28:160,30:75} },
-    '2025-11':{ score: 420,  words: 13800, days: {2:100,5:60,8:200,10:80,13:150,16:40,19:220,22:90,25:130,28:70} },
+    '2026-3': { score:380,  words:12400, days:{2:45,3:120,5:80,6:200,8:60,9:30,10:150,12:90,13:110,14:75,17:180,19:55,20:230,22:40,23:100,24:160,26:70,28:50,29:130} },
+    '2026-2': { score:510,  words:16200, days:{1:80,3:140,5:60,7:200,9:90,11:170,13:50,15:220,17:30,19:110,21:180,23:70,25:150,27:90} },
+    '2026-1': { score:290,  words:9100,  days:{4:70,6:130,10:50,14:180,18:90,22:110,26:40,28:160,30:75} },
+    '2025-11':{ score:420,  words:13800, days:{2:100,5:60,8:200,10:80,13:150,16:40,19:220,22:90,25:130,28:70} },
   };
-  const defaultDays = {1:0,2:45,3:120,5:80,6:200,8:60,10:150,12:90,14:75,17:180,20:230,22:100,24:160,26:70,29:130};
+  const defaultDays = {2:45,3:120,5:80,6:200,8:60,10:150,12:90,14:75,17:180,20:230,22:100,24:160,26:70,29:130};
 
   return {
     user: null, profile: null, favorited: false,
     calYear: 2026, calMonth: 3,
     calDays: [], calStartDay: 0,
     daySheet: false, selectedDay: { label: '' },
+    settingsPanel: false, settingsSub: '',
+    selectedColor: '', selectedGrade: '초4', selectedGender: '남',
 
     badges: [
-      {id:1, icon:'📚', label:'다독왕'},
-      {id:2, icon:'🔥', label:'연속30일'},
-      {id:3, icon:'⚡', label:'스피드'},
-      {id:4, icon:'🌟', label:'우수독자'},
-      {id:5, icon:'🎯', label:'목표달성'},
-      {id:6, icon:'🦉', label:'야독가'},
-      {id:7, icon:'💎', label:'정확도99'},
-      {id:8, icon:'🏅', label:'월간1위'},
+      {id:1,icon:'📚',label:'다독왕'},{id:2,icon:'🔥',label:'연속30일'},
+      {id:3,icon:'⚡',label:'스피드'},{id:4,icon:'🌟',label:'우수독자'},
+      {id:5,icon:'🎯',label:'목표달성'},{id:6,icon:'🦉',label:'야독가'},
+      {id:7,icon:'💎',label:'정확도99'},{id:8,icon:'🏅',label:'월간1위'},
+    ],
+    scores: { total:4820, totalPct:12, year:1340, yearPct:18, month:380, monthPct:22 },
+    monthSummary: { score:380, words:12400 },
+    dayScores: {},
+
+    settingsItems: [
+      {id:'photo',    icon:'🖼️', label:'사진 교체',      desc:'프로필 배경 색상 변경'},
+      {id:'nickname', icon:'✏️', label:'닉네임 변경',     desc:'표시되는 이름 수정'},
+      {id:'password', icon:'🔒', label:'비밀번호 변경',   desc:'로그인 비밀번호 수정'},
+      {id:'birth',    icon:'🎂', label:'생년월 변경',     desc:'생년월일 수정'},
+      {id:'grade',    icon:'🏫', label:'학년',            desc:'현재 학년 설정'},
+      {id:'gender',   icon:'👤', label:'성별',            desc:'성별 정보 수정'},
+      {id:'prefbook', icon:'📖', label:'선호책 설정',     desc:'좋아하는 장르 선택'},
+      {id:'recommend',icon:'💡', label:'책추천 설정',     desc:'추천 알고리즘 옵션'},
+      {id:'readdetect',icon:'👁️',label:'읽기탐지 설정',  desc:'읽기 감지 민감도 조정'},
     ],
 
-    scores: { total: 4820, totalPct: 12, year: 1340, yearPct: 18, month: 380, monthPct: 22 },
-    monthSummary: { score: 380, words: 12400 },
-    dayScores: {},
+    avatarColors: [
+      'linear-gradient(135deg,#667eea,#764ba2)',
+      'linear-gradient(135deg,#f093fb,#f5576c)',
+      'linear-gradient(135deg,#4facfe,#00f2fe)',
+      'linear-gradient(135deg,#43e97b,#38f9d7)',
+      'linear-gradient(135deg,#fa709a,#fee140)',
+      'linear-gradient(135deg,#a18cd1,#fbc2eb)',
+      'linear-gradient(135deg,#fd7043,#ff8a65)',
+      'linear-gradient(135deg,#26c6da,#00838f)',
+    ],
+    years: Array.from({length:15}, (_,i) => 2024-i),
+    grades: ['초1','초2','초3','초4','초5','초6','중1','중2','중3'],
+    genres: [
+      {id:1,label:'📚 모험',on:true},{id:2,label:'🔬 과학',on:false},
+      {id:3,label:'🏰 판타지',on:true},{id:4,label:'🌍 역사',on:false},
+      {id:5,label:'😂 유머',on:true},{id:6,label:'🔎 미스터리',on:false},
+      {id:7,label:'🐾 동물',on:false},{id:8,label:'🚀 SF',on:true},
+      {id:9,label:'💪 스포츠',on:false},{id:10,label:'🎨 예술',on:false},
+    ],
+    recommendSettings: [
+      {id:1,label:'또래 추천 반영',desc:'같은 나이·레벨 친구들이 읽는 책 우선 추천',on:true},
+      {id:2,label:'선호 장르 우선',desc:'선택한 장르 위주로 추천',on:true},
+      {id:3,label:'읽기 이력 기반',desc:'완독한 책과 유사한 책 추천',on:true},
+      {id:4,label:'새로운 장르 탐색',desc:'가끔 다른 장르도 추천',on:false},
+      {id:5,label:'선생님 큐레이션',desc:'담당 선생님이 직접 선별한 목록 포함',on:true},
+    ],
+    detectSettings: [
+      {id:1,label:'자동 읽기 시작 감지',desc:'앱을 열면 읽기 세션 자동 시작',on:true},
+      {id:2,label:'페이지 이탈 감지',desc:'오래 멈추면 일시정지 알림',on:true},
+      {id:3,label:'속도 이상 감지',desc:'비정상적 읽기 속도 감지 시 경고',on:false},
+      {id:4,label:'집중도 분석',desc:'읽기 패턴으로 집중도 점수 산출',on:true},
+      {id:5,label:'야간 읽기 제한',desc:'오후 10시 이후 읽기 세션 제한',on:false},
+    ],
 
     init() {
       this.user = JSON.parse(localStorage.getItem('cr_user') || 'null');
       if (!this.user) { window.location.href = 'index.html'; return; }
       this.profile = JSON.parse(localStorage.getItem('cr_profile') || 'null');
       if (!this.profile) { window.location.href = 'profiles.html'; return; }
+      this.selectedColor = this.profile.color || this.avatarColors[0];
+      this.selectedGrade = this.profile.grade || '초4';
+      this.selectedGender = this.profile.gender || '남';
       this.buildCalendar();
     },
 
     buildCalendar() {
       const key = `${this.calYear}-${this.calMonth}`;
-      const data = monthData[key] || { score: 0, words: 0, days: defaultDays };
-      this.monthSummary = { score: data.score, words: data.words };
+      const data = monthData[key] || { score:0, words:0, days:defaultDays };
+      this.monthSummary = { score:data.score, words:data.words };
       this.dayScores = data.days;
-      const daysInMonth = new Date(this.calYear, this.calMonth + 1, 0).getDate();
+      const daysInMonth = new Date(this.calYear, this.calMonth+1, 0).getDate();
       this.calStartDay = new Date(this.calYear, this.calMonth, 1).getDay();
-      this.calDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+      this.calDays = Array.from({length:daysInMonth}, (_,i) => i+1);
     },
-
-    prevMonth() {
-      if (this.calMonth === 0) { this.calMonth = 11; this.calYear--; }
-      else this.calMonth--;
-      this.buildCalendar();
-    },
-    nextMonth() {
-      if (this.calMonth === 11) { this.calMonth = 0; this.calYear++; }
-      else this.calMonth++;
-      this.buildCalendar();
-    },
+    prevMonth() { if(this.calMonth===0){this.calMonth=11;this.calYear--;}else this.calMonth--; this.buildCalendar(); },
+    nextMonth() { if(this.calMonth===11){this.calMonth=0;this.calYear++;}else this.calMonth++; this.buildCalendar(); },
 
     dayClass(day) {
       const score = this.dayScores[day] || 0;
       const today = new Date();
-      const isToday = day === today.getDate() && this.calMonth === today.getMonth() && this.calYear === today.getFullYear();
+      const isToday = day===today.getDate() && this.calMonth===today.getMonth() && this.calYear===today.getFullYear();
       let bg = 'bg-gray-100 text-gray-400 cursor-default';
-      if (score > 0 && score <= 50)   bg = 'bg-green-100 text-green-700 hover:bg-green-200';
-      if (score > 50 && score <= 100) bg = 'bg-green-200 text-green-800 hover:bg-green-300';
-      if (score > 100 && score <= 150) bg = 'bg-green-400 text-white hover:bg-green-500';
-      if (score > 150) bg = 'bg-green-600 text-white hover:bg-green-700';
-      if (isToday) return bg + ' ring-2 ring-indigo-400 ring-offset-1';
+      if (score>0   && score<=50)  bg='bg-green-100 text-green-700 hover:bg-green-200';
+      if (score>50  && score<=100) bg='bg-green-200 text-green-800 hover:bg-green-300';
+      if (score>100 && score<=150) bg='bg-green-400 text-white hover:bg-green-500';
+      if (score>150) bg='bg-green-600 text-white hover:bg-green-700';
+      if (isToday) return bg+' ring-2 ring-indigo-400 ring-offset-1';
       return bg;
     },
-
     goDay(day) {
-      if (!(this.dayScores[day] > 0)) return;
-      this.selectedDay = { label: `${this.calYear}년 ${this.calMonth+1}월 ${day}일` };
+      if(!(this.dayScores[day]>0)) return;
+      this.selectedDay = { label:`${this.calYear}년 ${this.calMonth+1}월 ${day}일` };
       this.daySheet = true;
     },
 
+    openSub(id) { this.settingsSub = id; },
+    currentSubLabel() {
+      return this.settingsItems.find(s=>s.id===this.settingsSub)?.label || '';
+    },
+
     trophyColor(grade) {
-      if (grade === '플래티넘') return 'text-cyan-300';
-      if (grade === '골드') return 'text-yellow-300';
-      if (grade === '실버') return 'text-gray-300';
+      if(grade==='플래티넘') return 'text-cyan-300';
+      if(grade==='골드') return 'text-yellow-300';
+      if(grade==='실버') return 'text-gray-300';
       return 'text-orange-300';
     }
   }
