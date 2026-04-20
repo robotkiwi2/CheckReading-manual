@@ -580,7 +580,12 @@ function reader() {
       this.$watch('lineHeight',  () => this.applyStyles());
       this.$watch('selectedBg',  () => this.applyStyles());
       this.applyStyles();
-      this.startFaceCheck();
+      const params = new URLSearchParams(location.search);
+      if (params.get('skip_calib') === '1') {
+        this.phase = 'reading';
+      } else {
+        this.startFaceCheck();
+      }
     },
 
     applyStyles() {

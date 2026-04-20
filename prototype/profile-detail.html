@@ -333,7 +333,7 @@
                   <p class="text-[10px] text-gray-500 mt-1">17분 · 640단어 · +80점 · 퀴즈 80%</p>
                   <div class="flex items-center justify-between mt-0.5">
                     <p class="text-[10px] text-blue-500">135 WPM · Reading 65% · 집중도 74%</p>
-                    <button @click="selectedSession={title:'Percy Jackson',time:'오후 15:10',grad:'#667eea,#764ba2'}; viewerSheet=true"
+                    <button @click="window.location.href='reader.html?skip_calib=1'"
                             class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg px-2 py-1 flex-shrink-0 ml-2">보기</button>
                   </div>
                 </div>
@@ -351,84 +351,12 @@
                   <p class="text-[10px] text-gray-500 mt-1">28분 · 1,120단어 · +90점 · 퀴즈 90%</p>
                   <div class="flex items-center justify-between mt-0.5">
                     <p class="text-[10px] text-blue-500">162 WPM · Reading 72% · 집중도 82%</p>
-                    <button @click="selectedSession={title:'Magic Tree House #5',time:'오후 19:40',grad:'#43e97b,#38f9d7'}; viewerSheet=true"
+                    <button @click="window.location.href='reader.html?skip_calib=1'"
                             class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg px-2 py-1 flex-shrink-0 ml-2">보기</button>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 시선기록 뷰어 모달 -->
-    <div x-show="viewerSheet" x-cloak
-         class="fixed inset-0 bg-black/40 z-[60] flex items-end justify-center"
-         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-      <div class="w-full max-w-3xl bg-white rounded-t-3xl flex flex-col"
-           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
-           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
-           style="height:88dvh;">
-        <!-- 핸들 + 헤더 -->
-        <div class="flex-shrink-0 flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
-        <div class="flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-gray-100">
-          <div x-show="selectedSession" class="flex items-center gap-2">
-            <div class="w-6 h-8 rounded-md flex-shrink-0" :style="selectedSession ? `background:linear-gradient(135deg,${selectedSession.grad})` : ''"></div>
-            <div>
-              <p class="font-bold text-gray-900 text-sm" x-text="selectedSession?.title"></p>
-              <p class="text-[10px] text-gray-400" x-text="selectedSession?.time + ' 읽기 기록'"></p>
-            </div>
-          </div>
-          <button @click="viewerSheet=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
-        </div>
-        <!-- 범례 -->
-        <div class="flex-shrink-0 flex items-center gap-4 px-5 py-2 bg-gray-50 border-b border-gray-100">
-          <span class="text-[10px] text-gray-500 font-semibold">시선 상태</span>
-          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-blue-200 inline-block"></span><span class="text-[10px] text-gray-500">Reading</span></span>
-          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-yellow-200 inline-block"></span><span class="text-[10px] text-gray-500">Scanning</span></span>
-          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-red-100 inline-block"></span><span class="text-[10px] text-gray-500">Lost</span></span>
-        </div>
-        <!-- 본문 -->
-        <div class="flex-1 overflow-y-auto min-h-0 px-5 py-5">
-          <p class="text-xs text-gray-400 mb-3">읽은 구간 · 형광펜: 시선 상태별 표시</p>
-          <div class="text-sm text-gray-800 leading-8 font-serif">
-            <span class="bg-blue-100 rounded px-0.5">The morning air was crisp and cool as Percy stepped out of the cabin.</span>
-            <span class="bg-yellow-100 rounded px-0.5"> He squinted toward the horizon, scanning the tree line for any sign of movement.</span>
-            <span class="bg-blue-100 rounded px-0.5"> Grover trotted up beside him, his hooves clicking softly on the worn path.</span>
-            <span class="bg-red-100 rounded px-0.5"> "You okay?" Grover asked. Percy didn't answer right away.</span>
-            <span class="bg-blue-100 rounded px-0.5"> He was thinking about the dream — the dark voice, the pit, the feeling of falling.</span>
-            <span class="bg-blue-100 rounded px-0.5"> "Yeah," he finally said. "Just tired." Grover gave him a skeptical look but said nothing.</span>
-            <span class="bg-yellow-100 rounded px-0.5"> They walked together toward the dining pavilion, where campers were already gathering.</span>
-            <span class="bg-blue-100 rounded px-0.5"> The smell of breakfast drifted over — blueberry pancakes and something warm and sweet.</span>
-            <span class="bg-red-100 rounded px-0.5"> Percy's stomach growled. At least some things were normal.</span>
-            <span class="bg-blue-100 rounded px-0.5"> Annabeth was already seated at the Athena table, a map spread open in front of her.</span>
-            <span class="bg-yellow-100 rounded px-0.5"> She looked up as he passed, and for a second their eyes met.</span>
-            <span class="bg-blue-100 rounded px-0.5"> Percy slid into his seat at the Poseidon table — alone, as usual — and poured himself some orange juice.</span>
-          </div>
-          <!-- 타임라인 -->
-          <div class="mt-6">
-            <p class="text-xs font-semibold text-gray-500 mb-2">시선 타임라인</p>
-            <div class="flex h-4 rounded-full overflow-hidden gap-px">
-              <div class="bg-blue-300" style="width:30%"></div>
-              <div class="bg-yellow-300" style="width:12%"></div>
-              <div class="bg-blue-300" style="width:18%"></div>
-              <div class="bg-red-200" style="width:8%"></div>
-              <div class="bg-blue-300" style="width:20%"></div>
-              <div class="bg-yellow-300" style="width:7%"></div>
-              <div class="bg-blue-300" style="width:5%"></div>
-            </div>
-            <div class="flex justify-between mt-1">
-              <span class="text-[10px] text-gray-400">00:00</span>
-              <span class="text-[10px] text-gray-400">17분</span>
-            </div>
-          </div>
-          <!-- 구간 통계 -->
-          <div class="mt-4 grid grid-cols-3 gap-2">
-            <div class="bg-blue-50 rounded-xl p-3 text-center"><p class="text-[10px] text-blue-400 mb-0.5">Reading</p><p class="text-sm font-bold text-blue-600">65%</p></div>
-            <div class="bg-yellow-50 rounded-xl p-3 text-center"><p class="text-[10px] text-yellow-500 mb-0.5">Scanning</p><p class="text-sm font-bold text-yellow-600">21%</p></div>
-            <div class="bg-red-50 rounded-xl p-3 text-center"><p class="text-[10px] text-red-400 mb-0.5">Lost</p><p class="text-sm font-bold text-red-500">14%</p></div>
           </div>
         </div>
       </div>
@@ -1023,7 +951,6 @@ function app() {
     calYear: 2026, calMonth: 3,
     calDays: [], calStartDay: 0,
     daySheet: false, selectedDay: { label: '' },
-    viewerSheet: false, selectedSession: null,
     reportSheet: false, selectedReport: null,
     settingsPanel: false, settingsSub: '', deleteConfirm: false,
     selectedColor: '', selectedGrade: '초4', selectedGender: '남', profilePhoto: null,

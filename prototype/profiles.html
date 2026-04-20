@@ -447,7 +447,7 @@ function app() {
     },
     openViewer(p) {
       localStorage.setItem('cr_profile', JSON.stringify(p));
-      window.location.href = 'reader.html';
+      window.location.href = 'reader.html?skip_calib=1';
     },
     async openCamera(p) {
       this.cameraProfile = p;
