@@ -733,24 +733,58 @@
            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
         <div class="flex justify-center mb-4"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
         <template x-if="grades.find(g=>g.label===(profile?.gradeLabel||'골드'))">
-          <div x-data="{ g: grades.find(g=>g.label===(profile?.gradeLabel||'골드')) }">
-            <div class="flex items-center gap-3 mb-4">
+          <div x-data="{
+            g: grades.find(g=>g.label===(profile?.gradeLabel||'골드')),
+            get total() { return profile?.totalScore||4820 },
+            get pct() {
+              if (!this.g.nextThreshold) return 100;
+              return Math.min(100, Math.round((this.total - this.g.threshold) / (this.g.nextThreshold - this.g.threshold) * 100));
+            }
+          }">
+            <!-- 헤더 -->
+            <div class="flex items-center gap-3 mb-1">
               <svg class="w-10 h-10 flex-shrink-0" :class="trophyColor(g.label)" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M5 3a1 1 0 000 2H3.5A1.5 1.5 0 002 6.5v1A3.5 3.5 0 005.5 11H6a4 4 0 003 3.874V16H7a1 1 0 100 2h6a1 1 0 100-2h-2v-1.126A4 4 0 0014 11h.5A3.5 3.5 0 0018 7.5v-1A1.5 1.5 0 0016.5 5H15a1 1 0 000-2H5z" clip-rule="evenodd"/>
               </svg>
-              <div>
+              <div class="flex-1">
                 <p class="font-bold text-gray-900 text-lg" x-text="g.label + ' 등급'"></p>
-                <p class="text-sm text-gray-500 mt-0.5" x-text="g.desc"></p>
+                <p class="text-sm text-gray-500" x-text="g.desc"></p>
               </div>
             </div>
-            <div class="bg-gray-50 rounded-xl px-4 py-3 mb-3">
-              <p class="text-[11px] text-gray-400 font-semibold uppercase tracking-widest mb-1">달성 조건</p>
-              <p class="text-sm text-gray-700" x-text="g.condition"></p>
+            <p class="text-xs text-indigo-500 font-medium mb-4 pl-1" x-text="g.acquiredAt + ' 달성'"></p>
+
+            <!-- 누적 점수 + 달성 조건 -->
+            <div class="bg-gray-50 rounded-xl px-4 py-3 mb-3 flex items-center justify-between">
+              <div>
+                <p class="text-[11px] text-gray-400 font-semibold uppercase tracking-widest mb-1">달성 조건</p>
+                <p class="text-sm text-gray-700">누적 읽기 점수 <span class="font-semibold" x-text="g.threshold.toLocaleString()"></span>점 이상</p>
+              </div>
+              <div class="text-right">
+                <p class="text-[11px] text-gray-400 mb-1">내 누적 점수</p>
+                <p class="text-lg font-bold text-indigo-600" x-text="total.toLocaleString() + '점'"></p>
+              </div>
             </div>
+
+            <!-- 다음 등급 진척도 -->
             <template x-if="g.next">
               <div class="bg-indigo-50 rounded-xl px-4 py-3">
-                <p class="text-[11px] text-indigo-400 font-semibold uppercase tracking-widest mb-1">다음 등급</p>
-                <p class="text-sm text-gray-700"><span class="font-semibold" x-text="g.next"></span>까지 <span x-text="g.nextCondition"></span></p>
+                <div class="flex items-center justify-between mb-2">
+                  <p class="text-[11px] text-indigo-400 font-semibold uppercase tracking-widest">다음 등급 · <span x-text="g.next"></span></p>
+                  <p class="text-xs text-indigo-600 font-semibold" x-text="pct + '%'"></p>
+                </div>
+                <div class="h-2 bg-indigo-100 rounded-full overflow-hidden mb-2">
+                  <div class="h-full bg-indigo-500 rounded-full transition-all duration-700" :style="`width:${pct}%`"></div>
+                </div>
+                <p class="text-xs text-gray-500">
+                  <span class="font-semibold text-indigo-600" x-text="(g.nextThreshold - total).toLocaleString()"></span>점 더 모으면 <span class="font-semibold" x-text="g.next"></span> 달성
+                  <span class="text-gray-400 ml-1" x-text="'(목표 ' + g.nextThreshold.toLocaleString() + '점)'"></span>
+                </p>
+              </div>
+            </template>
+            <template x-if="!g.next">
+              <div class="bg-cyan-50 rounded-xl px-4 py-3 text-center">
+                <p class="text-sm font-semibold text-cyan-600">🏆 최고 등급 달성!</p>
+                <p class="text-xs text-gray-400 mt-1">더 이상 높은 등급은 없습니다</p>
               </div>
             </template>
           </div>
@@ -908,10 +942,10 @@ function app() {
     chartTab: 'score', chartRange: 'bimonth', chartOffset: 0, scoreTooltip: false,
     badgeModal: false, selectedBadge: null, gradeModal: false,
     grades: [
-      { label:'브론즈',  color:'text-orange-400', desc:'독서를 시작한 새내기 독자', condition:'누적 읽기 점수 500점 이상', next:'실버', nextCondition:'누적 2,000점' },
-      { label:'실버',    color:'text-gray-300',   desc:'꾸준한 독서 습관이 자리잡힌 독자', condition:'누적 읽기 점수 2,000점 이상', next:'골드', nextCondition:'누적 5,000점' },
-      { label:'골드',    color:'text-yellow-300', desc:'높은 집중도와 독서량을 갖춘 우수 독자', condition:'누적 읽기 점수 5,000점 이상', next:'플래티넘', nextCondition:'누적 15,000점' },
-      { label:'플래티넘',color:'text-cyan-300',   desc:'최상위 독서 능력을 갖춘 엘리트 독자', condition:'누적 읽기 점수 15,000점 이상', next:null, nextCondition:null },
+      { label:'브론즈',  color:'text-orange-400', desc:'독서를 시작한 새내기 독자',              threshold:0,     next:'실버',    nextThreshold:1000,  acquiredAt:'2025.08.10' },
+      { label:'실버',    color:'text-gray-300',   desc:'꾸준한 독서 습관이 자리잡힌 독자',        threshold:1000,  next:'골드',    nextThreshold:3500,  acquiredAt:'2025.10.03' },
+      { label:'골드',    color:'text-yellow-300', desc:'높은 집중도와 독서량을 갖춘 우수 독자',   threshold:3500,  next:'플래티넘', nextThreshold:12000, acquiredAt:'2026.01.20' },
+      { label:'플래티넘',color:'text-cyan-300',   desc:'최상위 독서 능력을 갖춘 엘리트 독자',    threshold:12000, next:null,      nextThreshold:null,  acquiredAt:null },
     ],
     chartTouchX: 0,
 
