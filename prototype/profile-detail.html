@@ -246,7 +246,7 @@
           <p class="text-white font-bold text-base" x-text="profile?.name"></p>
         </div>
         <!-- 설정 메뉴 목록 -->
-        <div class="bg-white divide-y divide-gray-50">
+        <div class="bg-white divide-y divide-gray-50 mt-0">
           <template x-for="item in settingsItems" :key="item.id">
             <button @click="openSub(item.id)"
                     class="w-full flex items-center gap-3 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors text-left">
@@ -258,6 +258,26 @@
               <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </button>
           </template>
+        </div>
+        <!-- 프로필 삭제 -->
+        <div class="px-5 py-6">
+          <button @click="deleteConfirm=true"
+                  class="w-full py-3.5 rounded-xl text-sm font-bold border-2 border-red-200 text-red-500 hover:bg-red-50 transition-colors">
+            프로필 삭제
+          </button>
+        </div>
+      </div>
+      <!-- 삭제 확인 다이얼로그 -->
+      <div x-show="deleteConfirm" x-cloak @click.self="deleteConfirm=false"
+           class="absolute inset-0 bg-black/40 z-50 flex items-center justify-center px-6">
+        <div class="bg-white rounded-2xl p-6 w-full shadow-xl"
+             x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+          <p class="text-base font-bold text-gray-900 mb-2">프로필을 삭제할까요?</p>
+          <p class="text-sm text-gray-500 mb-5" x-text="'\''+profile?.name+'\' 프로필과 모든 읽기 기록이 영구 삭제됩니다.'"></p>
+          <div class="flex gap-3">
+            <button @click="deleteConfirm=false" class="flex-1 py-3 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">취소</button>
+            <button @click="deleteProfile()" class="flex-1 py-3 rounded-xl text-sm font-semibold bg-red-500 text-white hover:bg-red-600">삭제</button>
+          </div>
         </div>
       </div>
     </div>
@@ -452,7 +472,7 @@ function app() {
     calYear: 2026, calMonth: 3,
     calDays: [], calStartDay: 0,
     daySheet: false, selectedDay: { label: '' },
-    settingsPanel: false, settingsSub: '',
+    settingsPanel: false, settingsSub: '', deleteConfirm: false,
     selectedColor: '', selectedGrade: '초4', selectedGender: '남',
 
     badges: [
@@ -553,6 +573,7 @@ function app() {
     },
 
     openSub(id) { this.settingsSub = id; },
+    deleteProfile() { localStorage.removeItem('cr_profile'); window.location.href = 'profiles.html'; },
     currentSubLabel() {
       return this.settingsItems.find(s=>s.id===this.settingsSub)?.label || '';
     },
