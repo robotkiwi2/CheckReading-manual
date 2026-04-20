@@ -174,15 +174,15 @@
             </div>
             <div x-show="chartTab==='eye'" class="flex flex-wrap gap-3">
               <div class="flex items-center gap-1.5">
-                <div class="w-2.5 h-2.5 rounded-full bg-blue-600 flex-shrink-0"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-400 flex-shrink-0"></div>
                 <span class="text-xs text-gray-500">읽는 중 <span class="font-bold text-gray-800" x-text="chartSummary.reading+'%'"></span></span>
               </div>
               <div class="flex items-center gap-1.5">
-                <div class="w-2.5 h-2.5 rounded-full bg-green-400 flex-shrink-0"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0"></div>
                 <span class="text-xs text-gray-500">스캐닝 <span class="font-bold text-gray-800" x-text="chartSummary.scanning+'%'"></span></span>
               </div>
               <div class="flex items-center gap-1.5">
-                <div class="w-2.5 h-2.5 rounded-full bg-red-300 flex-shrink-0"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-red-400 flex-shrink-0"></div>
                 <span class="text-xs text-gray-500">이탈 <span class="font-bold text-gray-800" x-text="chartSummary.lost+'%'"></span></span>
               </div>
             </div>
@@ -1212,9 +1212,9 @@ function app() {
           data: {
             labels: p.x,
             datasets: [
-              { label:'이탈',    data: p.lost,     backgroundColor: '#fca5a5', stack: 's' },
-              { label:'스캐닝',  data: p.scanning, backgroundColor: '#4ade80', stack: 's' },
-              { label:'읽는 중', data: p.reading,  backgroundColor: '#6366f1', stack: 's' },
+              { label:'이탈',    data: p.lost,     backgroundColor: '#f87171', stack: 's' },
+              { label:'스캐닝',  data: p.scanning, backgroundColor: '#fbbf24', stack: 's' },
+              { label:'읽는 중', data: p.reading,  backgroundColor: '#4ade80', stack: 's' },
             ],
           },
           options: {
