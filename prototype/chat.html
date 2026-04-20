@@ -200,9 +200,9 @@
 <script>
 function app() {
   const profileColors = {
-    hong: 'linear-gradient(135deg,#667eea,#764ba2)',
-    chun: 'linear-gradient(135deg,#f093fb,#f5576c)',
-    system: 'linear-gradient(135deg,#43e97b,#38f9d7)',
+    hong: '#3d5069',
+    chun: '#553d6a',
+    system: '#2d5a3f',
   };
   return {
     user: null, isParent: false, showMenu: false,
@@ -249,7 +249,7 @@ function app() {
           {
             id:6, type:'report',
             profileId:'hong', profileName:'홍길동',
-            profileColor:'linear-gradient(135deg,#667eea,#764ba2)', profileInitial:'홍',
+            profileColor:'#3d5069', profileInitial:'홍',
             week:'4월 4주', period:'4/14~20',
             summary:'목요일 집중도가 이번 주 최고였어요. 전주보다 총점 42점 상승!',
             score:745, scoreDiff:+42, time:'오전 8:00',
@@ -257,7 +257,7 @@ function app() {
           {
             id:7, type:'report',
             profileId:'chun', profileName:'성춘향',
-            profileColor:'linear-gradient(135deg,#f093fb,#f5576c)', profileInitial:'성',
+            profileColor:'#553d6a', profileInitial:'성',
             week:'4월 4주', period:'4/14~20',
             summary:'이번 주 Charlotte\'s Web 완독! 연속 5일 독서 달성했어요.',
             score:703, scoreDiff:-15, time:'오전 8:01',
@@ -282,8 +282,8 @@ function app() {
     },
     goToReport(msg) {
       const profileMap = {
-        hong: { name:'홍길동', initial:'홍', color:'linear-gradient(135deg,#667eea,#764ba2)', age:10, grade:'초4', gender:'남', level:'Lexile 650L', gradeLabel:'골드', favorites:23, totalScore:4820 },
-        chun: { name:'성춘향', initial:'성', color:'linear-gradient(135deg,#f093fb,#f5576c)', age:9,  grade:'초3', gender:'여', level:'Lexile 520L', gradeLabel:'실버', favorites:15, totalScore:3210 },
+        hong: { name:'홍길동', initial:'홍', color:'#3d5069', age:10, grade:'초4', gender:'남', level:'Lexile 650L', gradeLabel:'골드', favorites:23, totalScore:4820 },
+        chun: { name:'성춘향', initial:'성', color:'#553d6a', age:9,  grade:'초3', gender:'여', level:'Lexile 520L', gradeLabel:'실버', favorites:15, totalScore:3210 },
       };
       const profile = profileMap[msg.profileId];
       if (!profile) return;
