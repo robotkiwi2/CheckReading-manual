@@ -66,15 +66,23 @@
         <p class="text-sm text-gray-400 mb-4">자녀 프로필을 선택하세요</p>
         <div class="flex flex-col gap-4 mb-4">
           <template x-for="p in profiles" :key="p.id">
-            <div @click="goProfile(p)"
-                 class="rounded-2xl p-5 cursor-pointer hover:opacity-90 active:scale-[0.99] transition shadow-md w-full"
+            <div class="rounded-2xl overflow-hidden shadow-md w-full transition"
+                 :class="p.today.eye.lost > 30 ? 'ring-2 ring-amber-400' : ''"
                  :style="`background: ${p.color}`">
-              <div class="flex items-center gap-4">
-                <div class="w-14 h-14 bg-white/25 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span class="text-2xl font-bold text-white" x-text="p.initial"></span>
+
+              <!-- 프로필 헤더 (클릭 → 상세) -->
+              <div @click="goProfile(p)" class="flex items-center gap-4 p-5 cursor-pointer hover:opacity-90 active:scale-[0.99] transition">
+                <div class="relative flex-shrink-0">
+                  <div class="w-14 h-14 bg-white/25 rounded-full flex items-center justify-center">
+                    <span class="text-2xl font-bold text-white" x-text="p.initial"></span>
+                  </div>
+                  <div x-show="p.online" class="absolute bottom-0 right-0 w-4 h-4 bg-green-400 rounded-full border-2 border-white shadow"></div>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-white font-bold text-lg" x-text="p.name"></p>
+                  <div class="flex items-center gap-2">
+                    <p class="text-white font-bold text-lg" x-text="p.name"></p>
+                    <span x-show="p.online" x-cloak class="bg-green-400/30 text-green-100 text-[10px] px-2 py-0.5 rounded-full font-medium">● 읽는 중</span>
+                  </div>
                   <p class="text-white/70 text-sm mt-0.5" x-text="p.age + '세 · ' + p.level"></p>
                   <div class="flex items-center gap-2 mt-2">
                     <span class="bg-white/20 text-white text-xs px-2.5 py-0.5 rounded-full" x-text="p.reading + '권 읽는 중'"></span>
@@ -82,6 +90,51 @@
                   </div>
                 </div>
                 <svg class="w-5 h-5 text-white/50 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </div>
+
+              <!-- 오늘 읽기 현황 -->
+              <div class="px-5 pb-5">
+                <div class="border-t border-white/20 pt-4">
+                  <p class="text-white/50 text-[10px] font-semibold uppercase tracking-widest mb-3">오늘 읽기 현황</p>
+
+                  <!-- 3개 스탯 -->
+                  <div class="flex gap-2 mb-3">
+                    <div class="flex-1 bg-white/15 rounded-xl px-2 py-2 text-center">
+                      <p class="text-white font-bold text-lg leading-tight" x-text="p.today.score"></p>
+                      <p class="text-white/55 text-[10px] mt-0.5">읽기점수</p>
+                    </div>
+                    <div class="flex-1 bg-white/15 rounded-xl px-2 py-2 text-center">
+                      <p class="text-white font-bold text-lg leading-tight" x-text="p.today.time + '분'"></p>
+                      <p class="text-white/55 text-[10px] mt-0.5" x-text="p.today.words.toLocaleString() + '단어'"></p>
+                    </div>
+                    <div class="flex-1 bg-white/15 rounded-xl px-2 py-2 text-center">
+                      <p class="text-white font-bold text-lg leading-tight" :class="p.today.eye.lost > 30 ? 'text-amber-300' : ''" x-text="p.today.eye.lost + '%'"></p>
+                      <p class="text-white/55 text-[10px] mt-0.5">Lost</p>
+                    </div>
+                  </div>
+
+                  <!-- 시선 상태 바 -->
+                  <div class="bg-white/10 rounded-xl p-3">
+                    <div class="flex rounded-full overflow-hidden h-2.5 mb-2.5">
+                      <div class="bg-emerald-400 transition-all duration-700" :style="`width:${p.today.eye.reading}%`"></div>
+                      <div class="bg-amber-400 transition-all duration-700" :style="`width:${p.today.eye.scanning}%`"></div>
+                      <div class="transition-all duration-700" :class="p.today.eye.lost > 30 ? 'bg-red-500' : 'bg-red-400'" :style="`width:${p.today.eye.lost}%`"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px]">
+                      <span class="text-emerald-300 font-medium">● Reading <span x-text="p.today.eye.reading + '%'"></span></span>
+                      <span class="text-amber-300 font-medium">● Scanning <span x-text="p.today.eye.scanning + '%'"></span></span>
+                      <span class="font-medium" :class="p.today.eye.lost > 30 ? 'text-red-300 font-bold' : 'text-red-300'">● Lost <span x-text="p.today.eye.lost + '%'"></span></span>
+                    </div>
+                  </div>
+
+                  <!-- 같이 보기 버튼 (온라인일 때만) -->
+                  <button x-show="p.online" x-cloak @click.stop="openViewer(p)"
+                          class="mt-3 w-full py-2.5 bg-white text-sm font-bold rounded-xl flex items-center justify-center gap-2 shadow"
+                          :style="`color:${p.accent}`">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    같이 보기
+                  </button>
+                </div>
               </div>
             </div>
           </template>
@@ -286,8 +339,14 @@ function app() {
     addPanel: false, addStep: 1,
     newP: { color:'', name:'', birthYear:2016, grade:'', gender:'' },
     profiles: [
-      { id:'hong', name:'홍길동', initial:'홍', age:9,  level:'Lv.3', reading:3, done:12, color:'linear-gradient(135deg,#667eea,#764ba2)' },
-      { id:'chun', name:'성춘향', initial:'성', age:11, level:'Lv.4', reading:2, done:8,  color:'linear-gradient(135deg,#f093fb,#f5576c)' },
+      { id:'hong', name:'홍길동', initial:'홍', age:9,  level:'Lv.3', reading:3, done:12,
+        color:'linear-gradient(135deg,#667eea,#764ba2)', accent:'#667eea',
+        online: true,
+        today: { score:124, time:42, words:1840, eye:{ reading:65, scanning:22, lost:13 } } },
+      { id:'chun', name:'성춘향', initial:'성', age:11, level:'Lv.4', reading:2, done:8,
+        color:'linear-gradient(135deg,#f093fb,#f5576c)', accent:'#f093fb',
+        online: false,
+        today: { score:87, time:28, words:1120, eye:{ reading:72, scanning:20, lost:8 } } },
     ],
     favorites: [
       { id:'f1', studentName:'김민준', parentName:'김철수 부모님', initial:'김', age:10, gender:'남', grade:'골드', color:'linear-gradient(135deg,#43e97b,#38f9d7)' },
@@ -297,11 +356,29 @@ function app() {
     init() {
       this.user = JSON.parse(localStorage.getItem('cr_user')||'null');
       if (!this.user || this.user.type !== 'parent') window.location.href = 'index.html';
+      // 실시간 시뮬레이션: 온라인 프로필 1초마다 지표 변동
+      setInterval(() => {
+        this.profiles.forEach(p => {
+          if (!p.online) return;
+          if (Math.random() < 0.35) p.today.score += 1;
+          p.today.words += Math.floor(Math.random() * 6);
+          if (Math.random() < 0.12) p.today.time += 1;
+          const d = Math.floor(Math.random() * 5) - 2;
+          p.today.eye.reading = Math.min(88, Math.max(20, p.today.eye.reading + d));
+          const d2 = Math.floor(Math.random() * 3) - 1;
+          p.today.eye.scanning = Math.min(45, Math.max(5, p.today.eye.scanning + d2));
+          p.today.eye.lost = 100 - p.today.eye.reading - p.today.eye.scanning;
+        });
+      }, 1000);
     },
     logout() { localStorage.removeItem('cr_user'); window.location.href = 'index.html'; },
     goProfile(p) {
       localStorage.setItem('cr_profile', JSON.stringify(p));
       window.location.href = 'profile-detail.html';
+    },
+    openViewer(p) {
+      localStorage.setItem('cr_profile', JSON.stringify(p));
+      window.location.href = 'reader.html';
     },
     removeFavorite(idx) {
       this.favorites.splice(idx, 1);
