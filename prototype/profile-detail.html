@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>프로필 상세 - CheckReading</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
     html,body{height:100%;}
@@ -106,36 +107,81 @@
         </div>
       </div>
 
-      <!-- ② 읽기점수 영역 -->
+      <!-- ② 차트 영역 -->
       <div class="mx-4 mt-5">
-        <h3 class="font-bold text-gray-800 text-sm mb-3">읽기 점수</h3>
-        <div class="flex gap-2">
-          <div class="flex-1 bg-white rounded-2xl px-3 py-3 shadow-sm min-w-0">
-            <p class="text-[9px] text-gray-400 font-medium mb-1.5">누적 총점</p>
-            <p class="text-lg font-bold text-indigo-600 leading-none" x-text="scores.total.toLocaleString()"></p>
-            <p class="text-[10px] text-gray-400 mt-0.5">점</p>
-            <div class="mt-2 flex items-center gap-1">
-              <div class="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-indigo-400 rounded-full" :style="`width:${scores.totalPct}%`"></div></div>
-              <span class="text-[9px] text-indigo-500 font-semibold flex-shrink-0" x-text="'상위' + scores.totalPct + '%'"></span>
+
+        <!-- 지표 탭 -->
+        <div class="flex bg-gray-100 rounded-2xl p-1 mb-3 gap-0.5">
+          <button @click="chartTab='score'"
+                  class="flex-1 py-2 text-xs font-semibold rounded-xl transition-all"
+                  :class="chartTab==='score' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'">읽기 점수</button>
+          <button @click="chartTab='eye'"
+                  class="flex-1 py-2 text-xs font-semibold rounded-xl transition-all"
+                  :class="chartTab==='eye' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'">시선 상태</button>
+          <button @click="chartTab='focus'"
+                  class="flex-1 py-2 text-xs font-semibold rounded-xl transition-all"
+                  :class="chartTab==='focus' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'">시선 집중도</button>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm px-4 pt-4 pb-3">
+
+          <!-- 범위 선택 + 기간 내비게이션 -->
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex bg-gray-100 rounded-xl p-0.5 gap-0.5">
+              <button @click="chartRange='week'"
+                      class="px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all"
+                      :class="chartRange==='week' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-400'">1주</button>
+              <button @click="chartRange='month'"
+                      class="px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all"
+                      :class="chartRange==='month' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-400'">1달</button>
+              <button @click="chartRange='quarter'"
+                      class="px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all"
+                      :class="chartRange==='quarter' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-400'">3달</button>
+            </div>
+            <div class="flex items-center gap-1">
+              <button @click="prevPeriod()" :disabled="!canGoPrev()"
+                      class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 disabled:opacity-25 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              <span class="text-[11px] font-semibold text-gray-600 min-w-[88px] text-center" x-text="periodLabel()"></span>
+              <button @click="nextPeriod()" :disabled="chartOffset===0"
+                      class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 disabled:opacity-25 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </button>
             </div>
           </div>
-          <div class="flex-1 bg-white rounded-2xl px-3 py-3 shadow-sm min-w-0">
-            <p class="text-[9px] text-gray-400 font-medium mb-1.5">올해 획득</p>
-            <p class="text-lg font-bold text-green-500 leading-none" x-text="scores.year.toLocaleString()"></p>
-            <p class="text-[10px] text-gray-400 mt-0.5">점</p>
-            <div class="mt-2 flex items-center gap-1">
-              <div class="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-green-400 rounded-full" :style="`width:${scores.yearPct}%`"></div></div>
-              <span class="text-[9px] text-green-500 font-semibold flex-shrink-0" x-text="'상위' + scores.yearPct + '%'"></span>
+
+          <!-- 요약 수치 -->
+          <div class="mb-3 min-h-[28px]">
+            <div x-show="chartTab==='score'" class="flex items-baseline gap-2">
+              <span class="text-xl font-bold text-indigo-600" x-text="chartSummary.main"></span>
+              <span class="text-xs text-gray-400" x-text="chartSummary.sub"></span>
+            </div>
+            <div x-show="chartTab==='eye'" class="flex flex-wrap gap-3">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-indigo-500 flex-shrink-0"></div>
+                <span class="text-xs text-gray-500">읽는 중 <span class="font-bold text-gray-800" x-text="chartSummary.reading+'%'"></span></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-green-400 flex-shrink-0"></div>
+                <span class="text-xs text-gray-500">스캐닝 <span class="font-bold text-gray-800" x-text="chartSummary.scanning+'%'"></span></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-300 flex-shrink-0"></div>
+                <span class="text-xs text-gray-500">이탈 <span class="font-bold text-gray-800" x-text="chartSummary.lost+'%'"></span></span>
+              </div>
+            </div>
+            <div x-show="chartTab==='focus'" class="flex items-baseline gap-2">
+              <span class="text-xl font-bold text-emerald-600" x-text="chartSummary.main"></span>
+              <span class="text-xs text-gray-400" x-text="chartSummary.sub"></span>
             </div>
           </div>
-          <div class="flex-1 bg-white rounded-2xl px-3 py-3 shadow-sm min-w-0">
-            <p class="text-[9px] text-gray-400 font-medium mb-1.5">이번달 획득</p>
-            <p class="text-lg font-bold text-orange-400 leading-none" x-text="scores.month.toLocaleString()"></p>
-            <p class="text-[10px] text-gray-400 mt-0.5">점</p>
-            <div class="mt-2 flex items-center gap-1">
-              <div class="flex-1 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-orange-300 rounded-full" :style="`width:${scores.monthPct}%`"></div></div>
-              <span class="text-[9px] text-orange-400 font-semibold flex-shrink-0" x-text="'상위' + scores.monthPct + '%'"></span>
-            </div>
+
+          <!-- 차트 캔버스 -->
+          <div style="height:148px; position:relative;"
+               @touchstart.passive="chartTouchX=$event.touches[0].clientX"
+               @touchend.passive="onChartSwipe($event)">
+            <canvas x-ref="chartCanvas"></canvas>
           </div>
         </div>
       </div>
@@ -459,6 +505,67 @@
 
 <script>
 function app() {
+  const W = ['월','화','수','목','금','토','일'];
+  const chartData = {
+    score: {
+      week: [
+        { label:'4월 4주 (4/14~20)', x:W, y:[45,120,80,200,60,150,90] },
+        { label:'4월 3주 (4/7~13)',  x:W, y:[30,90,110,50,180,70,120] },
+        { label:'4월 2주 (3/31~4/6)',x:W, y:[80,60,140,100,50,190,40] },
+        { label:'4월 1주 (3/24~30)', x:W, y:[50,130,70,160,90,110,85] },
+      ],
+      month: [
+        { label:'2026년 4월', x:['1주','2주','3주','4주'], y:[180,320,440,205] },
+        { label:'2026년 3월', x:['1주','2주','3주','4주'], y:[380,290,420,510] },
+        { label:'2026년 2월', x:['1주','2주','3주','4주'], y:[510,380,290,430] },
+        { label:'2026년 1월', x:['1주','2주','3주','4주'], y:[290,400,350,420] },
+      ],
+      quarter: [
+        { label:'2026년 1~3월',  x:['1월','2월','3월'],     y:[290,510,380] },
+        { label:'2025년 10~12월',x:['10월','11월','12월'],  y:[420,380,490] },
+        { label:'2025년 7~9월',  x:['7월','8월','9월'],     y:[310,450,390] },
+      ],
+    },
+    eye: {
+      week: [
+        { label:'4월 4주 (4/14~20)', x:W, reading:[65,70,60,72,68,75,63], scanning:[22,18,25,20,23,17,26], lost:[13,12,15,8,9,8,11] },
+        { label:'4월 3주 (4/7~13)',  x:W, reading:[62,68,58,70,65,72,61], scanning:[24,20,27,22,25,19,28], lost:[14,12,15,8,10,9,11] },
+        { label:'4월 2주 (3/31~4/6)',x:W, reading:[60,65,55,68,63,70,59], scanning:[26,22,29,24,27,21,30], lost:[14,13,16,8,10,9,11] },
+        { label:'4월 1주 (3/24~30)', x:W, reading:[58,63,53,66,61,68,57], scanning:[28,24,31,26,29,23,32], lost:[14,13,16,8,10,9,11] },
+      ],
+      month: [
+        { label:'2026년 4월', x:['1주','2주','3주','4주'], reading:[65,68,63,70], scanning:[22,20,25,18], lost:[13,12,12,12] },
+        { label:'2026년 3월', x:['1주','2주','3주','4주'], reading:[62,65,68,66], scanning:[25,23,21,22], lost:[13,12,11,12] },
+        { label:'2026년 2월', x:['1주','2주','3주','4주'], reading:[59,62,64,63], scanning:[27,25,24,25], lost:[14,13,12,12] },
+        { label:'2026년 1월', x:['1주','2주','3주','4주'], reading:[56,59,62,60], scanning:[30,28,26,27], lost:[14,13,12,13] },
+      ],
+      quarter: [
+        { label:'2026년 1~3월',  x:['1월','2월','3월'],    reading:[62,66,68], scanning:[25,22,20], lost:[13,12,12] },
+        { label:'2025년 10~12월',x:['10월','11월','12월'], reading:[54,58,61], scanning:[32,28,27], lost:[14,14,12] },
+        { label:'2025년 7~9월',  x:['7월','8월','9월'],    reading:[48,52,55], scanning:[37,33,31], lost:[15,15,14] },
+      ],
+    },
+    focus: {
+      week: [
+        { label:'4월 4주 (4/14~20)', x:W, y:[72,85,68,91,78,88,75] },
+        { label:'4월 3주 (4/7~13)',  x:W, y:[68,80,65,88,74,85,71] },
+        { label:'4월 2주 (3/31~4/6)',x:W, y:[65,77,62,85,71,82,68] },
+        { label:'4월 1주 (3/24~30)', x:W, y:[62,74,59,82,68,79,65] },
+      ],
+      month: [
+        { label:'2026년 4월', x:['1주','2주','3주','4주'], y:[75,78,72,82] },
+        { label:'2026년 3월', x:['1주','2주','3주','4주'], y:[71,74,78,76] },
+        { label:'2026년 2월', x:['1주','2주','3주','4주'], y:[67,70,74,72] },
+        { label:'2026년 1월', x:['1주','2주','3주','4주'], y:[63,66,70,68] },
+      ],
+      quarter: [
+        { label:'2026년 1~3월',  x:['1월','2월','3월'],    y:[71,76,80] },
+        { label:'2025년 10~12월',x:['10월','11월','12월'], y:[62,65,69] },
+        { label:'2025년 7~9월',  x:['7월','8월','9월'],    y:[54,58,62] },
+      ],
+    },
+  };
+
   const monthData = {
     '2026-3': { score:380,  words:12400, days:{2:45,3:120,5:80,6:200,8:60,9:30,10:150,12:90,13:110,14:75,17:180,19:55,20:230,22:40,23:100,24:160,26:70,28:50,29:130} },
     '2026-2': { score:510,  words:16200, days:{1:80,3:140,5:60,7:200,9:90,11:170,13:50,15:220,17:30,19:110,21:180,23:70,25:150,27:90} },
@@ -484,6 +591,27 @@ function app() {
     scores: { total:4820, totalPct:12, year:1340, yearPct:18, month:380, monthPct:22 },
     monthSummary: { score:380, words:12400 },
     dayScores: {},
+
+    chartTab: 'score', chartRange: 'month', chartOffset: 0,
+    chartInstance: null, chartTouchX: 0,
+
+    get chartSummary() {
+      const d = chartData[this.chartTab]?.[this.chartRange];
+      if (!d) return {};
+      const p = d[Math.min(this.chartOffset, d.length - 1)];
+      if (!p) return {};
+      if (this.chartTab === 'score') {
+        const total = p.y.reduce((a, b) => a + b, 0);
+        const avg = Math.round(total / p.y.length);
+        return { main: total.toLocaleString() + '점', sub: '합계 · 평균 ' + avg + '점' };
+      }
+      if (this.chartTab === 'eye') {
+        const avg = arr => Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
+        return { reading: avg(p.reading), scanning: avg(p.scanning), lost: avg(p.lost) };
+      }
+      const avg = Math.round(p.y.reduce((a, b) => a + b, 0) / p.y.length);
+      return { main: avg + '%', sub: '기간 평균 집중도' };
+    },
 
     settingsItems: [
       {id:'photo',    icon:'🖼️', label:'사진 교체',      desc:'프로필 배경 색상 변경'},
@@ -540,6 +668,10 @@ function app() {
       this.selectedGrade = this.profile.grade || '초4';
       this.selectedGender = this.profile.gender || '남';
       this.buildCalendar();
+      this.$nextTick(() => this.renderChart());
+      this.$watch('chartTab',    () => { this.chartOffset = 0; this.$nextTick(() => this.renderChart()); });
+      this.$watch('chartRange',  () => { this.chartOffset = 0; this.$nextTick(() => this.renderChart()); });
+      this.$watch('chartOffset', () => this.$nextTick(() => this.renderChart()));
     },
 
     buildCalendar() {
@@ -570,6 +702,77 @@ function app() {
       if(!(this.dayScores[day]>0)) return;
       this.selectedDay = { label:`${this.calYear}년 ${this.calMonth+1}월 ${day}일` };
       this.daySheet = true;
+    },
+
+    canGoPrev() {
+      const d = chartData[this.chartTab]?.[this.chartRange];
+      return d && this.chartOffset < d.length - 1;
+    },
+    prevPeriod() { if (this.canGoPrev()) this.chartOffset++; },
+    nextPeriod() { if (this.chartOffset > 0) this.chartOffset--; },
+    periodLabel() {
+      const d = chartData[this.chartTab]?.[this.chartRange];
+      if (!d) return '';
+      return d[Math.min(this.chartOffset, d.length - 1)]?.label || '';
+    },
+    onChartSwipe(e) {
+      const dx = e.changedTouches[0].clientX - this.chartTouchX;
+      if (Math.abs(dx) > 40) { dx < 0 ? this.prevPeriod() : this.nextPeriod(); }
+    },
+    renderChart() {
+      const canvas = this.$refs.chartCanvas;
+      if (!canvas || typeof Chart === 'undefined') return;
+      if (this.chartInstance) { this.chartInstance.destroy(); this.chartInstance = null; }
+
+      const tab = this.chartTab, range = this.chartRange;
+      const d = chartData[tab]?.[range];
+      if (!d) return;
+      const p = d[Math.min(this.chartOffset, d.length - 1)];
+      if (!p) return;
+
+      const ctx = canvas.getContext('2d');
+      const baseOpts = {
+        responsive: true, maintainAspectRatio: false,
+        animation: { duration: 250 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            displayColors: false,
+            callbacks: { label: v => v.raw + (tab === 'focus' ? '%' : tab === 'eye' ? '%' : '점') },
+          },
+        },
+      };
+      const xScale = { grid: { display: false }, ticks: { font: { size: 10 }, color: '#9ca3af' }, border: { display: false } };
+      const yScale = { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10 }, color: '#9ca3af', maxTicksLimit: 5 }, border: { display: false }, beginAtZero: true };
+
+      if (tab === 'score' || tab === 'focus') {
+        const color = tab === 'score' ? '#6366f1' : '#10b981';
+        const bg    = tab === 'score' ? 'rgba(99,102,241,0.08)' : 'rgba(16,185,129,0.08)';
+        this.chartInstance = new Chart(ctx, {
+          type: 'line',
+          data: { labels: p.x, datasets: [{ data: p.y, borderColor: color, backgroundColor: bg, fill: true, tension: 0.4, pointBackgroundColor: color, pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6 }] },
+          options: { ...baseOpts, scales: { x: xScale, y: yScale } },
+        });
+      } else {
+        this.chartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: p.x,
+            datasets: [
+              { label:'이탈',    data: p.lost,     backgroundColor: '#fca5a5', stack: 's' },
+              { label:'스캐닝',  data: p.scanning, backgroundColor: '#4ade80', stack: 's' },
+              { label:'읽는 중', data: p.reading,  backgroundColor: '#6366f1', stack: 's' },
+            ],
+          },
+          options: {
+            ...baseOpts,
+            scales: {
+              x: { ...xScale, stacked: true },
+              y: { ...yScale, stacked: true, max: 100, ticks: { ...yScale.ticks, callback: v => v + '%' } },
+            },
+          },
+        });
+      }
     },
 
     openSub(id) { this.settingsSub = id; },
