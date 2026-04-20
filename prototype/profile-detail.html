@@ -505,6 +505,7 @@
 
 <script>
 function app() {
+  let chartInst = null;  // Alpine 반응성 밖에 보관 — proxy 간섭 방지
   const W = ['월','화','수','목','금','토','일'];
   const chartData = {
     score: {
@@ -593,7 +594,7 @@ function app() {
     dayScores: {},
 
     chartTab: 'score', chartRange: 'month', chartOffset: 0,
-    chartInstance: null, chartTouchX: 0,
+    chartTouchX: 0,
 
     get chartSummary() {
       const d = chartData[this.chartTab]?.[this.chartRange];
@@ -621,8 +622,9 @@ function app() {
       {id:'grade',    icon:'🏫', label:'학년',            desc:'현재 학년 설정'},
       {id:'gender',   icon:'👤', label:'성별',            desc:'성별 정보 수정'},
       {id:'prefbook', icon:'📖', label:'선호책 설정',     desc:'좋아하는 장르 선택'},
-      {id:'recommend',icon:'💡', label:'책추천 설정',     desc:'추천 알고리즘 옵션'},
-      {id:'readdetect',icon:'👁️',label:'읽기탐지 설정',  desc:'읽기 감지 민감도 조정'},
+      {id:'recommend', icon:'💡', label:'책추천 설정',  desc:'추천 알고리즘 옵션'},
+      {id:'readdetect',icon:'👁️',label:'읽기탐지 설정', desc:'읽기 감지 민감도 조정'},
+      {id:'notify',    icon:'🔔', label:'알림 설정',    desc:'읽기 알림 조건 및 시간 설정'},
     ],
 
     avatarColors: [
@@ -722,7 +724,7 @@ function app() {
     renderChart() {
       const canvas = this.$refs.chartCanvas;
       if (!canvas || typeof Chart === 'undefined') return;
-      if (this.chartInstance) { this.chartInstance.destroy(); this.chartInstance = null; }
+      if (chartInst) { chartInst.destroy(); chartInst = null; }
 
       const tab = this.chartTab, range = this.chartRange;
       const d = chartData[tab]?.[range];
@@ -748,13 +750,13 @@ function app() {
       if (tab === 'score' || tab === 'focus') {
         const color = tab === 'score' ? '#6366f1' : '#10b981';
         const bg    = tab === 'score' ? 'rgba(99,102,241,0.08)' : 'rgba(16,185,129,0.08)';
-        this.chartInstance = new Chart(ctx, {
+        chartInst = new Chart(ctx, {
           type: 'line',
           data: { labels: p.x, datasets: [{ data: p.y, borderColor: color, backgroundColor: bg, fill: true, tension: 0.4, pointBackgroundColor: color, pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6 }] },
           options: { ...baseOpts, scales: { x: xScale, y: yScale } },
         });
       } else {
-        this.chartInstance = new Chart(ctx, {
+        chartInst = new Chart(ctx, {
           type: 'bar',
           data: {
             labels: p.x,
