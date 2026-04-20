@@ -458,10 +458,10 @@
                   <p class="text-xs text-gray-400 mt-0.5" x-text="r.desc"></p>
                 </div>
                 <button @click="r.on=!r.on"
-                        class="relative w-11 h-6 rounded-full transition-colors flex-shrink-0"
+                        class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
                         :class="r.on ? 'bg-indigo-500' : 'bg-gray-200'">
-                  <span class="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
-                        :class="r.on ? 'translate-x-5.5' : 'translate-x-0.5'"></span>
+                  <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
+                        :style="r.on ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
                 </button>
               </div>
             </template>
@@ -487,10 +487,10 @@
                         </div>
                         <!-- 토글 -->
                         <button @click="item.on=!item.on"
-                                class="relative w-11 h-6 rounded-full transition-colors flex-shrink-0"
+                                class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
                                 :class="item.on ? 'bg-indigo-500' : 'bg-gray-200'">
-                          <span class="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
-                                :class="item.on ? 'translate-x-5' : 'translate-x-0.5'"></span>
+                          <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
+                                :style="item.on ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
                         </button>
                       </div>
                       <!-- 값 선택 (옵션 있고 ON일 때) -->
@@ -526,10 +526,10 @@
                   <p class="text-xs text-gray-400 mt-0.5" x-text="r.desc"></p>
                 </div>
                 <button @click="r.on=!r.on"
-                        class="relative w-11 h-6 rounded-full transition-colors flex-shrink-0"
+                        class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
                         :class="r.on ? 'bg-indigo-500' : 'bg-gray-200'">
-                  <span class="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
-                        :class="r.on ? 'translate-x-5.5' : 'translate-x-0.5'"></span>
+                  <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
+                        :style="r.on ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
                 </button>
               </div>
             </template>
@@ -696,11 +696,11 @@ function app() {
     ],
     notifyGroups: [
       { label:'읽기 이벤트', items: [
-        { id:'n1', icon:'📖', label:'읽기 시작',   desc:'자녀가 책 읽기를 시작하면 알림', on:true,  value:null },
-        { id:'n2', icon:'✅', label:'읽기 완료',   desc:'챕터 또는 책을 완독하면 알림',   on:true,  value:null },
+        { id:'n1', icon:'📖', label:'읽기 시작/종료', desc:'자녀가 읽기를 시작하거나 종료하면 알림', on:true,  value:null },
+        { id:'n2', icon:'✅', label:'완독',           desc:'책을 끝까지 완독하면 알림',               on:true,  value:null },
       ]},
       { label:'중단 감지', items: [
-        { id:'n3', icon:'⏸', label:'읽기 중단',   desc:'읽다가 멈춘 채 일정 시간 이상 경과 시', on:true, value:5,  unit:'분', options:[3,5,10,15,20] },
+        { id:'n3', icon:'⏸', label:'읽기 중단', desc:'얼굴이 탐지되지 않거나 조작이 없으면 중단으로 판정. 5분 초과 시 자동 종료됩니다.', on:true, value:'1분', unit:'', options:['30초','1분','2분','3분','5분'] },
       ]},
       { label:'시선 상태', items: [
         { id:'n4', icon:'👁', label:'Reading 비율 저하', desc:'집중 읽기 비율이 기준 이하로 떨어질 때', on:true, value:50, unit:'%', options:[30,40,50,60,70] },
