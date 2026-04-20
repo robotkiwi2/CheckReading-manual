@@ -49,6 +49,9 @@
 
     <main class="flex-1 overflow-y-auto min-h-0">
 
+      <!-- ===== 학생 콘텐츠 ===== -->
+      <div x-show="!isParent">
+
       <!-- ① 기본정보 영역 (톱니 없음) -->
       <div class="mx-4 mt-4 rounded-2xl shadow-md overflow-hidden" :style="`background:${profile?.color}`">
         <div class="px-5 pt-5 pb-3">
@@ -195,7 +198,146 @@
         </div>
       </div>
 
+      </div><!-- /학생 콘텐츠 -->
+
+      <!-- ===== 부모 콘텐츠 ===== -->
+      <div x-show="isParent">
+
+        <!-- 프로필 카드 -->
+        <div class="bg-white mx-4 mt-4 rounded-2xl shadow-sm p-5">
+          <div class="flex items-center gap-4">
+            <div class="relative flex-shrink-0">
+              <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center">
+                <span class="text-2xl font-bold text-indigo-600" x-text="user?.initial||'?'"></span>
+              </div>
+              <button @click="openEdit()" class="absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center shadow">
+                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              </button>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h2 class="font-bold text-gray-900 text-base" x-text="user?.name"></h2>
+              <span class="mt-1 inline-block bg-indigo-100 text-indigo-600 text-[10px] font-semibold px-2 py-0.5 rounded-full">부모 계정</span>
+            </div>
+            <button @click="openEdit()" class="text-sm text-indigo-500 font-medium flex-shrink-0">편집</button>
+          </div>
+        </div>
+
+        <!-- 구독 -->
+        <div class="mx-4 mt-5">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">구독</p>
+          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <!-- 현재 플랜 -->
+            <div class="p-4 border-b border-gray-50">
+              <div class="flex items-start justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-gray-800">월간 구독</p>
+                  <p class="text-xs text-gray-400 mt-0.5">다음 결제일: 2026.05.20</p>
+                  <span class="mt-2 inline-block bg-green-100 text-green-600 text-[10px] font-bold px-2 py-0.5 rounded-full">구독 중</span>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <p class="text-lg font-bold text-indigo-600">10,000원</p>
+                  <p class="text-[10px] text-gray-400">/월</p>
+                </div>
+              </div>
+            </div>
+            <!-- 연간 전환 제안 -->
+            <div class="p-4 bg-indigo-50 flex items-center justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-indigo-700">연간 구독으로 전환</p>
+                <p class="text-xs text-indigo-400 mt-0.5">100,000원/년 · 2개월 무료 혜택</p>
+              </div>
+              <button class="flex-shrink-0 bg-indigo-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg whitespace-nowrap">전환하기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 결제 수단 -->
+        <div class="mx-4 mt-5">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">결제 수단</p>
+          <div class="bg-white rounded-2xl shadow-sm divide-y divide-gray-50">
+            <!-- 등록된 카드 -->
+            <div class="flex items-center gap-3 px-4 py-3.5">
+              <div class="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-800">신한카드</p>
+                <p class="text-xs text-gray-400">****-****-****-1234</p>
+              </div>
+              <span class="bg-gray-100 text-gray-500 text-[10px] font-medium px-2 py-0.5 rounded-full flex-shrink-0">기본</span>
+            </div>
+            <!-- 추가 버튼 -->
+            <button class="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors">
+              <div class="w-9 h-9 border-2 border-dashed border-indigo-300 rounded-xl flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              </div>
+              <span class="text-sm text-indigo-500 font-medium">결제 수단 추가</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 결제 내역 -->
+        <div class="mx-4 mt-5 mb-8">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">결제 내역</p>
+          <div class="bg-white rounded-2xl shadow-sm divide-y divide-gray-50">
+            <template x-for="h in payHistory" :key="h.date">
+              <div class="flex items-center justify-between px-4 py-3.5">
+                <div>
+                  <p class="text-sm font-medium text-gray-800" x-text="h.plan"></p>
+                  <p class="text-xs text-gray-400 mt-0.5" x-text="h.date + ' · 신한카드'"></p>
+                </div>
+                <p class="text-sm font-semibold text-gray-700" x-text="'-' + h.amount.toLocaleString() + '원'"></p>
+              </div>
+            </template>
+          </div>
+        </div>
+
+      </div><!-- /부모 콘텐츠 -->
+
     </main>
+
+    <!-- 프로필 편집 시트 (부모용) -->
+    <div x-show="showEditSheet" x-cloak
+         class="fixed inset-0 bg-black/40 z-40 flex items-end justify-center"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         @click.self="showEditSheet=false">
+      <div class="w-full max-w-3xl bg-white rounded-t-3xl flex flex-col"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
+        <!-- 핸들 -->
+        <div class="flex justify-center pt-3 pb-1 flex-shrink-0"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <!-- 헤더 -->
+        <div class="flex items-center justify-between px-5 py-3 border-b border-gray-100 flex-shrink-0">
+          <h3 class="font-bold text-gray-900">프로필 편집</h3>
+          <button @click="showEditSheet=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <!-- 콘텐츠 -->
+        <div class="px-5 py-6 flex flex-col gap-5">
+          <!-- 아바타 변경 -->
+          <div class="flex justify-center">
+            <div class="relative">
+              <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center">
+                <span class="text-3xl font-bold text-indigo-600" x-text="user?.initial||'?'"></span>
+              </div>
+              <button class="absolute -bottom-1 -right-1 w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center shadow">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              </button>
+            </div>
+          </div>
+          <!-- 닉네임 입력 -->
+          <div>
+            <label class="text-xs font-semibold text-gray-500 block mb-1.5">닉네임</label>
+            <input x-model="editName" type="text" placeholder="닉네임을 입력하세요"
+                   class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent">
+          </div>
+          <!-- 저장 버튼 -->
+          <button @click="saveEdit()" class="w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 active:scale-95 transition">저장</button>
+        </div>
+      </div>
+    </div>
 
     <!-- 일별 읽기내역 모달 -->
     <div x-show="daySheet" x-cloak
@@ -304,6 +446,13 @@ function app() {
     calYear: 2026, calMonth: 3,
     calDays: [], calStartDay: 0,
     daySheet: false, selectedDay: { label: '' },
+    showEditSheet: false, editName: '',
+    payHistory: [
+      { date: '2026.04.20', plan: '월간 구독', amount: 10000 },
+      { date: '2026.03.20', plan: '월간 구독', amount: 10000 },
+      { date: '2026.02.20', plan: '월간 구독', amount: 10000 },
+      { date: '2026.01.20', plan: '월간 구독', amount: 10000 },
+    ],
 
     badges: [
       {id:1, icon:'📚', label:'다독왕'},
@@ -374,6 +523,9 @@ function app() {
       this.selectedDay = { label: `${this.calYear}년 ${this.calMonth+1}월 ${day}일` };
       this.daySheet = true;
     },
+
+    openEdit() { this.editName = this.user?.name || ''; this.showEditSheet = true; },
+    saveEdit() { if (this.editName.trim()) { this.user.name = this.editName.trim(); } this.showEditSheet = false; },
 
     trophyColor(grade) {
       if (grade === '플래티넘') return 'text-cyan-300';
