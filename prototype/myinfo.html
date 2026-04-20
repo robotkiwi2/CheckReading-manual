@@ -311,7 +311,7 @@
         <!-- 결제 내역 -->
         <div class="mx-4 mt-5">
           <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">결제 내역</p>
-          <div class="bg-white rounded-2xl shadow-sm divide-y divide-gray-50">
+          <div class="bg-white rounded-2xl shadow-sm divide-y divide-gray-50 overflow-y-auto" style="max-height:234px">
             <template x-for="h in payHistory" :key="h.date">
               <div class="flex items-center justify-between px-4 py-3.5">
                 <div>
@@ -798,6 +798,12 @@ function app() {
       { date: '2026.03.20', plan: '월간 구독', amount: 10000 },
       { date: '2026.02.20', plan: '월간 구독', amount: 10000 },
       { date: '2026.01.20', plan: '월간 구독', amount: 10000 },
+      { date: '2025.12.20', plan: '월간 구독', amount: 10000 },
+      { date: '2025.11.20', plan: '월간 구독', amount: 10000 },
+      { date: '2025.10.20', plan: '월간 구독', amount: 10000 },
+      { date: '2025.09.20', plan: '월간 구독', amount: 10000 },
+      { date: '2025.08.20', plan: '월간 구독', amount: 10000 },
+      { date: '2025.07.20', plan: '월간 구독 (첫 결제)', amount: 10000 },
     ],
 
     badgeModal: false, selectedBadge: null, gradeModal: false,
