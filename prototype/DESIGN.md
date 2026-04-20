@@ -48,14 +48,23 @@ cr_user = {
 
 // 부모가 profiles.html에서 프로필 선택 시 저장
 cr_profile = {
-  id: 'hong',          // 'hong' | 'chun'
+  id: 'hong',
   name: '홍길동',
   initial: '홍',
   age: 9,
   level: 'Lv.3',
   reading: 3,
   done: 12,
-  color: 'linear-gradient(...)'
+  color: 'linear-gradient(135deg,#667eea,#764ba2)',
+  accent: '#667eea',        // 그라디언트 첫 색상 — 버튼 텍스트 등에 사용
+  online: true,             // 현재 뷰어 열려 있는지 (WebSocket 상태)
+  today: {
+    score: 124,
+    time: 42,               // 분
+    words: 1840,
+    eye: { reading: 65, scanning: 22, lost: 13 }  // % 합계 = 100
+  },
+  isOther: false            // true이면 다른 사용자의 자녀 (즐겨찾기)
 }
 ```
 
@@ -454,6 +463,285 @@ const profileColors = [
   'linear-gradient(135deg,#fa709a,#fee140)',
 ];
 // 인덱스: (name.charCodeAt(0) || 0) % profileColors.length
+```
+
+---
+
+---
+
+## profiles.html — 오늘 읽기 현황 + 실시간 모니터링
+
+### 프로필 데이터 구조
+
+```js
+profiles: [
+  {
+    id: 'hong', name: '홍길동', initial: '홍', age: 9, level: 'Lv.3',
+    reading: 3, done: 12,
+    color: 'linear-gradient(135deg,#667eea,#764ba2)',
+    accent: '#667eea',   // 버튼 텍스트 컬러 (그라디언트 첫 색)
+    online: true,        // 뷰어가 열려 있으면 true
+    today: { score: 124, time: 42, words: 1840,
+             eye: { reading: 65, scanning: 22, lost: 13 } }
+  },
+  ...
+]
+```
+
+### 실시간 시뮬레이션 (WebSocket 자리)
+
+```js
+init() {
+  // ...
+  setInterval(() => {
+    this.profiles.forEach(p => {
+      if (!p.online) return;
+      if (Math.random() < 0.35) p.today.score += 1;
+      p.today.words += Math.floor(Math.random() * 6);
+      if (Math.random() < 0.12) p.today.time += 1;
+      const d = Math.floor(Math.random() * 5) - 2;
+      p.today.eye.reading = Math.min(88, Math.max(20, p.today.eye.reading + d));
+      const d2 = Math.floor(Math.random() * 3) - 1;
+      p.today.eye.scanning = Math.min(45, Math.max(5, p.today.eye.scanning + d2));
+      p.today.eye.lost = 100 - p.today.eye.reading - p.today.eye.scanning;
+    });
+  }, 1000);
+}
+```
+
+실제 구현 시 WebSocket 메시지 핸들러로 교체. Alpine.js Proxy 기반 reactivity가 중첩 객체 변경도 감지하므로 별도 `$set` 불필요.
+
+### 시선 상태 바 UI
+
+```html
+<!-- 세그먼트 바 -->
+<div class="flex rounded-full overflow-hidden h-2.5">
+  <div class="bg-emerald-400 transition-all duration-700" :style="`width:${p.today.eye.reading}%`"></div>
+  <div class="bg-amber-400 transition-all duration-700"  :style="`width:${p.today.eye.scanning}%`"></div>
+  <div class="transition-all duration-700"
+       :class="p.today.eye.lost > 30 ? 'bg-red-500' : 'bg-red-400'"
+       :style="`width:${p.today.eye.lost}%`"></div>
+</div>
+<!-- Lost 30% 초과: 카드 테두리 경고 -->
+<div :class="p.today.eye.lost > 30 ? 'ring-2 ring-amber-400' : ''">
+```
+
+### [같이 보기] 버튼
+
+```html
+<!-- online 상태에서만 표시, @click.stop으로 카드 클릭(goProfile)과 분리 -->
+<button x-show="p.online" @click.stop="openViewer(p)"
+        class="mt-3 w-full py-2.5 bg-white text-sm font-bold rounded-xl flex items-center justify-center gap-2"
+        :style="`color:${p.accent}`">
+  <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+  같이 보기
+</button>
+```
+
+```js
+openViewer(p) {
+  localStorage.setItem('cr_profile', JSON.stringify(p));
+  window.location.href = 'reader.html';  // 미구현 — reader.html 만들면 연결
+}
+```
+
+---
+
+## profiles.html — 프로필 추가 위자드 (6단계)
+
+우측 슬라이드인 패널 (`addPanel`), 6단계 스텝.
+
+| 단계 | 항목 | 유효성 |
+|------|------|--------|
+| 1 | 배경색 선택 (컬러 그리드) | 색상 선택 여부 |
+| 2 | 닉네임 입력 | 2자 이상 |
+| 3 | 생년 선택 (그리드) | 선택 여부 |
+| 4 | 학년 선택 (그리드) | 선택 여부 |
+| 5 | 성별 카드 | 선택 여부 |
+| 6 | 선호 장르 태그 | 항상 통과 (선택 선택) |
+
+```js
+canNext() {
+  if (this.addStep===1) return !!this.newP.color;
+  if (this.addStep===2) return this.newP.name.trim().length >= 2;
+  if (this.addStep===3) return !!this.newP.birthYear;
+  if (this.addStep===4) return !!this.newP.grade;
+  if (this.addStep===5) return !!this.newP.gender;
+  return true;
+},
+addNext() {
+  if (!this.canNext()) return;
+  if (this.addStep < 6) { this.addStep++; return; }
+  const name = this.newP.name.trim();
+  this.profiles.push({
+    id: 'p' + Date.now(), name, initial: name[0],
+    age: new Date().getFullYear() - this.newP.birthYear,
+    level: 'Lv.1', reading: 0, done: 0,
+    color: this.newP.color, accent: /* 첫번째 색 추출 필요 */,
+    online: false,
+    today: { score: 0, time: 0, words: 0, eye: { reading: 0, scanning: 0, lost: 0 } }
+  });
+  this.addPanel = false;
+}
+```
+
+뒤로가기 버튼: `addStep > 1 ? addStep-- : addPanel = false`  
+진행 바: `:style="\`width:${addStep/6*100}%\`"`
+
+---
+
+## profile-detail.html — 헤더 분기 (isOther)
+
+```
+isOther === true   → 헤더 우측: 하트 아이콘 (즐겨찾기 토글)
+isOther === false  → 헤더 우측: 톱니 아이콘 (설정 패널 오픈)
+                     (단, user.type === 'parent'인 경우만)
+```
+
+```js
+favorited: false,   // 하트 토글 상태
+```
+
+```html
+<template x-if="profile.isOther">
+  <button @click="favorited=!favorited">
+    <!-- filled/unfilled heart SVG, :class 토글로 색상 변경 -->
+  </button>
+</template>
+<template x-if="!profile.isOther && isParent">
+  <button @click="settingsPanel=true">
+    <!-- 톱니 SVG -->
+  </button>
+</template>
+```
+
+---
+
+## profile-detail.html — 설정 패널 구조
+
+2단 레이어 — 메인 패널(z-30) → 하위 패널(z-40) 순으로 우측 슬라이드인.
+
+### 메인 설정 패널 메뉴 항목
+
+| 항목 | 아이콘 | 설명 |
+|------|--------|------|
+| 사진 교체 | 카메라 | 색상 그리드 |
+| 닉네임 변경 | 펜 | 텍스트 입력 |
+| 비밀번호 변경 | 자물쇠 | 현재/새/확인 입력 |
+| 생년월 변경 | 케이크 | 년/월 select |
+| 학년 변경 | 모자 | 학년 그리드 |
+| 성별 변경 | 사람 | 남/여 카드 |
+| 선호 책 설정 | 책 | 장르 태그 토글 |
+| 책 추천 설정 | 반짝이 | 추천 알고리즘 토글 |
+| 읽기 탐지 설정 | 눈 | 탐지 민감도 토글 |
+
+맨 아래: [프로필 삭제] 빨간 outline 버튼 → 확인 모달 → `deleteProfile()`
+
+```js
+deleteProfile() {
+  localStorage.removeItem('cr_profile');
+  window.location.href = 'profiles.html';
+}
+```
+
+### 상태 변수
+
+```js
+settingsPanel: false,    // 메인 설정 패널
+settingsSub: null,       // 열린 하위 패널 id (null이면 닫힘)
+deleteConfirm: false,    // 삭제 확인 모달
+```
+
+---
+
+## bookstore.html — 프로필별 추천선반
+
+### 선반 데이터 구조
+
+```js
+// 프로필별 선반: profile 필드 추가
+{ id: 2, title: '홍길동이 좋아하는 SF 소설',
+  profile: { id: 'hong', initial: '홍', name: '홍길동',
+             color: 'linear-gradient(135deg,#667eea,#764ba2)' },
+  books: mk([...]) }
+
+// 공통 선반: profile 없음
+{ id: 3, title: '📚 이번 주 인기 도서', books: mk([...]) }
+
+// 책에 likedBy 배열 추가
+mk([
+  { title: '...', author: '...', level: '...', likedBy: ['hong', 'chun'] },
+  { title: '...', author: '...', level: '...' },   // likedBy 없으면 하트 표시 안 함
+])
+```
+
+### 선반 헤더 — 프로필 아바타 조건부 표시
+
+```html
+<div class="flex items-center justify-between px-4 mb-3">
+  <template x-if="shelf.profile">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
+           :style="`background:${shelf.profile.color}`" x-text="shelf.profile.initial"></div>
+      <h3 class="font-bold text-gray-800 text-sm" x-text="shelf.title"></h3>
+    </div>
+  </template>
+  <template x-if="!shelf.profile">
+    <h3 class="font-bold text-gray-800 text-sm" x-text="shelf.title"></h3>
+  </template>
+  ...
+</div>
+```
+
+### 책 표지 찜 하트 아이콘
+
+```js
+// app() 데이터에 추가
+profileColors: { hong: '#667eea', chun: '#f093fb' },
+```
+
+```html
+<!-- 책 커버를 relative로 감싸고, 우측상단에 하트 스택 -->
+<div class="relative ...">
+  <div x-show="book.likedBy && book.likedBy.length"
+       class="absolute top-1.5 right-1.5 flex flex-col gap-0.5">
+    <template x-for="pid in (book.likedBy||[])" :key="pid">
+      <div class="w-4 h-4 rounded-full flex items-center justify-center shadow"
+           :style="`background:${profileColors[pid]||'#aaa'}`">
+        <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3..."/>
+        </svg>
+      </div>
+    </template>
+  </div>
+  ...
+</div>
+```
+
+---
+
+## reader.html — 설계 방향 (미구현)
+
+### 모드 분기
+
+```
+cr_profile.isOther === false → 학생 뷰어
+  - 페이지 텍스트 표시, 페이지 넘김
+  - 시선 보정 UI (읽는 중 표시기)
+
+openViewer() 호출 (부모가 [같이 보기] 클릭) → 부모 모니터링 뷰어
+  - 자녀 현재 페이지 미러링 (읽기 전용)
+  - 화면 상단 or 하단: 실시간 지표 오버레이
+    - 현재 페이지, 읽기 속도
+    - 시선 상태 바 (Reading / Scanning / Lost)
+  - 닫기 → profiles.html 복귀
+```
+
+### 진입 경로
+
+```
+profiles.html → [같이 보기] → openViewer(p) → localStorage cr_profile 저장 → reader.html
+reader.html   → init()에서 cr_profile 읽어 모니터링 모드 판단
 ```
 
 ---
