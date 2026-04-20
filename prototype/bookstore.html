@@ -331,7 +331,7 @@
                  @click="openReader(ch.n-1)">
               <span class="text-xs text-gray-300 w-5 text-right flex-shrink-0" x-text="ch.n"></span>
               <span class="text-sm text-gray-700 flex-1" x-text="ch.t"></span>
-              <span class="text-xs text-gray-400 flex-shrink-0" x-text="ch.p+'p'"></span>
+              <span class="text-xs text-gray-400 flex-shrink-0" x-text="ch.w.toLocaleString()+'단어'"></span>
               <svg class="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </div>
           </template>
@@ -531,14 +531,14 @@ function app() {
     searchPanel: false, searchQuery: '',
 
     toc: [
-      {n:1,t:'The Worst Birthday',p:1},{n:2,t:'Vanished into Thin Air',p:14},
-      {n:3,t:'Grover Unexpectedly Loses His Pants',p:27},{n:4,t:'My Mother Teaches Me Bullfighting',p:40},
-      {n:5,t:'I Play Pinochle with a Horse',p:53},{n:6,t:'I Become Supreme Lord of the Bathroom',p:67},
-      {n:7,t:'My Dinner Goes Up in Smoke',p:80},{n:8,t:'We Capture a Flag',p:94},
-      {n:9,t:'I Am Offered a Quest',p:108},{n:10,t:'I Ruin a Perfectly Good Bus',p:122},
-      {n:11,t:'We Visit the Garden Gnome',p:136},{n:12,t:'We Get Advice from a Poodle',p:150},
-      {n:13,t:'I Plunge to My Death',p:163},{n:14,t:'I Become the Swim Team Captain',p:177},
-      {n:15,t:'A God Buys Us Cheeseburgers',p:191},
+      {n:1,t:'The Worst Birthday',w:1240},{n:2,t:'Vanished into Thin Air',w:1380},
+      {n:3,t:'Grover Unexpectedly Loses His Pants',w:1510},{n:4,t:'My Mother Teaches Me Bullfighting',w:1290},
+      {n:5,t:'I Play Pinochle with a Horse',w:1450},{n:6,t:'I Become Supreme Lord of the Bathroom',w:1320},
+      {n:7,t:'My Dinner Goes Up in Smoke',w:1600},{n:8,t:'We Capture a Flag',w:1180},
+      {n:9,t:'I Am Offered a Quest',w:1420},{n:10,t:'I Ruin a Perfectly Good Bus',w:1350},
+      {n:11,t:'We Visit the Garden Gnome',w:1270},{n:12,t:'We Get Advice from a Poodle',w:1490},
+      {n:13,t:'I Plunge to My Death',w:1560},{n:14,t:'I Become the Swim Team Captain',w:1310},
+      {n:15,t:'A God Buys Us Cheeseburgers',w:1230},
     ],
 
     reviews: [
