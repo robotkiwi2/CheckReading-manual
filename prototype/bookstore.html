@@ -227,10 +227,12 @@
         <!-- 목차 -->
         <div x-show="bookDetailTab==='toc'" class="bg-white divide-y divide-gray-50 mb-2">
           <template x-for="ch in toc" :key="ch.n">
-            <div class="flex items-center gap-3 px-4 py-3">
+            <div class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-indigo-50 active:bg-indigo-100 transition-colors"
+                 @click="openReader(ch.n-1)">
               <span class="text-xs text-gray-300 w-5 text-right flex-shrink-0" x-text="ch.n"></span>
               <span class="text-sm text-gray-700 flex-1" x-text="ch.t"></span>
               <span class="text-xs text-gray-400 flex-shrink-0" x-text="ch.p+'p'"></span>
+              <svg class="w-4 h-4 text-indigo-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </div>
           </template>
         </div>
@@ -343,7 +345,7 @@
 
       <!-- 고정 하단 [책 읽기] 버튼 -->
       <div class="flex-shrink-0 bg-white border-t border-gray-100 px-4 py-3">
-        <button class="w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 active:scale-95 transition">책 읽기</button>
+        <button @click="openReader(0)" class="w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 active:scale-95 transition">책 읽기</button>
       </div>
     </div>
 
@@ -469,6 +471,10 @@ function app() {
     logout() { localStorage.removeItem('cr_user'); window.location.href = 'index.html'; },
     openShelf(s) { this.selectedBook = null; this.selectedShelf = s; },
     openBook(b) { this.selectedBook = b; this.bookDetailTab = 'toc'; this.reviewModal = false; },
+    openReader(chapter) {
+      localStorage.setItem('cr_reader_chapter', chapter);
+      window.location.href = 'reader.html';
+    },
     openReview(r) { this.selectedReview = r; this.reviewModal = true; },
     goReviewerProfile() {
       localStorage.setItem('cr_profile', JSON.stringify(minjun));
