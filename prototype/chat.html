@@ -101,67 +101,79 @@
       <!-- 메시지 목록 -->
       <div class="flex-1 overflow-y-auto min-h-0 px-4 py-4 flex flex-col gap-3" x-ref="msgList">
         <template x-for="msg in activeRoom?.messages" :key="msg.id">
+          <div>
 
-          <!-- 시스템 메시지 -->
-          <div x-show="msg.type==='system'" class="flex justify-center">
-            <span class="bg-gray-200 text-gray-500 text-[11px] px-3 py-1 rounded-full" x-text="msg.text"></span>
-          </div>
-
-          <!-- 날짜 구분선 -->
-          <div x-show="msg.type==='date'" class="flex items-center gap-3">
-            <hr class="flex-1 border-gray-200">
-            <span class="text-[11px] text-gray-400" x-text="msg.text"></span>
-            <hr class="flex-1 border-gray-200">
-          </div>
-
-          <!-- 상대방 메시지 (왼쪽) -->
-          <div x-show="msg.type==='them'" class="flex items-end gap-2">
-            <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                 :style="`background:${activeRoom?.color}`" x-text="activeRoom?.initial"></div>
-            <div class="max-w-[70%]">
-              <div class="bg-white rounded-2xl rounded-bl-sm px-3.5 py-2.5 shadow-sm">
-                <p class="text-sm text-gray-800 leading-relaxed" x-text="msg.text"></p>
+            <!-- 시스템 메시지 -->
+            <template x-if="msg.type==='system'">
+              <div class="flex justify-center">
+                <span class="bg-gray-200 text-gray-500 text-[11px] px-3 py-1 rounded-full" x-text="msg.text"></span>
               </div>
-              <p class="text-[10px] text-gray-400 mt-1 ml-1" x-text="msg.time"></p>
-            </div>
-          </div>
+            </template>
 
-          <!-- 리포트 알림 카드 -->
-          <div x-show="msg.type==='report'" class="flex justify-center">
-            <button @click="goToReport(msg)"
-                    class="w-full bg-white rounded-2xl shadow-sm p-4 text-left border border-indigo-100 hover:bg-indigo-50 active:bg-indigo-100 transition-colors">
-              <div class="flex items-center gap-2.5 mb-2.5">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                     :style="`background:${msg.profileColor}`" x-text="msg.profileInitial"></div>
-                <div class="min-w-0">
-                  <p class="text-xs font-bold text-indigo-600">📊 주간 리포트 도착</p>
-                  <p class="text-[10px] text-gray-400 truncate" x-text="msg.profileName + ' · ' + msg.week + ' (' + msg.period + ')'"></p>
+            <!-- 날짜 구분선 -->
+            <template x-if="msg.type==='date'">
+              <div class="flex items-center gap-3">
+                <hr class="flex-1 border-gray-200">
+                <span class="text-[11px] text-gray-400" x-text="msg.text"></span>
+                <hr class="flex-1 border-gray-200">
+              </div>
+            </template>
+
+            <!-- 상대방 메시지 (왼쪽) -->
+            <template x-if="msg.type==='them'">
+              <div class="flex items-end gap-2">
+                <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                     :style="`background:${activeRoom?.color}`" x-text="activeRoom?.initial"></div>
+                <div class="max-w-[70%]">
+                  <div class="bg-white rounded-2xl rounded-bl-sm px-3.5 py-2.5 shadow-sm">
+                    <p class="text-sm text-gray-800 leading-relaxed" x-text="msg.text"></p>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-1 ml-1" x-text="msg.time"></p>
                 </div>
               </div>
-              <p class="text-xs text-gray-600 mb-3 leading-relaxed" x-text="msg.summary"></p>
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-1.5">
-                  <span class="text-sm font-bold text-gray-800" x-text="msg.score.toLocaleString() + '점'"></span>
-                  <span class="text-xs font-semibold"
-                        :class="msg.scoreDiff >= 0 ? 'text-green-500' : 'text-red-400'"
-                        x-text="(msg.scoreDiff >= 0 ? '▲' : '▼') + Math.abs(msg.scoreDiff) + '점'"></span>
+            </template>
+
+            <!-- 리포트 알림 카드 -->
+            <template x-if="msg.type==='report'">
+              <div class="flex justify-center">
+                <button @click="goToReport(msg)"
+                        class="w-full bg-white rounded-2xl shadow-sm p-4 text-left border border-indigo-100 hover:bg-indigo-50 active:bg-indigo-100 transition-colors">
+                  <div class="flex items-center gap-2.5 mb-2.5">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+                         :style="`background:${msg.profileColor}`" x-text="msg.profileInitial"></div>
+                    <div class="min-w-0">
+                      <p class="text-xs font-bold text-indigo-600">📊 주간 리포트 도착</p>
+                      <p class="text-[10px] text-gray-400 truncate" x-text="msg.profileName + ' · ' + msg.week + ' (' + msg.period + ')'"></p>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-600 mb-3 leading-relaxed" x-text="msg.summary"></p>
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-sm font-bold text-gray-800" x-text="msg.score.toLocaleString() + '점'"></span>
+                      <span class="text-xs font-semibold"
+                            :class="msg.scoreDiff >= 0 ? 'text-green-500' : 'text-red-400'"
+                            x-text="(msg.scoreDiff >= 0 ? '▲' : '▼') + Math.abs(msg.scoreDiff) + '점'"></span>
+                    </div>
+                    <span class="text-xs text-indigo-500 font-semibold">리포트 보기 →</span>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-2 text-right" x-text="msg.time"></p>
+                </button>
+              </div>
+            </template>
+
+            <!-- 내 메시지 (오른쪽) -->
+            <template x-if="msg.type==='me'">
+              <div class="flex items-end gap-2 justify-end">
+                <div class="max-w-[70%]">
+                  <div class="bg-indigo-500 rounded-2xl rounded-br-sm px-3.5 py-2.5">
+                    <p class="text-sm text-white leading-relaxed" x-text="msg.text"></p>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-1 text-right mr-1" x-text="msg.time"></p>
                 </div>
-                <span class="text-xs text-indigo-500 font-semibold">리포트 보기 →</span>
               </div>
-              <p class="text-[10px] text-gray-400 mt-2 text-right" x-text="msg.time"></p>
-            </button>
-          </div>
+            </template>
 
-          <!-- 내 메시지 (오른쪽) -->
-          <div x-show="msg.type==='me'" class="flex items-end gap-2 justify-end">
-            <div class="max-w-[70%]">
-              <div class="bg-indigo-500 rounded-2xl rounded-br-sm px-3.5 py-2.5">
-                <p class="text-sm text-white leading-relaxed" x-text="msg.text"></p>
-              </div>
-              <p class="text-[10px] text-gray-400 mt-1 text-right mr-1" x-text="msg.time"></p>
-            </div>
           </div>
-
         </template>
       </div>
 
