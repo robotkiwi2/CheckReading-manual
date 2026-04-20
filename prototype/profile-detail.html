@@ -19,18 +19,18 @@
   <!-- 사이드바 (lg+) -->
   <aside class="hidden lg:flex flex-col w-56 bg-white border-r border-gray-100 flex-shrink-0">
     <div class="px-5 py-5 border-b border-gray-100 flex items-center gap-3">
-      <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center"><span class="text-white text-xs font-bold">CR</span></div>
+      <div class="w-8 h-8 bg-blue-700 rounded-xl flex items-center justify-center"><span class="text-white text-xs font-bold">CR</span></div>
       <span class="font-bold text-gray-900">CheckReading</span>
     </div>
     <nav class="flex-1 py-4 px-3 flex flex-col gap-1">
-      <a href="profiles.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-blue-50 text-blue-600 font-semibold text-sm"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg>프로필</a>
+      <a href="profiles.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-blue-50 text-blue-700 font-semibold text-sm"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg>프로필</a>
       <a href="chat.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>소통</a>
       <a href="bookstore.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>서점</a>
       <a href="bookshelf.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>내 책장</a>
       <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>내 정보</a>
     </nav>
     <div class="px-4 py-4 border-t border-gray-100 flex items-center gap-3">
-      <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600" x-text="user?.initial||'?'"></div>
+      <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-700" x-text="user?.initial||'?'"></div>
       <div class="flex-1 min-w-0"><p class="text-sm font-semibold text-gray-800 truncate" x-text="user?.name"></p><p class="text-xs text-gray-400">부모</p></div>
     </div>
   </aside>
@@ -117,13 +117,13 @@
         <div class="flex bg-gray-100 rounded-2xl p-1 mb-3 gap-0.5">
           <button @click="chartTab='score'"
                   class="flex-1 py-2 text-xs font-semibold rounded-xl transition-all"
-                  :class="chartTab==='score' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'">읽기 점수</button>
+                  :class="chartTab==='score' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-400 hover:text-gray-600'">읽기 점수</button>
           <button @click="chartTab='eye'"
                   class="flex-1 py-2 text-xs font-semibold rounded-xl transition-all"
-                  :class="chartTab==='eye' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'">시선 상태</button>
+                  :class="chartTab==='eye' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-400 hover:text-gray-600'">시선 상태</button>
           <button @click="chartTab='focus'"
                   class="flex-1 py-2 text-xs font-semibold rounded-xl transition-all"
-                  :class="chartTab==='focus' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'">시선 집중도</button>
+                  :class="chartTab==='focus' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-400 hover:text-gray-600'">시선 집중도</button>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm px-4 pt-4 pb-3">
@@ -157,24 +157,24 @@
           <!-- 요약 수치 -->
           <div class="mb-3 min-h-[28px]">
             <div x-show="chartTab==='score'" class="flex items-baseline gap-2">
-              <span class="text-xl font-bold text-blue-600" x-text="chartSummary.main"></span>
+              <span class="text-xl font-bold text-blue-700" x-text="chartSummary.main"></span>
               <span class="text-xs text-gray-400" x-text="chartSummary.sub"></span>
               <button @click="scoreTooltip=!scoreTooltip"
-                      class="w-4 h-4 rounded-full bg-gray-200 text-gray-500 text-[10px] font-bold flex items-center justify-center hover:bg-blue-100 hover:text-blue-600 transition-colors flex-shrink-0 mb-0.5">i</button>
+                      class="w-4 h-4 rounded-full bg-gray-200 text-gray-500 text-[10px] font-bold flex items-center justify-center hover:bg-blue-100 hover:text-blue-700 transition-colors flex-shrink-0 mb-0.5">i</button>
             </div>
             <!-- 읽기 점수 산출 방식 툴팁 -->
             <div x-show="chartTab==='score' && scoreTooltip"
                  x-cloak
                  @click.outside="scoreTooltip=false"
                  class="mt-2 mb-1 bg-blue-50 border border-blue-100 rounded-xl px-3.5 py-3 text-xs text-gray-600 leading-relaxed">
-              <p class="font-semibold text-blue-700 mb-1.5">읽기 점수 산출 방식</p>
+              <p class="font-semibold text-blue-800 mb-1.5">읽기 점수 산출 방식</p>
               <p class="mb-1"><span class="font-medium text-gray-800">기본 점수</span> = 읽은 단어수 × 책 레벨 가중치 × 시선상태 가중치</p>
               <p class="mb-2"><span class="font-medium text-gray-800">최종 점수</span> = 기본 점수 + 퀴즈 보너스 + 읽기속도 보너스</p>
               <p class="text-gray-400 text-[11px]">퀴즈·속도 보너스는 기본 점수의 30% 이내로 제한됩니다.</p>
             </div>
             <div x-show="chartTab==='eye'" class="flex flex-wrap gap-3">
               <div class="flex items-center gap-1.5">
-                <div class="w-2.5 h-2.5 rounded-full bg-blue-500 flex-shrink-0"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-blue-600 flex-shrink-0"></div>
                 <span class="text-xs text-gray-500">읽는 중 <span class="font-bold text-gray-800" x-text="chartSummary.reading+'%'"></span></span>
               </div>
               <div class="flex items-center gap-1.5">
@@ -214,7 +214,7 @@
         <div class="flex gap-3 mb-4">
           <div class="flex-1 bg-white rounded-2xl p-4 shadow-sm text-center">
             <p class="text-[10px] text-gray-400 mb-1">획득점수</p>
-            <p class="text-xl font-bold text-blue-600" x-text="monthSummary.score.toLocaleString() + '점'"></p>
+            <p class="text-xl font-bold text-blue-700" x-text="monthSummary.score.toLocaleString() + '점'"></p>
           </div>
           <div class="flex-1 bg-white rounded-2xl p-4 shadow-sm text-center">
             <p class="text-[10px] text-gray-400 mb-1">읽은 단어</p>
@@ -224,7 +224,7 @@
         <div class="bg-white rounded-2xl p-4 shadow-sm">
           <div class="grid grid-cols-7 mb-2">
             <template x-for="d in ['일','월','화','수','목','금','토']" :key="d">
-              <div class="text-center text-[10px] font-semibold" :class="d==='일'?'text-red-400':d==='토'?'text-blue-400':'text-gray-400'" x-text="d"></div>
+              <div class="text-center text-[10px] font-semibold" :class="d==='일'?'text-red-400':d==='토'?'text-blue-500':'text-gray-400'" x-text="d"></div>
             </template>
           </div>
           <div class="grid grid-cols-7 gap-y-1">
@@ -261,13 +261,13 @@
                     class="w-full bg-white rounded-2xl shadow-sm px-4 py-3.5 flex items-center gap-3 text-left hover:bg-gray-50 active:bg-gray-100 transition-colors">
               <div class="flex-shrink-0 w-12 h-12 rounded-xl flex flex-col items-center justify-center"
                    :class="r.isNew ? 'bg-blue-50' : 'bg-gray-50'">
-                <span class="text-[9px] font-semibold leading-tight" :class="r.isNew ? 'text-blue-400' : 'text-gray-400'" x-text="r.month"></span>
-                <span class="text-[12px] font-bold leading-tight" :class="r.isNew ? 'text-blue-600' : 'text-gray-600'" x-text="r.weekNum"></span>
+                <span class="text-[9px] font-semibold leading-tight" :class="r.isNew ? 'text-blue-500' : 'text-gray-400'" x-text="r.month"></span>
+                <span class="text-[12px] font-bold leading-tight" :class="r.isNew ? 'text-blue-700' : 'text-gray-600'" x-text="r.weekNum"></span>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1.5 mb-0.5">
                   <span class="text-[10px] text-gray-400" x-text="r.period"></span>
-                  <span x-show="r.isNew" class="px-1.5 py-0.5 bg-blue-500 text-white text-[9px] font-bold rounded-full leading-none">NEW</span>
+                  <span x-show="r.isNew" class="px-1.5 py-0.5 bg-blue-600 text-white text-[9px] font-bold rounded-full leading-none">NEW</span>
                 </div>
                 <p class="text-xs font-medium text-gray-700 truncate" x-text="r.summary"></p>
               </div>
@@ -299,7 +299,7 @@
         </div>
         <div class="flex-1 overflow-y-auto min-h-0">
           <div class="flex gap-3 px-5 py-4">
-            <div class="flex-1 bg-blue-50 rounded-2xl p-3 text-center"><p class="text-[10px] text-blue-400 mb-0.5">획득 점수</p><p class="text-lg font-bold text-blue-600">230점</p></div>
+            <div class="flex-1 bg-blue-50 rounded-2xl p-3 text-center"><p class="text-[10px] text-blue-500 mb-0.5">획득 점수</p><p class="text-lg font-bold text-blue-700">230점</p></div>
             <div class="flex-1 bg-green-50 rounded-2xl p-3 text-center"><p class="text-[10px] text-green-400 mb-0.5">읽은 단어</p><p class="text-lg font-bold text-green-600">1,840개</p></div>
             <div class="flex-1 bg-orange-50 rounded-2xl p-3 text-center"><p class="text-[10px] text-orange-400 mb-0.5">읽은 시간</p><p class="text-lg font-bold text-orange-500">42분</p></div>
           </div>
@@ -315,9 +315,9 @@
                     <span class="text-[10px] text-gray-400 bg-gray-100 rounded-md px-1.5 py-0.5 flex-shrink-0">오전 09:20</span>
                   </div>
                   <p class="text-xs text-gray-400">R. Riordan</p>
-                  <div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-400 rounded-full" style="width:68%"></div></div>
+                  <div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width:68%"></div></div>
                   <p class="text-[10px] text-gray-500 mt-1">25분 · 1,200단어 · +150점 · 퀴즈 85%</p>
-                  <p class="text-[10px] text-blue-500 mt-0.5">148 WPM · Reading 68% · 집중도 78%</p>
+                  <p class="text-[10px] text-blue-600 mt-0.5">148 WPM · Reading 68% · 집중도 78%</p>
                 </div>
               </div>
               <!-- Percy Jackson 오후 세션 (시선기록 있음 → 보기 버튼 있음) -->
@@ -329,12 +329,12 @@
                     <span class="text-[10px] text-gray-400 bg-gray-100 rounded-md px-1.5 py-0.5 flex-shrink-0">오후 15:10</span>
                   </div>
                   <p class="text-xs text-gray-400">R. Riordan</p>
-                  <div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-400 rounded-full" style="width:75%"></div></div>
+                  <div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width:75%"></div></div>
                   <p class="text-[10px] text-gray-500 mt-1">17분 · 640단어 · +80점 · 퀴즈 80%</p>
                   <div class="flex items-center justify-between mt-0.5">
-                    <p class="text-[10px] text-blue-500">135 WPM · Reading 65% · 집중도 74%</p>
+                    <p class="text-[10px] text-blue-600">135 WPM · Reading 65% · 집중도 74%</p>
                     <button @click="window.location.href='reader.html?skip_calib=1'"
-                            class="text-[10px] font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg px-2 py-1 flex-shrink-0 ml-2">보기</button>
+                            class="text-[10px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg px-2 py-1 flex-shrink-0 ml-2">보기</button>
                   </div>
                 </div>
               </div>
@@ -347,12 +347,12 @@
                     <span class="text-[10px] text-gray-400 bg-gray-100 rounded-md px-1.5 py-0.5 flex-shrink-0">오후 19:40</span>
                   </div>
                   <p class="text-xs text-gray-400">M. Osborne</p>
-                  <div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-400 rounded-full" style="width:92%"></div></div>
+                  <div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width:92%"></div></div>
                   <p class="text-[10px] text-gray-500 mt-1">28분 · 1,120단어 · +90점 · 퀴즈 90%</p>
                   <div class="flex items-center justify-between mt-0.5">
-                    <p class="text-[10px] text-blue-500">162 WPM · Reading 72% · 집중도 82%</p>
+                    <p class="text-[10px] text-blue-600">162 WPM · Reading 72% · 집중도 82%</p>
                     <button @click="window.location.href='reader.html?skip_calib=1'"
-                            class="text-[10px] font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg px-2 py-1 flex-shrink-0 ml-2">보기</button>
+                            class="text-[10px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg px-2 py-1 flex-shrink-0 ml-2">보기</button>
                   </div>
                 </div>
               </div>
@@ -388,7 +388,7 @@
               <div class="bg-blue-50 rounded-2xl p-4">
                 <div class="flex items-center gap-2 mb-2">
                   <span class="text-base">✨</span>
-                  <p class="text-xs font-bold text-blue-700">이번 주 총평</p>
+                  <p class="text-xs font-bold text-blue-800">이번 주 총평</p>
                 </div>
                 <p class="text-sm text-blue-900 leading-relaxed" x-text="selectedReport.aiComment"></p>
               </div>
@@ -435,15 +435,15 @@
                         <p class="font-semibold text-sm text-gray-800" x-text="book.title"></p>
                         <p class="text-xs text-gray-400" x-text="book.author"></p>
                         <div class="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div class="h-full bg-blue-400 rounded-full transition-all" :style="`width:${book.progress}%`"></div>
+                          <div class="h-full bg-blue-500 rounded-full transition-all" :style="`width:${book.progress}%`"></div>
                         </div>
                         <div class="flex items-center justify-between mt-0.5">
-                          <p class="text-[10px] text-blue-500" x-text="book.progress + '%'"></p>
+                          <p class="text-[10px] text-blue-600" x-text="book.progress + '%'"></p>
                           <p class="text-[10px] text-gray-400" x-text="'+' + book.score + '점'"></p>
                         </div>
                         <div class="flex items-center gap-2 mt-1.5">
                           <span class="text-[10px] text-emerald-600 bg-emerald-50 rounded px-1.5 py-0.5" x-text="'시선 ' + book.eye + '%'"></span>
-                          <span class="text-[10px] text-blue-500 bg-blue-50 rounded px-1.5 py-0.5" x-text="book.wpm + ' wpm'"></span>
+                          <span class="text-[10px] text-blue-600 bg-blue-50 rounded px-1.5 py-0.5" x-text="book.wpm + ' wpm'"></span>
                         </div>
                       </div>
                       <span x-show="book.progress===100" class="flex-shrink-0 text-base">🏁</span>
@@ -463,11 +463,11 @@
                     <div class="flex flex-col items-center gap-1.5">
                       <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-colors"
                            :class="selectedReport.readDays[i]
-                             ? (selectedReport.bestDayIndex === i ? 'bg-blue-500 text-white' : 'bg-blue-100 text-blue-600')
+                             ? (selectedReport.bestDayIndex === i ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-700')
                              : 'bg-gray-100 text-gray-300'">
                         <span x-text="day"></span>
                       </div>
-                      <div class="w-1.5 h-1.5 rounded-full" :class="selectedReport.readDays[i] ? 'bg-blue-400' : 'bg-gray-200'"></div>
+                      <div class="w-1.5 h-1.5 rounded-full" :class="selectedReport.readDays[i] ? 'bg-blue-500' : 'bg-gray-200'"></div>
                     </div>
                   </template>
                 </div>
@@ -568,7 +568,7 @@
           <input type="file" accept="image/*" x-ref="photoFileInput" class="hidden"
                  @change="onPhotoSelect($event)">
           <button @click="$refs.photoFileInput.click()"
-                  class="w-full py-3.5 bg-blue-600 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+                  class="w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             사진 선택
           </button>
@@ -598,7 +598,7 @@
                  :value="selectedColor"
                  @input="selectedColor=$event.target.value; if(profile) profile.color=$event.target.value">
           <button @click="$refs.colorPicker.click()"
-                  class="mt-4 w-full py-3 text-sm font-semibold text-gray-700 border-2 border-gray-200 rounded-xl hover:border-blue-300 transition-colors flex items-center justify-center gap-2.5">
+                  class="mt-4 w-full py-3 text-sm font-semibold text-gray-700 border-2 border-gray-200 rounded-xl hover:border-blue-400 transition-colors flex items-center justify-center gap-2.5">
             <span class="w-5 h-5 rounded-full border-2 border-gray-300 shadow-sm flex-shrink-0" :style="`background:${selectedColor}`"></span>
             다른 색 선택
           </button>
@@ -607,26 +607,26 @@
         <!-- 닉네임 변경 -->
         <div x-show="settingsSub==='nickname'">
           <label class="block text-xs font-semibold text-gray-500 mb-1.5">닉네임</label>
-          <input type="text" :value="profile?.name" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="닉네임을 입력하세요">
+          <input type="text" :value="profile?.name" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="닉네임을 입력하세요">
           <p class="text-xs text-gray-400 mt-2">2~10자, 한글/영문/숫자 사용 가능</p>
-          <button class="mt-6 w-full py-3.5 bg-blue-600 text-white rounded-xl text-sm font-bold">저장</button>
+          <button class="mt-6 w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold">저장</button>
         </div>
 
         <!-- 비밀번호 변경 -->
         <div x-show="settingsSub==='password'" class="flex flex-col gap-4">
           <div>
             <label class="block text-xs font-semibold text-gray-500 mb-1.5">현재 비밀번호</label>
-            <input type="password" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="현재 비밀번호">
+            <input type="password" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="현재 비밀번호">
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-500 mb-1.5">새 비밀번호</label>
-            <input type="password" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="새 비밀번호 (6자 이상)">
+            <input type="password" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="새 비밀번호 (6자 이상)">
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-500 mb-1.5">새 비밀번호 확인</label>
-            <input type="password" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="새 비밀번호 재입력">
+            <input type="password" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="새 비밀번호 재입력">
           </div>
-          <button class="mt-2 w-full py-3.5 bg-blue-600 text-white rounded-xl text-sm font-bold">변경</button>
+          <button class="mt-2 w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold">변경</button>
         </div>
 
         <!-- 생년·학년 통합 -->
@@ -635,13 +635,13 @@
           <div class="flex gap-3 mb-6">
             <div class="flex-1">
               <label class="block text-xs font-semibold text-gray-500 mb-1.5">년도</label>
-              <select class="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+              <select class="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <template x-for="y in years" :key="y"><option x-text="y + '년'" :selected="y===2016"></option></template>
               </select>
             </div>
             <div class="flex-1">
               <label class="block text-xs font-semibold text-gray-500 mb-1.5">월</label>
-              <select class="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+              <select class="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <template x-for="m in 12" :key="m"><option x-text="m + '월'" :selected="m===3"></option></template>
               </select>
             </div>
@@ -651,11 +651,11 @@
             <template x-for="g in grades" :key="g">
               <button @click="selectedGrade=g"
                       class="py-3 rounded-xl text-sm font-medium border transition-colors"
-                      :class="selectedGrade===g ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300'"
+                      :class="selectedGrade===g ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-gray-700 border-gray-200 hover:border-blue-400'"
                       x-text="g"></button>
             </template>
           </div>
-          <button class="mt-6 w-full py-3.5 bg-blue-600 text-white rounded-xl text-sm font-bold">저장</button>
+          <button class="mt-6 w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold">저장</button>
         </div>
 
         <!-- 성별 -->
@@ -664,7 +664,7 @@
           <div class="flex gap-3">
             <button @click="selectedGender='남'"
                     class="flex-1 py-5 rounded-2xl text-lg font-bold border-2 transition-colors flex flex-col items-center gap-2"
-                    :class="selectedGender==='남' ? 'bg-blue-50 border-blue-400 text-blue-600' : 'bg-white border-gray-200 text-gray-400'">
+                    :class="selectedGender==='남' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-gray-200 text-gray-400'">
               👦<span class="text-sm">남자</span>
             </button>
             <button @click="selectedGender='여'"
@@ -673,7 +673,7 @@
               👧<span class="text-sm">여자</span>
             </button>
           </div>
-          <button class="mt-6 w-full py-3.5 bg-blue-600 text-white rounded-xl text-sm font-bold">저장</button>
+          <button class="mt-6 w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold">저장</button>
         </div>
 
         <!-- 선호책 설정 -->
@@ -683,11 +683,11 @@
             <template x-for="g in genres" :key="g.id">
               <button @click="g.on=!g.on"
                       class="px-4 py-2 rounded-full text-sm font-medium border-2 transition-colors"
-                      :class="g.on ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'"
+                      :class="g.on ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-gray-600 border-gray-200 hover:border-blue-400'"
                       x-text="g.label"></button>
             </template>
           </div>
-          <button class="mt-6 w-full py-3.5 bg-blue-600 text-white rounded-xl text-sm font-bold">저장</button>
+          <button class="mt-6 w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold">저장</button>
         </div>
 
         <!-- 책추천 설정 -->
@@ -702,7 +702,7 @@
                 </div>
                 <button @click="r.on=!r.on"
                         class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
-                        :class="r.on ? 'bg-blue-500' : 'bg-gray-200'">
+                        :class="r.on ? 'bg-blue-600' : 'bg-gray-200'">
                   <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
                         :style="r.on ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
                 </button>
@@ -731,7 +731,7 @@
                         <!-- 토글 -->
                         <button @click="item.on=!item.on"
                                 class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
-                                :class="item.on ? 'bg-blue-500' : 'bg-gray-200'">
+                                :class="item.on ? 'bg-blue-600' : 'bg-gray-200'">
                           <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
                                 :style="item.on ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
                         </button>
@@ -744,8 +744,8 @@
                           <button @click="item.value=opt"
                                   class="px-3 py-1 rounded-lg text-xs font-semibold border transition-colors"
                                   :class="item.value===opt
-                                    ? 'bg-blue-600 text-white border-blue-600'
-                                    : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-blue-300'">
+                                    ? 'bg-blue-700 text-white border-blue-700'
+                                    : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-blue-400'">
                             <span x-text="opt + (item.unit||'')"></span>
                           </button>
                         </template>
@@ -770,7 +770,7 @@
                 </div>
                 <button @click="r.on=!r.on"
                         class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
-                        :class="r.on ? 'bg-blue-500' : 'bg-gray-200'">
+                        :class="r.on ? 'bg-blue-600' : 'bg-gray-200'">
                   <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
                         :style="r.on ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
                 </button>
@@ -795,7 +795,7 @@
           <span class="text-4xl" x-text="selectedBadge?.icon"></span>
           <div>
             <p class="font-bold text-gray-900 text-lg" x-text="selectedBadge?.label"></p>
-            <p class="text-xs text-blue-500 font-medium mt-0.5" x-text="selectedBadge?.acquiredAt + ' 획득'"></p>
+            <p class="text-xs text-blue-600 font-medium mt-0.5" x-text="selectedBadge?.acquiredAt + ' 획득'"></p>
           </div>
         </div>
         <p class="text-sm text-gray-600 leading-relaxed mb-4" x-text="selectedBadge?.desc"></p>
@@ -804,7 +804,7 @@
           <p class="text-sm text-gray-700" x-text="selectedBadge?.condition"></p>
         </div>
         <div x-show="selectedBadge?.nextCondition" class="bg-blue-50 rounded-xl px-4 py-3">
-          <p class="text-[11px] text-blue-400 font-semibold uppercase tracking-widest mb-1">다음 단계</p>
+          <p class="text-[11px] text-blue-500 font-semibold uppercase tracking-widest mb-1">다음 단계</p>
           <p class="text-sm text-gray-700" x-text="selectedBadge?.nextCondition"></p>
         </div>
       </div>
@@ -829,7 +829,7 @@
             <p class="text-sm text-gray-500" x-text="currentGrade().desc"></p>
           </div>
         </div>
-        <p class="text-xs text-blue-500 font-medium mb-4 pl-1" x-text="currentGrade().acquiredAt + ' 달성'"></p>
+        <p class="text-xs text-blue-600 font-medium mb-4 pl-1" x-text="currentGrade().acquiredAt + ' 달성'"></p>
 
         <!-- 누적 점수 + 달성 조건 -->
         <div class="bg-gray-50 rounded-xl px-4 py-3 mb-3 flex items-center justify-between">
@@ -839,21 +839,21 @@
           </div>
           <div class="text-right">
             <p class="text-[11px] text-gray-400 mb-1">내 누적 점수</p>
-            <p class="text-lg font-bold text-blue-600" x-text="(profile?.totalScore||4820).toLocaleString() + '점'"></p>
+            <p class="text-lg font-bold text-blue-700" x-text="(profile?.totalScore||4820).toLocaleString() + '점'"></p>
           </div>
         </div>
 
         <!-- 다음 등급 진척도 -->
         <div x-show="currentGrade().next" class="bg-blue-50 rounded-xl px-4 py-3">
           <div class="flex items-center justify-between mb-2">
-            <p class="text-[11px] text-blue-400 font-semibold uppercase tracking-widest">다음 등급 · <span x-text="currentGrade().next"></span></p>
-            <p class="text-xs text-blue-600 font-semibold" x-text="gradeProgress() + '%'"></p>
+            <p class="text-[11px] text-blue-500 font-semibold uppercase tracking-widest">다음 등급 · <span x-text="currentGrade().next"></span></p>
+            <p class="text-xs text-blue-700 font-semibold" x-text="gradeProgress() + '%'"></p>
           </div>
           <div class="h-2 bg-blue-100 rounded-full overflow-hidden mb-2">
-            <div class="h-full bg-blue-500 rounded-full transition-all duration-700" :style="`width:${gradeProgress()}%`"></div>
+            <div class="h-full bg-blue-600 rounded-full transition-all duration-700" :style="`width:${gradeProgress()}%`"></div>
           </div>
           <p class="text-xs text-gray-500">
-            <span class="font-semibold text-blue-600" x-text="(currentGrade().nextThreshold - (profile?.totalScore||4820)).toLocaleString()"></span>점 더 모으면 <span class="font-semibold" x-text="currentGrade().next"></span> 달성
+            <span class="font-semibold text-blue-700" x-text="(currentGrade().nextThreshold - (profile?.totalScore||4820)).toLocaleString()"></span>점 더 모으면 <span class="font-semibold" x-text="currentGrade().next"></span> 달성
             <span class="text-gray-400 ml-1" x-text="'(목표 ' + (currentGrade().nextThreshold||0).toLocaleString() + '점)'"></span>
           </p>
         </div>
@@ -866,7 +866,7 @@
 
     <!-- 하단 탭바 (lg 미만) -->
     <nav class="lg:hidden flex-shrink-0 bg-white border-t border-gray-100 flex">
-      <a href="profiles.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-blue-600"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg><span class="text-[10px] font-semibold">프로필</span></a>
+      <a href="profiles.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-blue-700"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg><span class="text-[10px] font-semibold">프로필</span></a>
       <a href="chat.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-gray-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><span class="text-[10px]">소통</span></a>
       <a href="bookstore.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-gray-300"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg><span class="text-[10px]">서점</span></a>
       <a href="bookshelf.html" class="flex-1 flex flex-col items-center py-2 gap-0.5 text-gray-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg><span class="text-[10px]">내 책장</span></a>
@@ -1148,7 +1148,7 @@ function app() {
       if (score>50  && score<=100) bg='bg-green-200 text-green-800 hover:bg-green-300';
       if (score>100 && score<=150) bg='bg-green-400 text-white hover:bg-green-500';
       if (score>150) bg='bg-green-600 text-white hover:bg-green-700';
-      if (isToday) return bg+' ring-2 ring-blue-400 ring-offset-1';
+      if (isToday) return bg+' ring-2 ring-blue-500 ring-offset-1';
       return bg;
     },
     goDay(day) {
