@@ -129,7 +129,8 @@
 
                 <!-- 체크박스 (호버 또는 선택 모드) -->
                 <div x-show="selectMode || hoveredBookId===book.id"
-                     class="absolute top-1.5 left-1.5 z-10 pointer-events-none">
+                     class="absolute top-1.5 left-1.5 z-10"
+                     @click.stop="selectMode ? toggleSelect(book) : (selectMode=true, selectedIds=[book.id])">
                   <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center shadow transition-all"
                        :class="isSelected(book) ? 'bg-indigo-600 border-indigo-600' : 'bg-white/90 border-gray-300'">
                     <svg x-show="isSelected(book)" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
