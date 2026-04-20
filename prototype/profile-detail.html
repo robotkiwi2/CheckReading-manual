@@ -307,11 +307,11 @@
             <div class="flex flex-col gap-3">
               <div class="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
                 <div class="w-10 h-14 rounded-xl flex-shrink-0 flex items-end p-1" style="background:linear-gradient(135deg,#667eea,#764ba2)"><span class="text-white text-[8px] font-bold leading-tight">Percy Jackson</span></div>
-                <div class="flex-1 min-w-0"><p class="font-semibold text-sm text-gray-800">Percy Jackson</p><p class="text-xs text-gray-400">R. Riordan</p><div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-indigo-400 rounded-full" style="width:68%"></div></div><p class="text-[10px] text-indigo-500 mt-0.5">68% · +150점</p></div>
+                <div class="flex-1 min-w-0"><p class="font-semibold text-sm text-gray-800">Percy Jackson</p><p class="text-xs text-gray-400">R. Riordan</p><div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-400 rounded-full" style="width:68%"></div></div><p class="text-[10px] text-blue-500 mt-0.5">148 WPM · 퀴즈 85% · Reading 68%</p></div>
               </div>
               <div class="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
                 <div class="w-10 h-14 rounded-xl flex-shrink-0 flex items-end p-1" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><span class="text-white text-[8px] font-bold leading-tight">Magic Tree</span></div>
-                <div class="flex-1 min-w-0"><p class="font-semibold text-sm text-gray-800">Magic Tree House #5</p><p class="text-xs text-gray-400">M. Osborne</p><div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-green-400 rounded-full" style="width:92%"></div></div><p class="text-[10px] text-green-500 mt-0.5">92% · +80점</p></div>
+                <div class="flex-1 min-w-0"><p class="font-semibold text-sm text-gray-800">Magic Tree House #5</p><p class="text-xs text-gray-400">M. Osborne</p><div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-400 rounded-full" style="width:92%"></div></div><p class="text-[10px] text-blue-500 mt-0.5">162 WPM · 퀴즈 90% · Reading 72%</p></div>
               </div>
             </div>
           </div>
@@ -450,8 +450,14 @@
       <div class="flex-1 overflow-y-auto min-h-0">
         <!-- 프로필 미리보기 -->
         <div class="flex flex-col items-center py-6" :style="`background:${profile?.color}`">
-          <div class="w-20 h-20 bg-white/25 rounded-full flex items-center justify-center mb-2">
-            <span class="text-4xl font-bold text-white" x-text="profile?.initial"></span>
+          <div class="relative mb-2">
+            <div class="w-20 h-20 bg-white/25 rounded-full flex items-center justify-center">
+              <span class="text-4xl font-bold text-white" x-text="profile?.initial"></span>
+            </div>
+            <button @click="openSub('photo')"
+                    class="absolute bottom-0 right-0 w-7 h-7 bg-white rounded-full shadow-md flex items-center justify-center">
+              <svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            </button>
           </div>
           <p class="text-white font-bold text-base" x-text="profile?.name"></p>
         </div>
@@ -961,7 +967,7 @@ function app() {
     },
 
     settingsItems: [
-      {id:'photo',    icon:'🖼️', label:'사진 교체',      desc:'프로필 배경 색상 변경'},
+      {id:'photo',    icon:'🎨', label:'색상 교체',      desc:'프로필 배경 색상 변경'},
       {id:'nickname', icon:'✏️', label:'닉네임 변경',     desc:'표시되는 이름 수정'},
       {id:'password', icon:'🔒', label:'비밀번호 변경',   desc:'로그인 비밀번호 수정'},
       {id:'birth',    icon:'🎂', label:'생년월 변경',     desc:'생년월일 수정'},
@@ -974,14 +980,14 @@ function app() {
     ],
 
     avatarColors: [
-      'linear-gradient(135deg,#667eea,#764ba2)',
-      'linear-gradient(135deg,#f093fb,#f5576c)',
-      'linear-gradient(135deg,#4facfe,#00f2fe)',
-      'linear-gradient(135deg,#43e97b,#38f9d7)',
-      'linear-gradient(135deg,#fa709a,#fee140)',
-      'linear-gradient(135deg,#a18cd1,#fbc2eb)',
-      'linear-gradient(135deg,#fd7043,#ff8a65)',
-      'linear-gradient(135deg,#26c6da,#00838f)',
+      '#3d5069',
+      '#553d6a',
+      '#2d5a3f',
+      '#6a3d3d',
+      '#3d5a5a',
+      '#6a5a3d',
+      '#3d4a6a',
+      '#5a3d4a',
     ],
     years: Array.from({length:15}, (_,i) => 2024-i),
     grades: ['초1','초2','초3','초4','초5','초6','중1','중2','중3'],
