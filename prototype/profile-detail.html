@@ -398,6 +398,10 @@
                           <p class="text-[10px] text-indigo-500" x-text="book.progress + '%'"></p>
                           <p class="text-[10px] text-gray-400" x-text="'+' + book.score + '점'"></p>
                         </div>
+                        <div class="flex items-center gap-2 mt-1.5">
+                          <span class="text-[10px] text-emerald-600 bg-emerald-50 rounded px-1.5 py-0.5" x-text="'시선 ' + book.eye + '%'"></span>
+                          <span class="text-[10px] text-blue-500 bg-blue-50 rounded px-1.5 py-0.5" x-text="book.wpm + ' wpm'"></span>
+                        </div>
                       </div>
                       <span x-show="book.progress===100" class="flex-shrink-0 text-base">🏁</span>
                     </div>
@@ -884,8 +888,8 @@ function app() {
         bestDay:'목요일', bestDayIndex:3,
         readDays:[true,true,false,true,true,true,false],
         books:[
-          { title:'Percy Jackson', author:'R. Riordan', progress:68, score:450, color:'linear-gradient(135deg,#667eea,#764ba2)' },
-          { title:'Magic Tree House #5', author:'M. Osborne', progress:92, score:295, color:'linear-gradient(135deg,#43e97b,#38f9d7)' },
+          { title:'Percy Jackson', author:'R. Riordan', progress:68, score:450, color:'linear-gradient(135deg,#667eea,#764ba2)', eye:70, wpm:145 },
+          { title:'Magic Tree House #5', author:'M. Osborne', progress:92, score:295, color:'linear-gradient(135deg,#43e97b,#38f9d7)', eye:65, wpm:132 },
         ],
         aiComment:'이번 주는 목요일과 금요일에 집중도가 특히 높았어요. Percy Jackson을 꾸준히 읽으며 주 4회 독서 습관을 잘 유지했고, Magic Tree House #5를 거의 완독에 가깝게 읽었네요. 전주보다 총점이 42점 올랐고, 시선 집중도도 5% 향상됐어요. 다음 주도 이 페이스를 유지해 보아요! 🎉',
       },
@@ -895,8 +899,8 @@ function app() {
         bestDay:'화요일', bestDayIndex:1,
         readDays:[true,true,true,false,true,true,false],
         books:[
-          { title:'Percy Jackson', author:'R. Riordan', progress:45, score:380, color:'linear-gradient(135deg,#667eea,#764ba2)' },
-          { title:"Charlotte's Web", author:'E.B. White', progress:100, score:323, color:'linear-gradient(135deg,#f093fb,#f5576c)' },
+          { title:'Percy Jackson', author:'R. Riordan', progress:45, score:380, color:'linear-gradient(135deg,#667eea,#764ba2)', eye:67, wpm:138 },
+          { title:"Charlotte's Web", author:'E.B. White', progress:100, score:323, color:'linear-gradient(135deg,#f093fb,#f5576c)', eye:72, wpm:125 },
         ],
         aiComment:"이번 주는 Charlotte's Web을 완독했어요! 5일 연속 독서로 이번 달 최장 스트릭을 기록했네요. 총점은 지난주보다 15점 낮지만, 완독 보너스를 감안하면 실질적으로는 탄탄한 한 주였어요.",
       },
@@ -906,8 +910,8 @@ function app() {
         bestDay:'수요일', bestDayIndex:2,
         readDays:[false,true,true,true,false,true,true],
         books:[
-          { title:"Charlotte's Web", author:'E.B. White', progress:72, score:390, color:'linear-gradient(135deg,#f093fb,#f5576c)' },
-          { title:'The BFG', author:'R. Dahl', progress:30, score:328, color:'linear-gradient(135deg,#4facfe,#00f2fe)' },
+          { title:"Charlotte's Web", author:'E.B. White', progress:72, score:390, color:'linear-gradient(135deg,#f093fb,#f5576c)', eye:75, wpm:118 },
+          { title:'The BFG', author:'R. Dahl', progress:30, score:328, color:'linear-gradient(135deg,#4facfe,#00f2fe)', eye:58, wpm:142 },
         ],
         aiComment:'이번 주는 시선 집중도가 71%로 이번 달 최고치를 기록했어요. 특히 수요일 세션에서 집중도가 82%까지 올랐는데, 아주 훌륭해요. The BFG를 새로 시작하며 책 선택의 폭도 넓어지고 있어요.',
       },
@@ -917,8 +921,8 @@ function app() {
         bestDay:'토요일', bestDayIndex:5,
         readDays:[false,true,false,true,false,true,true],
         books:[
-          { title:'Percy Jackson', author:'R. Riordan', progress:18, score:350, color:'linear-gradient(135deg,#667eea,#764ba2)' },
-          { title:'Diary of Wimpy Kid', author:'J. Kinney', progress:100, score:340, color:'linear-gradient(135deg,#fa709a,#fee140)' },
+          { title:'Percy Jackson', author:'R. Riordan', progress:18, score:350, color:'linear-gradient(135deg,#667eea,#764ba2)', eye:62, wpm:130 },
+          { title:'Diary of Wimpy Kid', author:'J. Kinney', progress:100, score:340, color:'linear-gradient(135deg,#fa709a,#fee140)', eye:68, wpm:155 },
         ],
         aiComment:'Diary of a Wimpy Kid을 완독하고 Percy Jackson을 새로 시작한 주였어요. 새 책 초반이라 집중도가 살짝 낮아졌지만 자연스러운 적응 과정이에요. 주말에 집중해서 읽는 패턴이 보이는데, 평일에도 조금씩 읽어보는 건 어떨까요?',
       },
