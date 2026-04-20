@@ -127,13 +127,20 @@
                     </div>
                   </div>
 
-                  <!-- 같이 보기 버튼 (온라인일 때만) -->
-                  <button x-show="p.online" x-cloak @click.stop="openViewer(p)"
-                          class="mt-3 w-full py-2.5 bg-white text-sm font-bold rounded-xl flex items-center justify-center gap-2 shadow"
-                          :style="`color:${p.accent}`">
-                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                    같이 보기
-                  </button>
+                  <!-- 온라인 버튼 2개 (온라인일 때만) -->
+                  <div x-show="p.online" x-cloak class="mt-3 flex gap-2">
+                    <button @click.stop="openViewer(p)"
+                            class="flex-1 py-2.5 bg-white text-sm font-bold rounded-xl flex items-center justify-center gap-1.5 shadow"
+                            :style="`color:${p.accent}`">
+                      <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                      같이 보기
+                    </button>
+                    <button @click.stop="openCamera(p)"
+                            class="flex-1 py-2.5 bg-white/20 text-white text-sm font-bold rounded-xl flex items-center justify-center gap-1.5 border border-white/30">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M4 6h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
+                      얼굴 보기
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -379,6 +386,10 @@ function app() {
     openViewer(p) {
       localStorage.setItem('cr_profile', JSON.stringify(p));
       window.location.href = 'reader.html';
+    },
+    openCamera(p) {
+      localStorage.setItem('cr_profile', JSON.stringify(p));
+      window.location.href = 'camera.html';
     },
     removeFavorite(idx) {
       this.favorites.splice(idx, 1);
