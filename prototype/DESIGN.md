@@ -20,6 +20,7 @@
 | `bookshelf.html` | any | 책장 (프로필 선택 바 + 탭 4종 + 선택 삭제) |
 | `chat.html` | any | 소통 (채팅방 목록 + 채팅 패널) |
 | `myinfo.html` | any | 내 정보 (학생/부모 분기, 우측 슬라이드인) |
+| `reader.html` | any | 책 뷰어 (캘리브레이션 → 읽기 컨트롤러) |
 
 > `login.html`, `hub.html` — 구버전, 미사용
 
@@ -720,28 +721,105 @@ profileColors: { hong: '#667eea', chun: '#f093fb' },
 
 ---
 
-## reader.html — 설계 방향 (미구현)
+## reader.html — 캘리브레이션 플로우
 
-### 모드 분기
-
-```
-cr_profile.isOther === false → 학생 뷰어
-  - 페이지 텍스트 표시, 페이지 넘김
-  - 시선 보정 UI (읽는 중 표시기)
-
-openViewer() 호출 (부모가 [같이 보기] 클릭) → 부모 모니터링 뷰어
-  - 자녀 현재 페이지 미러링 (읽기 전용)
-  - 화면 상단 or 하단: 실시간 지표 오버레이
-    - 현재 페이지, 읽기 속도
-    - 시선 상태 바 (Reading / Scanning / Lost)
-  - 닫기 → profiles.html 복귀
-```
-
-### 진입 경로
+### Phase 전이
 
 ```
-profiles.html → [같이 보기] → openViewer(p) → localStorage cr_profile 저장 → reader.html
-reader.html   → init()에서 cr_profile 읽어 모니터링 모드 판단
+뷰어 열기
+  └─ phase='face'    얼굴 확인 (카메라 + 타원 가이드)
+       └─ confirmFace()
+            └─ phase='calib1'  1점 간이 캘리브레이션 (3초)
+                 └─ finishCalib1()
+                      └─ phase='reading'  읽기
+
+챕터 이동 (next/prevChapter)
+  └─ _pendingChapter 저장 → startCalib1() → finishCalib1() → cur 변경 → reading
+
+읽기 중 25초 후 (시뮬레이션)
+  └─ precisionBanner = true
+       └─ [재보정] → startCalib5FromBanner() → phase='calib5' → finishCalib5() → reading
+       └─ [나중에] → precisionBanner = false
+
+⚙ 설정 패널 → "5점 정밀 보정 다시 하기" / "1점 간이 보정 다시 하기"
+```
+
+### 상태 변수
+
+```js
+phase: 'face',           // 'face' | 'calib1' | 'calib5' | 'reading'
+
+// 얼굴 확인
+faceOk: false,
+faceError: null,
+_faceStream: null,       // getUserMedia stream
+
+// 1점 캘리
+calib1Progress: 0,       // 0–100, setInterval 50ms × 60틱 = 3초
+_pendingChapter: null,   // 챕터 이동 후 적용할 번호
+
+// 5점 캘리
+calib5Points: [{x,y}, ...],  // 5개 좌표 (%, %)
+calib5Step: 0,           // 0–4 현재 점
+calib5Progress: 0,       // 0–100 현재 점 진행률
+_calib5FromBanner: false, // true이면 완료 후 reading 복귀, false이면 calib1 대체
+
+// 읽기
+precisionBanner: false,
+_precisionTimer: null,   // 25초 후 배너 트리거
+```
+
+### 얼굴 확인 화면
+
+- `getUserMedia({ video:{ facingMode:'user' } })` → `<video>` srcObject
+- CSS radial-gradient로 타원 바깥 어둡게, SVG ellipse 점선 테두리
+- 감지 시뮬레이션: 1.8초 후 `faceOk = true` → 타원 테두리 보라→초록
+- [확인] 버튼: `faceOk` false이면 disabled
+- [보정 건너뛰기]: 시선 기능 토글 off → `enterReading()` 바로 진입
+- 뒤로가기: 카메라 스트림 stop → `history.back()`
+
+### 1점 캘리브레이션 오버레이
+
+- `backdrop-filter:blur(6px)` + 반투명 검은 배경 — 읽기 텍스트가 어렴풋이 보임
+- SVG 원형 진행 바: `stroke-dashoffset = 263.9 * (1 - progress/100)`, `transition 0.1s linear`
+- 중앙 점: `calib-dot` CSS animation (이중 pulse ring)
+- 3초 완료 후 400ms 딜레이 → `finishCalib1()`
+
+### 5점 캘리브레이션 화면
+
+```js
+calib5Points = [
+  { x:15, y:18 },  // 좌상
+  { x:85, y:18 },  // 우상
+  { x:50, y:50 },  // 중앙
+  { x:15, y:82 },  // 좌하
+  { x:85, y:82 },  // 우하
+]
+```
+
+- 각 점: 완료(체크 아이콘) / 현재(SVG 원형 진행, r=30, 2.5초) / 대기(흐린 점)
+- 점 완료 → 300ms 딜레이 → 다음 점으로 이동
+- 상단 진행 바: `width = (calib5Step/5)*100 + (calib5Progress/5)`%
+
+### 정밀 보정 권고 배너
+
+```html
+<!-- 읽기 중, showUI 여부와 무관하게 항상 z-40에 표시 -->
+<div x-show="precisionBanner && phase==='reading'">
+  amber 배너: "시선 감지 품질이 낮아졌습니다" [재보정] [나중에]
+</div>
+```
+
+### 진입 경로 요약
+
+```
+bookstore.html [책 읽기] / TOC 챕터 클릭
+  → localStorage.setItem('cr_reader_chapter', N)
+  → reader.html
+
+profiles.html [같이 보기]
+  → localStorage.setItem('cr_profile', ...)
+  → reader.html  (부모 모니터링 모드 — 미구현)
 ```
 
 ---
