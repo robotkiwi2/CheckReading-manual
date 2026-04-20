@@ -774,10 +774,11 @@
           <!-- 읽기 탐지 토글 목록 -->
           <div class="bg-white rounded-2xl divide-y divide-gray-50 shadow-sm mb-4">
             <template x-for="r in detectSettings" :key="r.id">
-              <div class="flex items-center justify-between px-4 py-4">
-                <div>
+              <div class="flex items-center justify-between px-4 py-3.5">
+                <div class="flex items-center gap-2">
                   <p class="text-sm font-medium text-gray-800" x-text="r.label"></p>
-                  <p class="text-xs text-gray-400 mt-0.5" x-text="r.desc"></p>
+                  <button @click.stop="detectInfoTitle=r.label; detectInfoText=r.desc; detectInfoModal=true"
+                          class="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center text-gray-400 text-[10px] font-bold leading-none flex-shrink-0">?</button>
                 </div>
                 <button @click="r.on=!r.on"
                         class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
@@ -790,11 +791,12 @@
           </div>
 
           <!-- 읽기 속도 자동 조정 -->
-          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div class="flex items-center justify-between px-4 py-4 border-b border-gray-50">
-              <div>
+          <div class="bg-white rounded-2xl shadow-sm">
+            <div class="flex items-center justify-between px-4 py-3.5">
+              <div class="flex items-center gap-2">
                 <p class="text-sm font-medium text-gray-800">읽기 속도 자동 조정</p>
-                <p class="text-xs text-gray-400 mt-0.5">세션 결과에 따라 재생 속도를 자동으로 조정</p>
+                <button @click.stop="detectInfoTitle='읽기 속도 자동 조정'; detectInfoText=autoSpeedDesc; detectInfoModal=true"
+                        class="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center text-gray-400 text-[10px] font-bold leading-none flex-shrink-0">?</button>
               </div>
               <button @click="autoSpeedOn=!autoSpeedOn"
                       class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
@@ -803,16 +805,19 @@
                       :style="autoSpeedOn ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
               </button>
             </div>
-            <div class="px-4 py-3 bg-blue-50/60">
-              <p class="text-[11px] text-blue-600 font-semibold mb-1.5">속도 조정 조건</p>
-              <div class="flex items-start gap-1.5 mb-1.5">
-                <span class="mt-0.5 w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></span>
-                <p class="text-xs text-gray-600 leading-relaxed">최근 읽기 세션의 reading 비율이 <span class="font-semibold text-gray-800">80% 이상</span>이고 시선 집중도가 <span class="font-semibold text-gray-800">80% 이상</span>이면 재생 속도를 <span class="font-semibold text-green-600">5% 높입니다.</span></p>
-              </div>
-              <div class="flex items-start gap-1.5">
-                <span class="mt-0.5 w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0"></span>
-                <p class="text-xs text-gray-600 leading-relaxed">reading 비율이 <span class="font-semibold text-gray-800">60% 이하</span>이고 시선 집중도가 <span class="font-semibold text-gray-800">60% 이하</span>이면 재생 속도를 <span class="font-semibold text-red-500">5% 낮춥니다.</span></p>
-              </div>
+          </div>
+
+          <!-- 항목 설명 모달 -->
+          <div x-show="detectInfoModal" x-cloak @click.self="detectInfoModal=false"
+               class="absolute inset-0 bg-black/40 z-[60] flex items-center justify-center px-6"
+               x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+               x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+            <div class="bg-white rounded-2xl p-5 w-full shadow-xl"
+                 x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+              <p class="font-bold text-gray-900 text-base mb-2" x-text="detectInfoTitle"></p>
+              <p class="text-sm text-gray-600 leading-relaxed whitespace-pre-line" x-text="detectInfoText"></p>
+              <button @click="detectInfoModal=false"
+                      class="mt-4 w-full py-2.5 bg-blue-700 text-white rounded-xl text-sm font-semibold">확인</button>
             </div>
           </div>
         </div>
@@ -1145,12 +1150,14 @@ function app() {
     ],
 
     detectSettings: [
-      {id:2,label:'페이지 이탈 감지',desc:'오래 멈추면 일시정지 알림',on:true},
-      {id:3,label:'속도 이상 감지',desc:'비정상적 읽기 속도 감지 시 경고',on:false},
-      {id:4,label:'집중도 분석',desc:'읽기 패턴으로 집중도 점수 산출',on:true},
-      {id:5,label:'야간 읽기 제한',desc:'오후 10시 이후 읽기 세션 제한',on:false},
+      {id:2,label:'페이지 이탈 감지',   desc:'화면을 오래 벗어나거나 멈추면 읽기 세션을 일시정지하고 알림을 보냅니다.',on:true},
+      {id:3,label:'속도 이상 감지',     desc:'비정상적으로 빠르거나 느린 읽기 속도가 감지되면 경고를 표시합니다.',on:false},
+      {id:5,label:'야간 읽기 제한',     desc:'오후 10시 이후에는 읽기 세션을 시작할 수 없도록 제한합니다.',on:false},
+      {id:6,label:'집중듣기 도움',      desc:'집중듣기시, 읽어주는 위치를 계속 따라가지 못하면 단어를 점멸해서 현재 위치를 알려줍니다.',on:true},
     ],
     autoSpeedOn: true,
+    autoSpeedDesc: 'reading 비율이 80% 이상이고 시선 집중도가 80% 이상이면 재생 속도를 5% 높입니다.\nreading 비율이 60% 이하이고 시선 집중도가 60% 이하이면 재생 속도를 5% 낮춥니다.',
+    detectInfoModal: false, detectInfoTitle: '', detectInfoText: '',
 
     init() {
       this.user = JSON.parse(localStorage.getItem('cr_user') || 'null');
