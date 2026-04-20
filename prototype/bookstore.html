@@ -66,7 +66,9 @@
     <main class="flex-1 overflow-y-auto min-h-0">
       <!-- 이번 주 Pick 슬라이더 -->
       <div class="mt-4 relative" x-data="pickSlider()">
-        <div class="overflow-hidden mx-4 rounded-2xl">
+        <div class="overflow-hidden mx-4 rounded-2xl"
+             @touchstart.passive="touchStartX=$event.touches[0].clientX"
+             @touchend.passive="onSwipe($event)">
           <div class="flex transition-transform duration-500 ease-in-out"
                :style="`transform:translateX(-${current*100}%)`">
             <template x-for="(p, idx) in picks" :key="idx">
@@ -488,7 +490,7 @@ function initCarousels() {
 /* ── Pick 슬라이더 컴포넌트 ── */
 function pickSlider() {
   return {
-    current: 0, timer: null,
+    current: 0, timer: null, touchStartX: 0,
     picks: [
       { id:'p1', label:'이번 주 Pick ✨', title:"Charlotte's Web", author:'E.B. White', level:'Lv.3', color:'linear-gradient(135deg,#667eea,#764ba2)' },
       { id:'p2', label:'에디터 추천 📖', title:'Wonder', author:'R.J. Palacio', level:'Lv.4', color:'linear-gradient(135deg,#f093fb,#f5576c)' },
@@ -496,6 +498,13 @@ function pickSlider() {
       { id:'p4', label:'초보 독자 추천 🌱', title:'Magic Tree House', author:'M. Osborne', level:'Lv.2', color:'linear-gradient(135deg,#43e97b,#38f9d7)' },
       { id:'p5', label:'고학년 강추 🚀', title:"Ender's Game", author:'O.S. Card', level:'Lv.5', color:'linear-gradient(135deg,#fa709a,#fee140)' },
     ],
+    onSwipe(e) {
+      const dx = e.changedTouches[0].clientX - this.touchStartX;
+      if (Math.abs(dx) < 40) return;
+      if (dx < 0) this.current = (this.current + 1) % this.picks.length;
+      else this.current = (this.current - 1 + this.picks.length) % this.picks.length;
+      this.resetTimer();
+    },
     init() { this.startTimer(); },
     startTimer() { this.timer = setInterval(() => { this.current = (this.current + 1) % this.picks.length; }, 3500); },
     resetTimer() { clearInterval(this.timer); this.startTimer(); },
