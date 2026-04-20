@@ -946,7 +946,7 @@ function app() {
       this.$watch('chartOffset', () => this.$nextTick(() => this.renderChart()));
       if (localStorage.getItem('cr_openReport')) {
         localStorage.removeItem('cr_openReport');
-        this.$nextTick(() => { this.selectedReport = this.reports[0]; this.reportSheet = true; });
+        setTimeout(() => { this.selectedReport = this.reports[0]; this.reportSheet = true; }, 50);
       }
     },
 
