@@ -197,6 +197,67 @@
 
     </main>
 
+    <!-- ===== 얼굴 보기 모달 ===== -->
+    <div x-show="cameraModal" x-cloak
+         class="absolute inset-0 bg-black z-50 flex flex-col"
+         x-transition:enter="transition ease-out duration-250"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+
+      <!-- 헤더 -->
+      <div class="flex-shrink-0 flex items-center gap-3 px-4 pt-10 pb-4">
+        <button @click="closeCamera()"
+                class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div class="flex-1">
+          <p class="text-white font-bold text-base" x-text="cameraProfile?.name"></p>
+          <div class="flex items-center gap-1.5 mt-0.5">
+            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+            <span class="text-green-400 text-xs font-medium">실시간 영상</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 비디오 영역 -->
+      <div class="flex-1 relative flex items-center justify-center min-h-0">
+        <video x-ref="cameraVideo"
+               autoplay playsinline muted
+               class="w-full h-full object-cover"></video>
+
+        <!-- 카메라 권한 거부 or 로딩 -->
+        <div x-show="cameraError" class="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gray-900">
+          <div class="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center">
+            <svg class="w-8 h-8 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M4 6h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
+          </div>
+          <p class="text-white/60 text-sm text-center px-8" x-text="cameraError"></p>
+        </div>
+
+        <!-- 하단 오버레이: 실시간 시선 상태 -->
+        <div x-show="cameraProfile && !cameraError"
+             class="absolute bottom-0 left-0 right-0 px-4 py-4"
+             style="background:linear-gradient(to top, rgba(0,0,0,0.7), transparent)">
+          <p class="text-white/60 text-[10px] font-semibold uppercase tracking-widest mb-2">시선 상태</p>
+          <div class="flex rounded-full overflow-hidden h-2 mb-1.5">
+            <div class="bg-emerald-400 transition-all duration-700"
+                 :style="`width:${profiles.find(p=>p.id===cameraProfile?.id)?.today.eye.reading||0}%`"></div>
+            <div class="bg-amber-400 transition-all duration-700"
+                 :style="`width:${profiles.find(p=>p.id===cameraProfile?.id)?.today.eye.scanning||0}%`"></div>
+            <div class="bg-red-400 transition-all duration-700"
+                 :style="`width:${profiles.find(p=>p.id===cameraProfile?.id)?.today.eye.lost||0}%`"></div>
+          </div>
+          <div class="flex justify-between text-[10px]">
+            <span class="text-emerald-400">● Reading <span x-text="(profiles.find(p=>p.id===cameraProfile?.id)?.today.eye.reading||0)+'%'"></span></span>
+            <span class="text-amber-400">● Scanning <span x-text="(profiles.find(p=>p.id===cameraProfile?.id)?.today.eye.scanning||0)+'%'"></span></span>
+            <span class="text-red-400">● Lost <span x-text="(profiles.find(p=>p.id===cameraProfile?.id)?.today.eye.lost||0)+'%'"></span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== 프로필 추가 위자드 패널 ===== -->
     <div x-show="addPanel" x-cloak
          class="absolute inset-0 bg-white z-30 flex flex-col"
@@ -343,6 +404,7 @@ function app() {
   const C = ['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#f093fb,#f5576c)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)','linear-gradient(135deg,#a18cd1,#fbc2eb)','linear-gradient(135deg,#fd7043,#ff8a65)','linear-gradient(135deg,#26c6da,#00838f)'];
   return {
     user: null, showMenu: false, activeTab: 'my',
+    cameraModal: false, cameraProfile: null, cameraError: null, _cameraStream: null,
     addPanel: false, addStep: 1,
     newP: { color:'', name:'', birthYear:2016, grade:'', gender:'' },
     profiles: [
@@ -387,9 +449,30 @@ function app() {
       localStorage.setItem('cr_profile', JSON.stringify(p));
       window.location.href = 'reader.html';
     },
-    openCamera(p) {
-      localStorage.setItem('cr_profile', JSON.stringify(p));
-      window.location.href = 'camera.html';
+    async openCamera(p) {
+      this.cameraProfile = p;
+      this.cameraError = null;
+      this.cameraModal = true;
+      await this.$nextTick();
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        this._cameraStream = stream;
+        this.$refs.cameraVideo.srcObject = stream;
+      } catch (e) {
+        this.cameraError = e.name === 'NotAllowedError'
+          ? '카메라 권한이 필요합니다.\n브라우저 설정에서 카메라 접근을 허용해주세요.'
+          : '카메라를 사용할 수 없습니다.\n기기에 카메라가 연결되어 있는지 확인하세요.';
+      }
+    },
+    closeCamera() {
+      if (this._cameraStream) {
+        this._cameraStream.getTracks().forEach(t => t.stop());
+        this._cameraStream = null;
+      }
+      this.$refs.cameraVideo.srcObject = null;
+      this.cameraModal = false;
+      this.cameraProfile = null;
+      this.cameraError = null;
     },
     removeFavorite(idx) {
       this.favorites.splice(idx, 1);
