@@ -770,7 +770,9 @@
         <!-- 읽기탐지 설정 -->
         <div x-show="settingsSub==='readdetect'">
           <p class="text-sm text-gray-500 mb-4">읽기 탐지 관련 설정을 조정하세요</p>
-          <div class="bg-white rounded-2xl divide-y divide-gray-50 shadow-sm">
+
+          <!-- 읽기 탐지 토글 목록 -->
+          <div class="bg-white rounded-2xl divide-y divide-gray-50 shadow-sm mb-4">
             <template x-for="r in detectSettings" :key="r.id">
               <div class="flex items-center justify-between px-4 py-4">
                 <div>
@@ -785,6 +787,33 @@
                 </button>
               </div>
             </template>
+          </div>
+
+          <!-- 읽기 속도 자동 조정 -->
+          <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-4 border-b border-gray-50">
+              <div>
+                <p class="text-sm font-medium text-gray-800">읽기 속도 자동 조정</p>
+                <p class="text-xs text-gray-400 mt-0.5">세션 결과에 따라 재생 속도를 자동으로 조정</p>
+              </div>
+              <button @click="autoSpeedOn=!autoSpeedOn"
+                      class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
+                      :class="autoSpeedOn ? 'bg-blue-600' : 'bg-gray-200'">
+                <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
+                      :style="autoSpeedOn ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
+              </button>
+            </div>
+            <div class="px-4 py-3 bg-blue-50/60">
+              <p class="text-[11px] text-blue-600 font-semibold mb-1.5">속도 조정 조건</p>
+              <div class="flex items-start gap-1.5 mb-1.5">
+                <span class="mt-0.5 w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></span>
+                <p class="text-xs text-gray-600 leading-relaxed">최근 읽기 세션의 reading 비율이 <span class="font-semibold text-gray-800">80% 이상</span>이고 시선 집중도가 <span class="font-semibold text-gray-800">80% 이상</span>이면 재생 속도를 <span class="font-semibold text-green-600">5% 높입니다.</span></p>
+              </div>
+              <div class="flex items-start gap-1.5">
+                <span class="mt-0.5 w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0"></span>
+                <p class="text-xs text-gray-600 leading-relaxed">reading 비율이 <span class="font-semibold text-gray-800">60% 이하</span>이고 시선 집중도가 <span class="font-semibold text-gray-800">60% 이하</span>이면 재생 속도를 <span class="font-semibold text-red-500">5% 낮춥니다.</span></p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1116,12 +1145,12 @@ function app() {
     ],
 
     detectSettings: [
-      {id:1,label:'자동 읽기 시작 감지',desc:'앱을 열면 읽기 세션 자동 시작',on:true},
       {id:2,label:'페이지 이탈 감지',desc:'오래 멈추면 일시정지 알림',on:true},
       {id:3,label:'속도 이상 감지',desc:'비정상적 읽기 속도 감지 시 경고',on:false},
       {id:4,label:'집중도 분석',desc:'읽기 패턴으로 집중도 점수 산출',on:true},
       {id:5,label:'야간 읽기 제한',desc:'오후 10시 이후 읽기 세션 제한',on:false},
     ],
+    autoSpeedOn: true,
 
     init() {
       this.user = JSON.parse(localStorage.getItem('cr_user') || 'null');
