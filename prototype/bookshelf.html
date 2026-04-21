@@ -235,7 +235,8 @@
         <!-- 목차 -->
         <div x-show="bookDetailTab==='toc'" class="bg-white divide-y divide-gray-50 mb-2">
           <template x-for="ch in [{n:1,t:'Chapter 1',w:1240},{n:2,t:'Chapter 2',w:1380},{n:3,t:'Chapter 3',w:1510},{n:4,t:'Chapter 4',w:1290},{n:5,t:'Chapter 5',w:1450},{n:6,t:'Chapter 6',w:1320},{n:7,t:'Chapter 7',w:1600},{n:8,t:'Chapter 8',w:1180}]" :key="ch.n">
-            <div class="flex items-center gap-3 px-4 py-3">
+            <div class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-blue-50 active:bg-blue-100 transition-colors"
+                 @click="openReader(ch.n-1)">
               <span class="text-xs text-gray-300 w-5 text-right flex-shrink-0" x-text="ch.n"></span>
               <span class="text-sm text-gray-700 flex-1" x-text="ch.t"></span>
               <span class="text-xs text-gray-400 flex-shrink-0" x-text="ch.w.toLocaleString()+'단어'"></span>
@@ -303,7 +304,7 @@
 
       <!-- 고정 하단 [책 읽기] 버튼 -->
       <div class="flex-shrink-0 bg-white border-t border-gray-100 px-4 py-3">
-        <button class="w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold hover:bg-blue-800 active:scale-95 transition">책 읽기</button>
+        <button @click="openReader(0)" class="w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold hover:bg-blue-800 active:scale-95 transition">책 읽기</button>
       </div>
     </div>
 
@@ -456,6 +457,10 @@ function app() {
       this.$nextTick(() => initDragScroll(this.$refs.mainScroll));
     },
     logout() { localStorage.removeItem('cr_user'); window.location.href = 'index.html'; },
+    openReader(chapter) {
+      localStorage.setItem('cr_reader_chapter', chapter);
+      window.location.href = 'reader.html';
+    },
     selectProfile(p) { this.selectedProfile = p; this.activeTab = 'reading'; this.exitSelectMode(); },
     openBook(b) { if (!this.selectMode) { this.selectedBook = b; this.bookDetailTab = 'toc'; } },
 
