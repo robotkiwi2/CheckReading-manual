@@ -470,8 +470,12 @@
             <p class="font-bold text-gray-900 text-base">권장 도서</p>
           </div>
           <p class="text-sm text-gray-600 leading-relaxed mb-4" x-text="alreadyRecommendMsg"></p>
-          <button @click="alreadyRecommendPopup=false"
-                  class="w-full py-2.5 bg-blue-700 text-white rounded-xl text-sm font-semibold">확인</button>
+          <div class="flex gap-2">
+            <button @click="alreadyRecommendPopup=false"
+                    class="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold">취소</button>
+            <button @click="confirmSaveRecommend()"
+                    class="flex-1 py-2.5 bg-blue-700 text-white rounded-xl text-sm font-semibold">진행</button>
+          </div>
         </div>
       </div>
 
@@ -743,14 +747,7 @@ function app() {
     openReview(r) { this.selectedReview = r; this.reviewModal = true; },
     openRecommendSheet() {
       const key = this.selectedBook?.title;
-      const existing = this.recommendTargets[key] || [];
-      if (existing.length) {
-        const names = existing.map(id => this.childProfiles.find(p=>p.id===id)?.name).filter(Boolean).join(', ');
-        this.alreadyRecommendMsg = `이미 ${names}에게 추천되어 있습니다.`;
-        this.alreadyRecommendPopup = true;
-        return;
-      }
-      this.tempRecommend = [];
+      this.tempRecommend = [...(this.recommendTargets[key] || [])];
       this.recommendSheet = true;
     },
     toggleTempRecommend(pid) {
@@ -760,8 +757,20 @@ function app() {
     },
     saveRecommend() {
       const key = this.selectedBook?.title;
+      const existing = this.recommendTargets[key] || [];
+      if (existing.length) {
+        const names = existing.map(id => this.childProfiles.find(p=>p.id===id)?.name).filter(Boolean).join(', ');
+        this.alreadyRecommendMsg = `이미 ${names}에게 추천되어 있습니다. 진행하시겠습니까?`;
+        this.alreadyRecommendPopup = true;
+        return;
+      }
+      this.confirmSaveRecommend();
+    },
+    confirmSaveRecommend() {
+      const key = this.selectedBook?.title;
       if (this.tempRecommend.length) this.recommendTargets[key] = [...this.tempRecommend];
       else delete this.recommendTargets[key];
+      this.alreadyRecommendPopup = false;
       this.recommendSheet = false;
     },
     isRecommended(title) { return (this.recommendTargets[title]||[]).length > 0; },
