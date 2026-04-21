@@ -804,22 +804,6 @@
             </template>
           </div>
 
-          <!-- 읽기 속도 자동 조정 -->
-          <div class="bg-white rounded-2xl shadow-sm">
-            <div class="flex items-center justify-between px-4 py-3.5">
-              <div class="flex items-center gap-2">
-                <p class="text-sm font-medium text-gray-800">읽기 속도 자동 조정</p>
-                <button @click.stop="detectInfoTitle='읽기 속도 자동 조정'; detectInfoText=autoSpeedDesc; detectInfoModal=true"
-                        class="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center text-gray-400 text-[10px] font-bold leading-none flex-shrink-0">?</button>
-              </div>
-              <button @click="autoSpeedOn=!autoSpeedOn"
-                      class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
-                      :class="autoSpeedOn ? 'bg-blue-600' : 'bg-gray-200'">
-                <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
-                      :style="autoSpeedOn ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
-              </button>
-            </div>
-          </div>
 
           <!-- 항목 설명 모달 -->
           <div x-show="detectInfoModal" x-cloak @click.self="detectInfoModal=false"
@@ -1168,10 +1152,10 @@ function app() {
       {id:3,label:'자동 시선 맞춤',     desc:'책을 읽는 동안, 시선의 위치를 자동으로 보정합니다.',on:false},
       {id:5,label:'야간 읽기 제한',     desc:'설정한 시간 이후에는 읽기 세션을 시작할 수 없도록 제한합니다.',on:false},
       {id:6,label:'집중듣기 도움',      desc:'집중듣기시, 읽어주는 위치를 계속 따라가지 못하면 단어를 점멸해서 현재 위치를 알려줍니다.',on:true},
+      {id:7,label:'읽기 속도 자동 조정',desc:'reading 비율이 80% 이상이고 시선 집중도가 80% 이상이면 재생 속도를 5% 높입니다.\nreading 비율이 60% 이하이고 시선 집중도가 60% 이하이면 재생 속도를 5% 낮춥니다.',on:true},
+      {id:8,label:'권장도서 우선',      desc:'권장도서의 책을 다 읽기 전에는 다른 책을 읽을 수 없습니다.',on:false},
     ],
     nightLimitHour: 22,
-    autoSpeedOn: true,
-    autoSpeedDesc: 'reading 비율이 80% 이상이고 시선 집중도가 80% 이상이면 재생 속도를 5% 높입니다.\nreading 비율이 60% 이하이고 시선 집중도가 60% 이하이면 재생 속도를 5% 낮춥니다.',
     detectInfoModal: false, detectInfoTitle: '', detectInfoText: '',
 
     init() {
