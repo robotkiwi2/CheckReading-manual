@@ -297,7 +297,7 @@
          class="fixed inset-0 bg-black/40 z-50 flex items-end justify-center"
          x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
          x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-      <div class="w-full max-w-3xl bg-white rounded-t-3xl flex flex-col"
+      <div class="w-full max-w-3xl bg-white rounded-t-3xl flex flex-col relative overflow-hidden"
            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
            style="height:92dvh;">
@@ -306,6 +306,45 @@
           <h3 class="font-bold text-gray-900 text-base" x-text="selectedDay.label + ' 읽기 내역'"></h3>
           <button @click="daySheet=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
         </div>
+
+        <!-- 좋아요 영역 -->
+        <!-- isOther=true: 하트 버튼 + 카운트 / isOther=false(내 자녀): 받은 좋아요 수 탭 -->
+        <div class="flex-shrink-0 px-5 py-3 border-b border-gray-100 flex items-center gap-3">
+          <!-- 다른 자녀: 좋아요 버튼 -->
+          <template x-if="profile && profile.isOther">
+            <div class="flex items-center gap-2 w-full">
+              <button @click="dayLiked=!dayLiked; dayLiked ? dayLikeCount++ : dayLikeCount--"
+                      class="flex items-center gap-1.5 px-4 py-2 rounded-xl font-semibold text-sm transition-all"
+                      :class="dayLiked ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-400'">
+                <svg class="w-4 h-4 transition-transform" :class="dayLiked ? 'scale-110' : ''" fill="currentColor" viewBox="0 0 24 24">
+                  <path :fill="dayLiked ? '#ef4444' : 'none'" :stroke="dayLiked ? 'none' : 'currentColor'" stroke-width="2"
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span x-text="dayLiked ? '좋아요 취소' : '좋아요'"></span>
+              </button>
+              <span class="text-sm text-gray-500">
+                <span class="font-bold text-gray-800" x-text="dayLikeCount"></span>명이 좋아합니다
+              </span>
+            </div>
+          </template>
+          <!-- 내 자녀: 받은 좋아요 수 → 탭으로 목록 보기 -->
+          <template x-if="profile && !profile.isOther">
+            <button @click="showDayLikers=true"
+                    class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors -mx-1">
+              <div class="flex -space-x-1.5">
+                <template x-for="liker in dayLikers.slice(0,3)" :key="liker.name">
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[9px] font-bold border border-white"
+                       :style="`background:${liker.color}`" x-text="liker.initial"></div>
+                </template>
+              </div>
+              <span class="text-sm text-gray-600">
+                <span class="font-bold text-gray-800" x-text="dayLikeCount"></span>명이 좋아합니다
+              </span>
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </template>
+        </div>
+
         <div class="flex-1 overflow-y-auto min-h-0">
           <div class="flex gap-3 px-5 py-4">
             <div class="flex-1 bg-blue-50 rounded-2xl p-3 text-center"><p class="text-[10px] text-blue-500 mb-0.5">획득 점수</p><p class="text-lg font-bold text-blue-700">230점</p></div>
@@ -366,6 +405,62 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- 부모 활동 메모 (내 자녀만) -->
+          <template x-if="profile && !profile.isOther">
+            <div class="px-5 pb-6">
+              <div class="flex items-center gap-1.5 mb-3">
+                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                <p class="text-xs font-semibold text-gray-500">부모 활동</p>
+              </div>
+              <div class="relative">
+                <textarea x-model="dayNote"
+                          placeholder="이 날 함께 한 활동을 기록해 보세요.&#10;예) 함께 소리 내어 읽기, 모르는 단어 찾아보기, 독후감 쓰기 등"
+                          rows="4"
+                          class="w-full text-sm text-gray-700 placeholder-gray-300 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all leading-relaxed"></textarea>
+                <div class="flex justify-end mt-2">
+                  <button @click="dayNote=''"
+                          x-show="dayNote.length > 0"
+                          class="text-xs text-gray-400 hover:text-gray-600 mr-3 transition-colors">지우기</button>
+                  <button class="text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded-xl transition-colors">저장</button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- 좋아요한 부모 목록 서브 패널 (z-60, 내 자녀) -->
+        <div x-show="showDayLikers" x-cloak
+             class="absolute inset-0 bg-black/40 z-10 flex items-end"
+             x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+             @click.self="showDayLikers=false">
+          <div class="w-full bg-white rounded-t-3xl flex flex-col"
+               x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+               x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
+            <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+            <div class="flex items-center justify-between px-5 py-3 border-b border-gray-100">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <h4 class="font-bold text-gray-900 text-base">좋아요</h4>
+                <span class="text-sm text-gray-400 font-medium" x-text="dayLikeCount + '명'"></span>
+              </div>
+              <button @click="showDayLikers=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div class="overflow-y-auto" style="max-height:50dvh;">
+              <template x-for="liker in dayLikers" :key="liker.name">
+                <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-50 last:border-0">
+                  <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+                       :style="`background:${liker.color}`" x-text="liker.initial"></div>
+                  <span class="text-sm font-semibold text-gray-800" x-text="liker.name"></span>
+                  <svg class="w-4 h-4 text-red-400 ml-auto flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                </div>
+              </template>
+            </div>
+            <div class="h-safe-area-inset-bottom pb-4"></div>
           </div>
         </div>
       </div>
@@ -1012,6 +1107,14 @@ function app() {
     calYear: 2026, calMonth: 3,
     calDays: [], calStartDay: 0,
     daySheet: false, selectedDay: { label: '' },
+    dayLiked: false, dayLikeCount: 3,
+    dayLikers: [
+      { name: '이영희 엄마', initial: '이', color: 'linear-gradient(135deg,#f093fb,#f5576c)' },
+      { name: '박민준 아빠', initial: '박', color: 'linear-gradient(135deg,#4facfe,#00f2fe)' },
+      { name: '최수진 엄마', initial: '최', color: 'linear-gradient(135deg,#43e97b,#38f9d7)' },
+    ],
+    showDayLikers: false,
+    dayNote: '',
     reportSheet: false, selectedReport: null,
     settingsPanel: false, settingsSub: '', deleteConfirm: false,
     selectedColor: '', selectedGrade: '초4', selectedGender: '남', profilePhoto: null,
@@ -1241,6 +1344,10 @@ function app() {
     goDay(day) {
       if(!(this.dayScores[day]>0)) return;
       this.selectedDay = { label:`${this.calYear}년 ${this.calMonth+1}월 ${day}일` };
+      this.dayLiked = false;
+      this.dayLikeCount = 3;
+      this.showDayLikers = false;
+      this.dayNote = '';
       this.daySheet = true;
     },
 
