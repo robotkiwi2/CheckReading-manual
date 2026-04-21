@@ -51,12 +51,8 @@ function loginApp() {
     password: '',
     error: '',
     login() {
-      if (this.email === 'admin@readerseye.com' && this.password === 'admin1234') {
-        localStorage.setItem('cr_admin', JSON.stringify({ email: this.email, name: '관리자' }));
-        location.href = 'dashboard.html';
-      } else {
-        this.error = '이메일 또는 비밀번호가 올바르지 않습니다.';
-      }
+      localStorage.setItem('cr_admin', JSON.stringify({ email: this.email || 'admin@readerseye.com', name: '관리자' }));
+      location.href = 'dashboard.html';
     }
   }
 }
