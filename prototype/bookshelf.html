@@ -145,6 +145,14 @@
                   </div>
                 </div>
 
+                <!-- 엄마 권장 북마크 -->
+                <div x-show="book.byParent && !selectMode && !(hasHover && hoveredBookId===book.id)"
+                     class="absolute top-1.5 left-1.5 z-10 pointer-events-none">
+                  <svg class="w-4 h-4 text-yellow-400 drop-shadow" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/>
+                  </svg>
+                </div>
+
                 <!-- 책 커버 -->
                 <div class="w-full aspect-[3/4] rounded-xl mb-1.5 flex items-end p-2.5 shadow-sm transition-all relative overflow-hidden"
                      :class="[isSelected(book) ? 'ring-2 ring-inset ring-blue-500' : '', !selectMode ? 'group-hover:scale-105' : '']"
@@ -362,9 +370,9 @@ function app() {
         {title:'The Maze Runner',author:'J. Dashner'},
       ]),
       must: mk([
-        {title:"Charlotte's Web",author:'E.B. White'},
+        {title:"Charlotte's Web",author:'E.B. White',byParent:true},
         {title:'The One and Only Ivan',author:'K. Applegate'},
-        {title:'Wonder',author:'R.J. Palacio'},
+        {title:'Wonder',author:'R.J. Palacio',byParent:true},
       ]),
     },
     chun: {
@@ -394,9 +402,9 @@ function app() {
         {title:'Harry Potter 2',author:'J.K. Rowling'},
       ]),
       must: mk([
-        {title:'The Giver',author:'L. Lowry'},
+        {title:'The Giver',author:'L. Lowry',byParent:true},
         {title:'Wonder',author:'R.J. Palacio'},
-        {title:'Harry Potter 1',author:'J.K. Rowling'},
+        {title:'Harry Potter 1',author:'J.K. Rowling',byParent:true},
       ]),
     },
     student: {
@@ -435,7 +443,7 @@ function app() {
         { id:'reading', label:'읽고 있는 책', books: f(d.reading) },
         { id:'done',    label:'읽은 책',      books: f(d.done)    },
         { id:'wish',    label:'찜한 책',       books: f(d.wish)    },
-        { id:'must',    label:'필독서',        books: f(d.must)    },
+        { id:'must',    label:'권장도서',       books: f(d.must)    },
       ];
     },
 
