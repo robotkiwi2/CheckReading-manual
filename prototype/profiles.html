@@ -429,6 +429,25 @@
       </div>
     </div>
 
+    <!-- 프로필 생성 완료 모달 -->
+    <div x-show="addDoneModal" x-cloak @click.self="addDoneModal=false"
+         class="absolute inset-0 bg-black/40 z-50 flex items-center justify-center px-6"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+      <div class="bg-white rounded-2xl p-6 w-full shadow-xl text-center"
+           x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+        <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <p class="font-bold text-gray-900 text-lg mb-1">프로필 생성 완료!</p>
+        <p class="text-sm text-gray-500 mb-6"><span class="font-semibold text-gray-700" x-text="addDoneName"></span> 프로필이 추가되었습니다.</p>
+        <button @click="addDoneModal=false"
+                class="w-full py-3 bg-blue-700 text-white rounded-xl text-sm font-semibold">확인</button>
+      </div>
+    </div>
+
     <!-- 하단 탭바 (lg 미만) -->
     <nav class="lg:hidden flex-shrink-0 bg-white border-t border-gray-100 flex">
       <a href="profiles.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-blue-700"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg><span class="text-xs font-semibold">프로필</span></a>
@@ -445,7 +464,7 @@ function app() {
   return {
     user: null, showMenu: false, activeTab: 'my',
     cameraModal: false, cameraProfile: null, cameraError: null, _cameraStream: null,
-    addPanel: false, addStep: 1,
+    addPanel: false, addStep: 1, addDoneModal: false, addDoneName: '',
     newP: { color:'', name:'', birthYear:2016, grade:'', gender:'' },
     profiles: [
       { id:'hong', name:'홍길동', initial:'홍', age:9,  level:'Lv.3', reading:3, done:12,
@@ -579,6 +598,8 @@ function app() {
         color: this.newP.color
       });
       this.addPanel = false;
+      this.addDoneName = name;
+      this.addDoneModal = true;
     },
     trophyColor(grade) {
       if (grade === '플래티넘') return 'text-cyan-400';
