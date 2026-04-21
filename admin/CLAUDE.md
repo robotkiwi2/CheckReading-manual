@@ -34,7 +34,7 @@ GitHub repo: `robotkiwi2/CheckReading-manual`, branch `main`, path `/admin/`
 
 - **인증**: localStorage `cr_admin` 저장. 프로토타입이므로 로그인 검증 없음.
 - **디자인 시스템**: prototype과 동일 — `blue-700` 기본, 프로필 색상 8종 (`#2e4f8f`, `#5c2e8c`, `#1e6840`, `#8a2424`, `#7a5c1e`, `#1e5c6e`, `#6e1e5c`, `#3d6e1e`)
-- **사이드바**: 모든 페이지 동일 구조. 메뉴: 대시보드 / 회원 관리 / 도서 관리 / 구독 관리 / 알림 관리
+- **사이드바**: 모든 페이지 동일 구조. 메뉴: 대시보드 / 회원 관리 / 도서 관리 / 추천 관리 / 구독 관리 / 알림 관리
 
 ---
 
@@ -79,6 +79,7 @@ GitHub repo: `robotkiwi2/CheckReading-manual`, branch `main`, path `/admin/`
 
 | 항목 | 설명 |
 |------|------|
+| `recommendations.html` | 추천 관리 — [프로필 추천 선반] [공통 추천 선반] 탭, 스키마 CRUD (우측 편집 패널) |
 | `subscriptions.html` | 구독 관리 (플랜별 목록, 결제 내역) |
 | `notifications.html` | 알림 관리 (공지 발송, 푸시 이력) |
 | 회원 상세 — 읽기 이력 탭 | 자녀별 읽기 세션 로그 |

@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>추천 관리 · CheckReading Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-50" x-data="recoApp()">
+
+<!-- Sidebar -->
+<div class="fixed inset-y-0 left-0 w-60 bg-white border-r border-gray-200 flex flex-col z-30">
+  <div class="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
+    <div class="w-8 h-8 bg-blue-700 rounded-lg flex items-center justify-center">
+      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+      </svg>
+    </div>
+    <div>
+      <div class="text-sm font-bold text-gray-900">CheckReading</div>
+      <div class="text-xs text-gray-400">Admin Console</div>
+    </div>
+  </div>
+  <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+    <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      대시보드
+    </a>
+    <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+      회원 관리
+    </a>
+    <a href="books.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      도서 관리
+    </a>
+    <a href="recommendations.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 text-sm font-medium">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      추천 관리
+    </a>
+    <a href="subscriptions.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+      구독 관리
+    </a>
+    <a href="notifications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      알림 관리
+    </a>
+  </nav>
+  <div class="px-3 py-4 border-t border-gray-100">
+    <div class="flex items-center gap-3 px-3 py-2">
+      <div class="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-xs font-bold">관</div>
+      <div class="flex-1 min-w-0">
+        <div class="text-xs font-medium text-gray-800">관리자</div>
+        <div class="text-xs text-gray-400">admin@readerseye.com</div>
+      </div>
+      <button @click="logout()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="ml-60">
+  <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+    <div>
+      <h1 class="text-lg font-semibold text-gray-900">추천 관리</h1>
+      <p class="text-xs text-gray-400 mt-0.5">서점에 노출될 추천 선반 스키마를 관리합니다</p>
+    </div>
+    <button @click="openAdd()" class="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      스키마 추가
+    </button>
+  </header>
+
+  <main class="p-6">
+
+    <!-- 개념 설명 배너 -->
+    <div class="bg-blue-50 border border-blue-100 rounded-xl px-5 py-4 mb-5 flex gap-3">
+      <svg class="w-5 h-5 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <div class="text-sm text-blue-700 leading-relaxed">
+        <strong>추천 선반 스키마</strong>는 특정 조건으로 책을 모으는 규칙입니다.
+        <span class="text-blue-500">프로필 추천 선반</span>은 프로필의 선호 설정에 따라 할당되며,
+        <span class="text-blue-500">공통 추천 선반</span>은 모든 사용자의 서점에 공통 노출됩니다.
+        스키마가 활성화되면 다음 단계에서 조건에 맞는 구체적인 책이 선정됩니다.
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex items-center gap-1 mb-5 bg-gray-100 rounded-xl p-1 w-fit">
+      <button @click="activeTab = 'profile'"
+        class="px-5 py-2 rounded-lg text-sm font-medium transition-all"
+        :class="activeTab === 'profile' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'">
+        프로필 추천 선반
+        <span class="ml-1.5 text-xs px-1.5 py-0.5 rounded-full"
+          :class="activeTab === 'profile' ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-500'"
+          x-text="profileSchemas.length"></span>
+      </button>
+      <button @click="activeTab = 'common'"
+        class="px-5 py-2 rounded-lg text-sm font-medium transition-all"
+        :class="activeTab === 'common' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'">
+        공통 추천 선반
+        <span class="ml-1.5 text-xs px-1.5 py-0.5 rounded-full"
+          :class="activeTab === 'common' ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-500'"
+          x-text="commonSchemas.length"></span>
+      </button>
+    </div>
+
+    <!-- 탭 설명 -->
+    <div class="mb-4 text-sm text-gray-500" x-show="activeTab === 'profile'">
+      프로필의 선호 장르·레벨 설정에 따라 자동 할당되는 개인화 선반 스키마입니다. 각 프로필은 조건에 맞는 스키마를 배정받고, 서점에서 맞춤 선반으로 노출됩니다.
+    </div>
+    <div class="mb-4 text-sm text-gray-500" x-show="activeTab === 'common'">
+      전체 사용자 서점에 공통으로 노출되는 선반 스키마입니다. 노출 순서에 따라 서점 상단부터 배치됩니다.
+    </div>
+
+    <!-- 프로필 추천 선반 테이블 -->
+    <div x-show="activeTab === 'profile'" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm" style="min-width:900px">
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-200">
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 w-8">#</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">선반 이름</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">유형</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">조건 요약</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">정렬 기준</th>
+              <th class="text-center px-4 py-3 text-xs font-medium text-gray-500">최대 권수</th>
+              <th class="text-center px-4 py-3 text-xs font-medium text-gray-500">할당 프로필</th>
+              <th class="text-center px-4 py-3 text-xs font-medium text-gray-500">상태</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">수정일</th>
+              <th class="px-4 py-3 text-xs font-medium text-gray-500 w-16"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <template x-for="(schema, i) in profileSchemas" :key="schema.id">
+              <tr class="hover:bg-gray-50 transition-colors cursor-pointer" @click="openEdit(schema, 'profile')">
+                <td class="px-4 py-3 text-xs text-gray-400" x-text="i + 1"></td>
+                <td class="px-4 py-3">
+                  <div class="font-medium text-gray-900" x-text="schema.name"></div>
+                  <div class="text-xs text-gray-400 mt-0.5" x-text="schema.description"></div>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                    :class="filterTypeBadge(schema.filterType).cls"
+                    x-text="filterTypeBadge(schema.filterType).label"></span>
+                </td>
+                <td class="px-4 py-3 text-xs text-gray-600" x-text="schema.conditionSummary"></td>
+                <td class="px-4 py-3 text-xs text-gray-600" x-text="sortLabel(schema.sortBy)"></td>
+                <td class="px-4 py-3 text-center text-sm text-gray-700" x-text="schema.maxBooks + '권'"></td>
+                <td class="px-4 py-3 text-center">
+                  <span class="text-sm font-medium text-gray-900" x-text="schema.assignedCount"></span>
+                  <span class="text-xs text-gray-400">명</span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
+                    :class="schema.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-400'">
+                    <span class="w-1.5 h-1.5 rounded-full" :class="schema.isActive ? 'bg-emerald-500' : 'bg-gray-300'"></span>
+                    <span x-text="schema.isActive ? '활성' : '비활성'"></span>
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-xs text-gray-400" x-text="schema.updatedDate"></td>
+                <td class="px-4 py-3 text-right">
+                  <button @click.stop="openEdit(schema, 'profile')" class="text-gray-400 hover:text-blue-600 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  </button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 공통 추천 선반 테이블 -->
+    <div x-show="activeTab === 'common'" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm" style="min-width:900px">
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-200">
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 w-8">#</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">선반 이름</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">유형</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">조건 요약</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">정렬 기준</th>
+              <th class="text-center px-4 py-3 text-xs font-medium text-gray-500">최대 권수</th>
+              <th class="text-center px-4 py-3 text-xs font-medium text-gray-500">노출 순서</th>
+              <th class="text-center px-4 py-3 text-xs font-medium text-gray-500">상태</th>
+              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">수정일</th>
+              <th class="px-4 py-3 text-xs font-medium text-gray-500 w-16"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <template x-for="(schema, i) in commonSchemas" :key="schema.id">
+              <tr class="hover:bg-gray-50 transition-colors cursor-pointer" @click="openEdit(schema, 'common')">
+                <td class="px-4 py-3 text-xs text-gray-400" x-text="i + 1"></td>
+                <td class="px-4 py-3">
+                  <div class="font-medium text-gray-900" x-text="schema.name"></div>
+                  <div class="text-xs text-gray-400 mt-0.5" x-text="schema.description"></div>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                    :class="filterTypeBadge(schema.filterType).cls"
+                    x-text="filterTypeBadge(schema.filterType).label"></span>
+                </td>
+                <td class="px-4 py-3 text-xs text-gray-600" x-text="schema.conditionSummary"></td>
+                <td class="px-4 py-3 text-xs text-gray-600" x-text="sortLabel(schema.sortBy)"></td>
+                <td class="px-4 py-3 text-center text-sm text-gray-700" x-text="schema.maxBooks + '권'"></td>
+                <td class="px-4 py-3 text-center">
+                  <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-sm font-semibold text-gray-700"
+                    x-text="schema.displayOrder"></span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
+                    :class="schema.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-400'">
+                    <span class="w-1.5 h-1.5 rounded-full" :class="schema.isActive ? 'bg-emerald-500' : 'bg-gray-300'"></span>
+                    <span x-text="schema.isActive ? '활성' : '비활성'"></span>
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-xs text-gray-400" x-text="schema.updatedDate"></td>
+                <td class="px-4 py-3 text-right">
+                  <button @click.stop="openEdit(schema, 'common')" class="text-gray-400 hover:text-blue-600 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  </button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- 우측 편집 패널 -->
+<div class="fixed inset-0 z-40 pointer-events-none" x-show="panelOpen" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+  <div class="absolute inset-0 bg-black/30 pointer-events-auto" @click="closePanel()"></div>
+  <div class="absolute right-0 top-0 bottom-0 w-[420px] bg-white shadow-2xl flex flex-col pointer-events-auto"
+    x-transition:enter="transition-transform duration-200" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+    x-transition:leave="transition-transform duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+
+    <!-- 패널 헤더 -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+      <div>
+        <h2 class="text-sm font-semibold text-gray-900" x-text="isNew ? '스키마 추가' : '스키마 편집'"></h2>
+        <p class="text-xs text-gray-400 mt-0.5" x-text="panelTab === 'profile' ? '프로필 추천 선반' : '공통 추천 선반'"></p>
+      </div>
+      <button @click="closePanel()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- 패널 내용 -->
+    <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+
+      <!-- 이름 -->
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1.5">선반 이름 <span class="text-red-500">*</span></label>
+        <input type="text" x-model="form.name" placeholder="예: 레벨 맞춤 추천" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- 설명 -->
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1.5">설명</label>
+        <input type="text" x-model="form.description" placeholder="서점에서 선반 아래 표시될 짧은 설명" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- 유형 -->
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1.5">유형 <span class="text-red-500">*</span></label>
+        <select x-model="form.filterType" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="level">레벨 기반</option>
+          <option value="genre">장르 기반</option>
+          <option value="history">완독 이력 기반</option>
+          <option value="popular">인기도 기반</option>
+          <option value="new">신규 출판</option>
+          <option value="editor">편집자 추천</option>
+          <option value="words">분량 기반</option>
+          <option value="custom">커스텀</option>
+        </select>
+      </div>
+
+      <!-- 조건 — 레벨 -->
+      <div x-show="form.filterType === 'level'" class="space-y-3">
+        <label class="block text-xs font-medium text-gray-700">레벨 범위</label>
+        <div class="flex items-center gap-3">
+          <div class="flex-1">
+            <label class="text-xs text-gray-500 mb-1 block">최소 레벨</label>
+            <select x-model="form.levelMin" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <template x-for="n in [1,2,3,4,5,6]" :key="n">
+                <option :value="n" x-text="'Lv.' + n"></option>
+              </template>
+            </select>
+          </div>
+          <span class="text-gray-400 mt-4">~</span>
+          <div class="flex-1">
+            <label class="text-xs text-gray-500 mb-1 block">최대 레벨</label>
+            <select x-model="form.levelMax" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <template x-for="n in [1,2,3,4,5,6]" :key="n">
+                <option :value="n" x-text="'Lv.' + n"></option>
+              </template>
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 mt-1">
+          <input type="checkbox" id="levelRelative" x-model="form.levelRelative" class="rounded border-gray-300 text-blue-600">
+          <label for="levelRelative" class="text-xs text-gray-600">프로필 현재 레벨 기준 상대값으로 계산</label>
+        </div>
+      </div>
+
+      <!-- 조건 — 장르 -->
+      <div x-show="form.filterType === 'genre'" class="space-y-2">
+        <label class="block text-xs font-medium text-gray-700">포함 장르</label>
+        <div class="flex flex-wrap gap-2">
+          <template x-for="g in ['소설','판타지','SF','역사','자연','과학']" :key="g">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" :value="g" x-model="form.genres" class="rounded border-gray-300 text-blue-600">
+              <span class="text-xs text-gray-700" x-text="g"></span>
+            </label>
+          </template>
+        </div>
+        <div class="flex items-center gap-2 mt-1">
+          <input type="checkbox" id="genreFromProfile" x-model="form.genreFromProfile" class="rounded border-gray-300 text-blue-600">
+          <label for="genreFromProfile" class="text-xs text-gray-600">프로필 선호 장르 자동 적용</label>
+        </div>
+      </div>
+
+      <!-- 조건 — 완독 이력 -->
+      <div x-show="form.filterType === 'history'" class="space-y-2">
+        <label class="block text-xs font-medium text-gray-700">조건</label>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-600">완독</span>
+          <input type="number" x-model="form.minCompleted" min="1" max="100" class="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span class="text-xs text-gray-600">권 이상 읽은 프로필에게 적용</span>
+        </div>
+        <div class="text-xs text-gray-400">완독한 책과 같은 장르·레벨에서 아직 읽지 않은 책 추천</div>
+      </div>
+
+      <!-- 조건 — 인기도 -->
+      <div x-show="form.filterType === 'popular'" class="space-y-2">
+        <label class="block text-xs font-medium text-gray-700">집계 기간</label>
+        <select x-model="form.popularPeriod" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="7">최근 7일</option>
+          <option value="30">최근 30일</option>
+          <option value="90">최근 90일</option>
+          <option value="all">전체 기간</option>
+        </select>
+      </div>
+
+      <!-- 조건 — 신규 출판 -->
+      <div x-show="form.filterType === 'new'" class="space-y-2">
+        <label class="block text-xs font-medium text-gray-700">출판 후 N일 이내</label>
+        <div class="flex items-center gap-2">
+          <input type="number" x-model="form.newWithinDays" min="1" max="365" class="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span class="text-xs text-gray-600">일 이내 출판된 책</span>
+        </div>
+      </div>
+
+      <!-- 조건 — 분량 -->
+      <div x-show="form.filterType === 'words'" class="space-y-2">
+        <label class="block text-xs font-medium text-gray-700">단어 수 범위</label>
+        <div class="flex items-center gap-2">
+          <input type="number" x-model="form.wordsMin" placeholder="최소" class="flex-1 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span class="text-xs text-gray-400">~</span>
+          <input type="number" x-model="form.wordsMax" placeholder="최대" class="flex-1 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span class="text-xs text-gray-600">단어</span>
+        </div>
+      </div>
+
+      <!-- 조건 — 편집자 추천 / 커스텀 -->
+      <div x-show="form.filterType === 'editor' || form.filterType === 'custom'" class="space-y-2">
+        <label class="block text-xs font-medium text-gray-700">메모</label>
+        <textarea x-model="form.customNote" rows="2" placeholder="운영자 메모 (선택 기준, 특이사항 등)" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+      </div>
+
+      <!-- 정렬 기준 -->
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1.5">정렬 기준</label>
+        <select x-model="form.sortBy" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="reads_desc">읽기 많은 순</option>
+          <option value="reads_asc">읽기 적은 순</option>
+          <option value="score_desc">퀴즈 점수 높은 순</option>
+          <option value="level_asc">레벨 낮은 순</option>
+          <option value="level_desc">레벨 높은 순</option>
+          <option value="new">최근 출판 순</option>
+          <option value="words_asc">분량 짧은 순</option>
+          <option value="random">랜덤</option>
+        </select>
+      </div>
+
+      <!-- 최대 권수 -->
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1.5">최대 표시 권수</label>
+        <div class="flex items-center gap-2">
+          <input type="number" x-model="form.maxBooks" min="3" max="30" class="w-24 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span class="text-xs text-gray-500">권 (3~30)</span>
+        </div>
+      </div>
+
+      <!-- 공통 선반 전용: 노출 순서 -->
+      <div x-show="panelTab === 'common'">
+        <label class="block text-xs font-medium text-gray-700 mb-1.5">노출 순서</label>
+        <div class="flex items-center gap-2">
+          <input type="number" x-model="form.displayOrder" min="1" max="20" class="w-24 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span class="text-xs text-gray-500">번째 선반 (숫자 낮을수록 상단)</span>
+        </div>
+      </div>
+
+      <!-- 상태 -->
+      <div class="flex items-center justify-between py-3 border-t border-gray-100">
+        <div>
+          <div class="text-sm font-medium text-gray-700">활성화</div>
+          <div class="text-xs text-gray-400 mt-0.5">비활성화 시 서점에 노출되지 않습니다</div>
+        </div>
+        <button @click="form.isActive = !form.isActive"
+          class="relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none"
+          :class="form.isActive ? 'bg-blue-600' : 'bg-gray-200'">
+          <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
+            :class="form.isActive ? 'translate-x-5' : 'translate-x-0'"></span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- 패널 푸터 -->
+    <div class="px-5 py-4 border-t border-gray-200 flex items-center gap-3">
+      <button @click="saveSchema()" class="flex-1 bg-blue-700 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors">저장</button>
+      <button x-show="!isNew" @click="deleteSchema()" class="px-4 py-2 text-red-600 border border-red-200 rounded-lg text-sm hover:bg-red-50 transition-colors">삭제</button>
+      <button @click="closePanel()" class="px-4 py-2 text-gray-600 border border-gray-200 rounded-lg text-sm hover:bg-gray-50 transition-colors">취소</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function recoApp() {
+  return {
+    activeTab: 'profile',
+    panelOpen: false,
+    panelTab: 'profile',
+    isNew: false,
+    editingId: null,
+
+    form: {},
+
+    profileSchemas: [
+      {
+        id: 'ps1',
+        name: '레벨 맞춤 추천',
+        description: '현재 레벨과 한 단계 위 책을 추천',
+        filterType: 'level',
+        conditionSummary: '현재 레벨 ±1 (상대값)',
+        sortBy: 'reads_desc',
+        maxBooks: 10,
+        assignedCount: 38,
+        isActive: true,
+        updatedDate: '2026-04-10',
+        levelMin: 1, levelMax: 2, levelRelative: true,
+        genres: [], genreFromProfile: false,
+        minCompleted: 0,
+        popularPeriod: '30',
+        newWithinDays: 30,
+        wordsMin: '', wordsMax: '',
+        displayOrder: 1,
+        customNote: '',
+      },
+      {
+        id: 'ps2',
+        name: '장르 선호 추천',
+        description: '프로필이 선호하는 장르 중심 추천',
+        filterType: 'genre',
+        conditionSummary: '선호 장르 자동 적용',
+        sortBy: 'reads_desc',
+        maxBooks: 12,
+        assignedCount: 31,
+        isActive: true,
+        updatedDate: '2026-04-08',
+        levelMin: 1, levelMax: 6, levelRelative: false,
+        genres: [], genreFromProfile: true,
+        minCompleted: 0,
+        popularPeriod: '30',
+        newWithinDays: 30,
+        wordsMin: '', wordsMax: '',
+        displayOrder: 1,
+        customNote: '',
+      },
+      {
+        id: 'ps3',
+        name: '완독 이력 기반 추천',
+        description: '읽은 책과 비슷한 장르·레벨 추천',
+        filterType: 'history',
+        conditionSummary: '완독 3권 이상 프로필 대상',
+        sortBy: 'score_desc',
+        maxBooks: 10,
+        assignedCount: 22,
+        isActive: true,
+        updatedDate: '2026-03-28',
+        levelMin: 1, levelMax: 6, levelRelative: false,
+        genres: [], genreFromProfile: false,
+        minCompleted: 3,
+        popularPeriod: '30',
+        newWithinDays: 30,
+        wordsMin: '', wordsMax: '',
+        displayOrder: 1,
+        customNote: '',
+      },
+      {
+        id: 'ps4',
+        name: '짧은 책 먼저',
+        description: '분량이 짧아 부담 없이 시작할 수 있는 책',
+        filterType: 'words',
+        conditionSummary: '5,000단어 이하',
+        sortBy: 'words_asc',
+        maxBooks: 8,
+        assignedCount: 15,
+        isActive: true,
+        updatedDate: '2026-03-20',
+        levelMin: 1, levelMax: 6, levelRelative: false,
+        genres: [], genreFromProfile: false,
+        minCompleted: 0,
+        popularPeriod: '30',
+        newWithinDays: 30,
+        wordsMin: '', wordsMax: 5000,
+        displayOrder: 1,
+        customNote: '',
+      },
+      {
+        id: 'ps5',
+        name: '다음 레벨 도전',
+        description: '현재 레벨보다 한 단계 높은 책으로 도전 유도',
+        filterType: 'level',
+        conditionSummary: '현재 레벨 +1 (상대값)',
+        sortBy: 'level_asc',
+        maxBooks: 6,
+        assignedCount: 18,
+        isActive: false,
+        updatedDate: '2026-03-15',
+        levelMin: 2, levelMax: 2, levelRelative: true,
+        genres: [], genreFromProfile: false,
+        minCompleted: 0,
+        popularPeriod: '30',
+        newWithinDays: 30,
+        wordsMin: '', wordsMax: '',
+        displayOrder: 1,
+        customNote: '',
+      },
+    ],
+
+    commonSchemas: [
+      {
+        id: 'cs1',
+        name: '이주의 신규 도서',
+        description: '이번 주 새로 출판된 책 모음',
+        filterType: 'new',
+        conditionSummary: '출판 후 7일 이내',
+        sortBy: 'new',
+        maxBooks: 8,
+        displayOrder: 1,
+        isActive: true,
+        updatedDate: '2026-04-15',
+        levelMin: 1, levelMax: 6, levelRelative: false,
+        genres: [], genreFromProfile: false,
+        minCompleted: 0,
+        popularPeriod: '30',
+        newWithinDays: 7,
+        wordsMin: '', wordsMax: '',
+        customNote: '',
+      },
+      {
+        id: 'cs2',
+        name: '지금 가장 인기있는 책',
+        description: '최근 30일 기준 읽기 횟수 TOP',
+        filterType: 'popular',
+        conditionSummary: '최근 30일 읽기 횟수 기준',
+        sortBy: 'reads_desc',
+        maxBooks: 10,
+        displayOrder: 2,
+        isActive: true,
+        updatedDate: '2026-04-12',
+        levelMin: 1, levelMax: 6, levelRelative: false,
+        genres: [], genreFromProfile: false,
+        minCompleted: 0,
+        popularPeriod: '30',
+        newWithinDays: 30,
+        wordsMin: '', wordsMax: '',
+        customNote: '',
+      },
+      {
+        id: 'cs3',
+        name: '편집자 추천',
+        description: '리더스아이 편집팀이 직접 선정한 책',
+        filterType: 'editor',
+        conditionSummary: '수동 선정',
+        sortBy: 'random',
+        maxBooks: 8,
+        displayOrder: 3,
+        isActive: true,
+        updatedDate: '2026-04-05',
+        levelMin: 1, levelMax: 6, levelRelative: false,
+        genres: [], genreFromProfile: false,
+        minCompleted: 0,
+        popularPeriod: '30',
+        newWithinDays: 30,
+        wordsMin: '', wordsMax: '',
+        customNote: '매월 초 편집팀 회의에서 선정. 장르 균형 고려.',
+      },
+      {
+        id: 'cs4',
+        name: '처음 읽기에 딱 좋은 책',
+        description: 'Lv.1~2 입문자를 위한 쉬운 책 모음',
+        filterType: 'level',
+        conditionSummary: 'Lv.1~2, 5,000단어 이하',
+        sortBy: 'reads_desc',
+        maxBooks: 8,
+        displayOrder: 4,
+        isActive: true,
+        updatedDate: '2026-03-30',
+        levelMin: 1, levelMax: 2, levelRelative: false,
+        genres: [], genreFromProfile: false,
+        minCompleted: 0,
+        popularPeriod: '30',
+        newWithinDays: 30,
+        wordsMin: '', wordsMax: 5000,
+        customNote: '',
+      },
+      {
+        id: 'cs5',
+        name: '이달의 장르: 판타지',
+        description: '4월 테마 — 판타지 장르 특집',
+        filterType: 'genre',
+        conditionSummary: '판타지',
+        sortBy: 'reads_desc',
+        maxBooks: 10,
+        displayOrder: 5,
+        isActive: false,
+        updatedDate: '2026-03-25',
+        levelMin: 1, levelMax: 6, levelRelative: false,
+        genres: ['판타지'], genreFromProfile: false,
+        minCompleted: 0,
+        popularPeriod: '30',
+        newWithinDays: 30,
+        wordsMin: '', wordsMax: '',
+        customNote: '매월 테마 변경 필요.',
+      },
+    ],
+
+    filterTypeBadge(type) {
+      const map = {
+        level:   { label: '레벨',     cls: 'bg-blue-50 text-blue-700' },
+        genre:   { label: '장르',     cls: 'bg-purple-50 text-purple-700' },
+        history: { label: '완독이력', cls: 'bg-amber-50 text-amber-700' },
+        popular: { label: '인기도',   cls: 'bg-rose-50 text-rose-700' },
+        new:     { label: '신규출판', cls: 'bg-emerald-50 text-emerald-700' },
+        editor:  { label: '편집자',   cls: 'bg-indigo-50 text-indigo-700' },
+        words:   { label: '분량',     cls: 'bg-orange-50 text-orange-700' },
+        custom:  { label: '커스텀',   cls: 'bg-gray-100 text-gray-600' },
+      };
+      return map[type] || { label: type, cls: 'bg-gray-100 text-gray-600' };
+    },
+
+    sortLabel(key) {
+      const map = {
+        reads_desc: '읽기 많은 순', reads_asc: '읽기 적은 순',
+        score_desc: '퀴즈 점수순', level_asc: '레벨 낮은 순',
+        level_desc: '레벨 높은 순', new: '최근 출판 순',
+        words_asc: '분량 짧은 순', random: '랜덤',
+      };
+      return map[key] || key;
+    },
+
+    openAdd() {
+      this.isNew = true;
+      this.editingId = null;
+      this.panelTab = this.activeTab;
+      this.form = {
+        name: '', description: '', filterType: 'level',
+        levelMin: 1, levelMax: 3, levelRelative: false,
+        genres: [], genreFromProfile: false,
+        minCompleted: 3,
+        popularPeriod: '30',
+        newWithinDays: 7,
+        wordsMin: '', wordsMax: '',
+        sortBy: 'reads_desc', maxBooks: 10,
+        displayOrder: this.commonSchemas.length + 1,
+        isActive: true, customNote: '',
+      };
+      this.panelOpen = true;
+    },
+
+    openEdit(schema, tab) {
+      this.isNew = false;
+      this.editingId = schema.id;
+      this.panelTab = tab;
+      this.form = { ...schema };
+      this.panelOpen = true;
+    },
+
+    closePanel() {
+      this.panelOpen = false;
+    },
+
+    saveSchema() {
+      const today = new Date().toISOString().slice(0, 10);
+      const list = this.panelTab === 'profile' ? this.profileSchemas : this.commonSchemas;
+      if (this.isNew) {
+        const newId = (this.panelTab === 'profile' ? 'ps' : 'cs') + Date.now();
+        list.push({ ...this.form, id: newId, updatedDate: today, assignedCount: 0 });
+      } else {
+        const idx = list.findIndex(s => s.id === this.editingId);
+        if (idx !== -1) {
+          list[idx] = { ...list[idx], ...this.form, updatedDate: today };
+        }
+      }
+      this.closePanel();
+    },
+
+    deleteSchema() {
+      if (!confirm('이 스키마를 삭제하시겠습니까?')) return;
+      if (this.panelTab === 'profile') {
+        this.profileSchemas = this.profileSchemas.filter(s => s.id !== this.editingId);
+      } else {
+        this.commonSchemas = this.commonSchemas.filter(s => s.id !== this.editingId);
+      }
+      this.closePanel();
+    },
+
+    logout() {
+      localStorage.removeItem('cr_admin');
+      location.href = 'index.html';
+    },
+
+    init() {
+      if (!localStorage.getItem('cr_admin')) location.href = 'index.html';
+    },
+  };
+}
+</script>
+</body>
+</html>
