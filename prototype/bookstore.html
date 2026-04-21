@@ -271,7 +271,7 @@
         <!-- 부모: 권장 도서 추가 -->
         <button x-show="isParent" @click="openRecommendSheet()"
                 class="w-8 h-8 flex items-center justify-center rounded-full flex-shrink-0 transition-colors"
-                :class="isRecommended(selectedBook?.title) ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:bg-gray-50'">
+                :class="isRecommended(selectedBook?.title) ? 'text-yellow-400 bg-yellow-50' : 'text-gray-400 hover:bg-gray-50'">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
@@ -458,6 +458,23 @@
         <button @click="openReader(0)" class="w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold hover:bg-blue-800 active:scale-95 transition">책 읽기</button>
       </div>
 
+      <!-- 이미 추천됨 안내 팝업 -->
+      <div x-show="alreadyRecommendPopup" x-cloak @click.self="alreadyRecommendPopup=false"
+           class="absolute inset-0 bg-black/40 z-40 flex items-center justify-center px-6"
+           x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+           x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+        <div class="bg-white rounded-2xl p-5 w-full shadow-xl"
+             x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-yellow-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>
+            <p class="font-bold text-gray-900 text-base">권장 도서</p>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed mb-4" x-text="alreadyRecommendMsg"></p>
+          <button @click="alreadyRecommendPopup=false"
+                  class="w-full py-2.5 bg-blue-700 text-white rounded-xl text-sm font-semibold">확인</button>
+        </div>
+      </div>
+
       <!-- 권장 도서 추가 시트 -->
       <div x-show="recommendSheet" x-cloak @click.self="recommendSheet=false"
            class="absolute inset-0 bg-black/40 z-40 flex items-end"
@@ -566,7 +583,8 @@ function app() {
     user: null, isParent: false, showMenu: false,
     selectedShelf: null, selectedBook: null, bookDetailTab: 'toc',
     reviewModal: false, selectedReview: null,
-    recommendSheet: false, tempRecommend: [], recommendTargets: {},
+    recommendSheet: false, tempRecommend: [], recommendTargets: {"Charlotte's Web": ['hong']},
+    alreadyRecommendPopup: false, alreadyRecommendMsg: '',
     childProfiles: [
       { id:'hong', initial:'홍', name:'홍길동', color:'linear-gradient(135deg,#667eea,#764ba2)' },
       { id:'chun', initial:'성', name:'성춘향', color:'linear-gradient(135deg,#f093fb,#f5576c)' },
@@ -724,7 +742,15 @@ function app() {
     },
     openReview(r) { this.selectedReview = r; this.reviewModal = true; },
     openRecommendSheet() {
-      this.tempRecommend = [...(this.recommendTargets[this.selectedBook?.title] || [])];
+      const key = this.selectedBook?.title;
+      const existing = this.recommendTargets[key] || [];
+      if (existing.length) {
+        const names = existing.map(id => this.childProfiles.find(p=>p.id===id)?.name).filter(Boolean).join(', ');
+        this.alreadyRecommendMsg = `이미 ${names}에게 추천되어 있습니다.`;
+        this.alreadyRecommendPopup = true;
+        return;
+      }
+      this.tempRecommend = [];
       this.recommendSheet = true;
     },
     toggleTempRecommend(pid) {
