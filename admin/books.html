@@ -72,74 +72,164 @@
   </header>
 
   <main class="p-6">
-    <!-- Filters -->
-    <div class="flex items-center gap-3 mb-4">
-      <div class="relative flex-1 max-w-xs">
+
+    <!-- Tabs -->
+    <div class="flex items-center gap-1 mb-5 bg-gray-100 rounded-xl p-1 w-fit">
+      <template x-for="tab in tabs" :key="tab.key">
+        <button @click="publishTab = tab.key; page = 1"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+          :class="publishTab === tab.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'">
+          <span x-text="tab.label"></span>
+          <span class="text-xs px-1.5 py-0.5 rounded-full"
+            :class="publishTab === tab.key ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-500'"
+            x-text="books.filter(b => b.publishStatus === tab.key).length"></span>
+        </button>
+      </template>
+    </div>
+
+    <!-- Filters + View Toggle -->
+    <div class="flex items-center gap-2 mb-4">
+      <!-- Search -->
+      <div class="relative">
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         <input x-model="search" type="text" placeholder="제목, 작가 검색"
-          class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          class="pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm w-52 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
       </div>
-      <select x-model="filterGenre" class="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <!-- Genre -->
+      <select x-model="filterGenre" class="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
         <option value="">전체 장르</option>
         <template x-for="g in genres" :key="g"><option x-text="g"></option></template>
       </select>
-      <select x-model="filterLevel" class="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <!-- Level -->
+      <select x-model="filterLevel" class="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
         <option value="">전체 레벨</option>
-        <option>초급</option>
-        <option>중급</option>
-        <option>고급</option>
+        <option>초급</option><option>중급</option><option>고급</option>
       </select>
-      <select x-model="filterStatus" class="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="">전체 상태</option>
-        <option>공개</option>
-        <option>비공개</option>
+      <!-- Sort -->
+      <select x-model="sortBy" class="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+        <option value="reads_desc">읽기 많은 순</option>
+        <option value="reads_asc">읽기 적은 순</option>
+        <option value="title_asc">제목 가나다순</option>
+        <option value="words_desc">단어 많은 순</option>
+        <option value="words_asc">단어 적은 순</option>
+        <option value="score_desc">퀴즈 점수 높은 순</option>
       </select>
+
+      <!-- Spacer -->
+      <div class="flex-1"></div>
+
+      <!-- View toggle -->
+      <div class="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+        <button @click="viewMode = 'card'"
+          class="p-1.5 rounded-md transition-all"
+          :class="viewMode === 'card' ? 'bg-white shadow-sm text-blue-700' : 'text-gray-400 hover:text-gray-600'">
+          <!-- Grid icon -->
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+        </button>
+        <button @click="viewMode = 'table'"
+          class="p-1.5 rounded-md transition-all"
+          :class="viewMode === 'table' ? 'bg-white shadow-sm text-blue-700' : 'text-gray-400 hover:text-gray-600'">
+          <!-- List icon -->
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <!-- Book Grid -->
-    <div class="grid grid-cols-5 gap-4">
+    <!-- Card View -->
+    <div x-show="viewMode === 'card'" class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr))">
       <template x-for="b in paginated" :key="b.title">
-        <div class="bg-white rounded-xl border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" @click="openDetail(b)">
-          <!-- Cover -->
-          <div class="h-44 flex items-end p-3" :style="`background:${b.color}`">
+        <div class="bg-white rounded-lg border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-shadow group" @click="openDetail(b)">
+          <!-- Book cover -->
+          <div class="flex flex-col justify-end p-2.5" style="height:168px" :style="`background:${b.color}`">
+            <!-- Level badge top-right -->
+            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            </div>
             <div>
-              <div class="text-white font-bold text-sm leading-tight line-clamp-2" x-text="b.title"></div>
-              <div class="text-white/70 text-xs mt-1" x-text="b.author"></div>
+              <div class="text-white font-bold text-xs leading-tight line-clamp-3 mb-1" x-text="b.title"></div>
+              <div class="text-white/65 text-[10px] truncate" x-text="b.author"></div>
             </div>
           </div>
-          <div class="p-3">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600" x-text="b.genre"></span>
-              <span class="text-xs px-2 py-0.5 rounded-full"
+          <!-- Info -->
+          <div class="px-2 py-2">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] px-1.5 py-0.5 rounded-full"
                 :class="b.level === '초급' ? 'bg-green-50 text-green-600' : b.level === '중급' ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-500'"
                 x-text="b.level"></span>
+              <span class="text-[10px] text-gray-400" x-text="b.genre"></span>
             </div>
-            <div class="flex items-center justify-between text-xs text-gray-500">
-              <span x-text="b.words.toLocaleString() + '단어'"></span>
-              <div class="flex items-center gap-1">
-                <div class="w-1.5 h-1.5 rounded-full" :class="b.status === '공개' ? 'bg-green-400' : 'bg-gray-300'"></div>
-                <span x-text="b.status"></span>
-              </div>
-            </div>
-            <div class="mt-2 text-xs text-gray-400">
-              읽기 <span class="font-medium text-gray-700" x-text="b.reads + '회'"></span>
+            <div class="text-[10px] text-gray-400">
+              읽기 <span class="text-gray-600 font-medium" x-text="b.reads"></span>회
             </div>
           </div>
         </div>
       </template>
     </div>
 
+    <!-- Table View -->
+    <div x-show="viewMode === 'table'" class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-100 bg-gray-50">
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 w-8"><input type="checkbox" class="rounded"></th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">도서</th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">장르</th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">레벨</th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">단어 수</th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">읽기</th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">평균 WPM</th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">퀴즈</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="b in paginated" :key="b.title">
+            <tr class="border-b border-gray-50 hover:bg-gray-50 cursor-pointer" @click="openDetail(b)">
+              <td class="px-4 py-3" @click.stop><input type="checkbox" class="rounded"></td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-11 rounded flex-shrink-0" :style="`background:${b.color}`"></div>
+                  <div>
+                    <div class="font-medium text-gray-900 text-sm line-clamp-1" x-text="b.title"></div>
+                    <div class="text-xs text-gray-400" x-text="b.author"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-xs text-gray-600" x-text="b.genre"></td>
+              <td class="px-4 py-3">
+                <span class="text-xs px-2 py-0.5 rounded-full"
+                  :class="b.level === '초급' ? 'bg-green-50 text-green-600' : b.level === '중급' ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-500'"
+                  x-text="b.level"></span>
+              </td>
+              <td class="px-4 py-3 text-xs text-gray-600" x-text="b.words.toLocaleString()"></td>
+              <td class="px-4 py-3 text-xs text-gray-600" x-text="b.reads + '회'"></td>
+              <td class="px-4 py-3 text-xs text-gray-600" x-text="b.avgWpm"></td>
+              <td class="px-4 py-3 text-xs text-gray-600" x-text="b.avgScore + '%'"></td>
+              <td class="px-4 py-3" @click.stop>
+                <button class="text-gray-400 hover:text-gray-600 p-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                </button>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Pagination -->
-    <div class="flex items-center justify-center gap-1 mt-6">
+    <div class="flex items-center justify-center gap-1 mt-5">
       <button @click="page = Math.max(1, page - 1)" :disabled="page === 1"
-        class="px-3 py-1.5 text-xs border border-gray-200 rounded-md text-gray-600 disabled:opacity-40 hover:bg-gray-50">이전</button>
+        class="px-3 py-1.5 text-xs border border-gray-200 rounded-md text-gray-600 disabled:opacity-40 hover:bg-gray-50 bg-white">이전</button>
       <template x-for="p in totalPages" :key="p">
         <button @click="page = p" class="w-7 h-7 text-xs rounded-md"
-          :class="page === p ? 'bg-blue-700 text-white' : 'text-gray-600 hover:bg-gray-50'"
+          :class="page === p ? 'bg-blue-700 text-white' : 'text-gray-600 hover:bg-gray-50 bg-white border border-gray-200'"
           x-text="p"></button>
       </template>
       <button @click="page = Math.min(totalPages, page + 1)" :disabled="page === totalPages"
-        class="px-3 py-1.5 text-xs border border-gray-200 rounded-md text-gray-600 disabled:opacity-40 hover:bg-gray-50">다음</button>
+        class="px-3 py-1.5 text-xs border border-gray-200 rounded-md text-gray-600 disabled:opacity-40 hover:bg-gray-50 bg-white">다음</button>
     </div>
   </main>
 </div>
@@ -159,8 +249,7 @@
 
   <div class="p-5">
     <!-- Cover preview -->
-    <div class="h-40 rounded-xl mb-5 flex items-end p-4"
-      :style="`background:${form.color || '#2e4f8f'}`">
+    <div class="h-40 rounded-xl mb-5 flex items-end p-4" :style="`background:${form.color || '#2e4f8f'}`">
       <div>
         <div class="text-white font-bold text-base leading-tight" x-text="form.title || '제목 없음'"></div>
         <div class="text-white/70 text-sm mt-1" x-text="form.author || '저자 미입력'"></div>
@@ -202,15 +291,19 @@
         </div>
       </div>
       <div>
-        <label class="block text-xs font-medium text-gray-600 mb-1">공개 상태</label>
-        <div class="flex gap-3">
+        <label class="block text-xs font-medium text-gray-600 mb-1">출판 상태</label>
+        <div class="flex gap-3 flex-wrap">
           <label class="flex items-center gap-2 cursor-pointer">
-            <input type="radio" x-model="form.status" value="공개" class="text-blue-600">
-            <span class="text-sm text-gray-700">공개</span>
+            <input type="radio" x-model="form.publishStatus" value="출판중" class="text-blue-600">
+            <span class="text-sm text-gray-700">출판 중</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
-            <input type="radio" x-model="form.status" value="비공개" class="text-blue-600">
-            <span class="text-sm text-gray-700">비공개</span>
+            <input type="radio" x-model="form.publishStatus" value="출판대기" class="text-blue-600">
+            <span class="text-sm text-gray-700">출판 대기</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" x-model="form.publishStatus" value="출판중지" class="text-blue-600">
+            <span class="text-sm text-gray-700">출판 중지</span>
           </label>
         </div>
       </div>
@@ -243,63 +336,76 @@
 
     <!-- Actions -->
     <div class="mt-5 space-y-2">
-      <button @click="saveBook()"
-        class="w-full bg-blue-700 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-800">
+      <button @click="saveBook()" class="w-full bg-blue-700 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-800">
         <span x-text="addMode ? '도서 추가' : '저장'"></span>
       </button>
-      <template x-if="!addMode">
-        <button @click="toggleStatus()"
-          class="w-full py-2.5 border rounded-lg text-sm font-medium"
-          :class="form.status === '공개' ? 'border-yellow-200 text-yellow-600 hover:bg-yellow-50' : 'border-green-200 text-green-600 hover:bg-green-50'"
-          x-text="form.status === '공개' ? '비공개로 전환' : '공개로 전환'">
-        </button>
-      </template>
     </div>
   </div>
 </div>
 
 <script>
 function booksApp() {
-  const colors = ['#2e4f8f','#5c2e8c','#1e6840','#8a2424','#7a5c1e','#1e5c6e','#6e1e5c','#3d6e1e','#1e3d6e','#6e3d1e'];
   const books = [
-    { title:"Charlotte's Web", author:'E.B. White', genre:'소설', level:'초급', words:31938, color:'#2e4f8f', status:'공개', reads:312, avgWpm:142, avgScore:81, description:"A beloved classic about friendship between a pig named Wilbur and a spider named Charlotte." },
-    { title:'The BFG', author:'Roald Dahl', genre:'판타지', level:'초급', words:44512, color:'#5c2e8c', status:'공개', reads:278, avgWpm:138, avgScore:76, description:"A big friendly giant and a little girl named Sophie go on an extraordinary adventure." },
-    { title:'Holes', author:'Louis Sachar', genre:'소설', level:'중급', words:47079, color:'#1e6840', status:'공개', reads:241, avgWpm:161, avgScore:84, description:"Stanley Yelnats is sent to a detention center where the boys dig holes every day." },
-    { title:'Wonder', author:'R.J. Palacio', genre:'소설', level:'중급', words:73053, color:'#8a2424', status:'공개', reads:198, avgWpm:155, avgScore:79, description:"August Pullman was born with a facial difference. This is the story of his first year at a mainstream school." },
-    { title:'Matilda', author:'Roald Dahl', genre:'판타지', level:'초급', words:39309, color:'#7a5c1e', status:'공개', reads:187, avgWpm:140, avgScore:82, description:"Matilda is a brilliant girl with a gift for mischief and a love of books." },
-    { title:'Harry Potter and the Sorcerer\'s Stone', author:'J.K. Rowling', genre:'판타지', level:'중급', words:77325, color:'#1e5c6e', status:'공개', reads:176, avgWpm:172, avgScore:88, description:"Harry Potter learns he's a wizard and begins his magical education at Hogwarts." },
-    { title:'The Giver', author:'Lois Lowry', genre:'SF', level:'고급', words:43617, color:'#6e1e5c', status:'공개', reads:154, avgWpm:168, avgScore:72, description:"Jonas lives in a seemingly perfect community. Then he is chosen for an extraordinary role." },
-    { title:'James and the Giant Peach', author:'Roald Dahl', genre:'판타지', level:'초급', words:26000, color:'#3d6e1e', status:'공개', reads:142, avgWpm:135, avgScore:80, description:"James escapes his horrible life with aunts by embarking on a magical journey inside a giant peach." },
-    { title:'A Wrinkle in Time', author:'Madeleine L\'Engle', genre:'SF', level:'고급', words:49965, color:'#1e3d6e', status:'공개', reads:128, avgWpm:163, avgScore:71, description:"Meg Murry and friends travel through time and space to rescue her father from evil." },
-    { title:'Island of the Blue Dolphins', author:'Scott O\'Dell', genre:'소설', level:'중급', words:41000, color:'#6e3d1e', status:'공개', reads:115, avgWpm:150, avgScore:77, description:"A Native American girl survives alone on an island for years after her tribe leaves." },
-    { title:'Number the Stars', author:'Lois Lowry', genre:'역사', level:'중급', words:27197, color:'#2e4f8f', status:'공개', reads:108, avgWpm:158, avgScore:83, description:"A story of friendship and bravery during the German occupation of Denmark." },
-    { title:'My Father\'s Dragon', author:'Ruth Stiles Gannett', genre:'판타지', level:'초급', words:12000, color:'#5c2e8c', status:'공개', reads:98, avgWpm:128, avgScore:85, description:"Elmer Elevator rescues a baby dragon from wild animals on a remote island." },
-    { title:'The Phantom Tollbooth', author:'Norton Juster', genre:'판타지', level:'고급', words:46880, color:'#1e6840', status:'비공개', reads:87, avgWpm:145, avgScore:69, description:"A bored boy named Milo suddenly finds a magic tollbooth appearing in his room." },
-    { title:'Sarah, Plain and Tall', author:'Patricia MacLachlan', genre:'역사', level:'초급', words:7600, color:'#8a2424', status:'공개', reads:76, avgWpm:132, avgScore:87, description:"Jacob Witting, a widower with two children, advertises for a wife from the East." },
-    { title:'Bud, Not Buddy', author:'Christopher Paul Curtis', genre:'역사', level:'중급', words:54000, color:'#7a5c1e', status:'공개', reads:65, avgWpm:153, avgScore:78, description:"A ten-year-old orphan searches for the man he believes to be his father during the Great Depression." },
+    { title:"Charlotte's Web", author:'E.B. White', genre:'소설', level:'초급', words:31938, color:'#2e4f8f', publishStatus:'출판중', reads:312, avgWpm:142, avgScore:81, description:"A beloved classic about friendship between a pig named Wilbur and a spider named Charlotte." },
+    { title:'The BFG', author:'Roald Dahl', genre:'판타지', level:'초급', words:44512, color:'#5c2e8c', publishStatus:'출판중', reads:278, avgWpm:138, avgScore:76, description:"A big friendly giant and a little girl named Sophie go on an extraordinary adventure." },
+    { title:'Holes', author:'Louis Sachar', genre:'소설', level:'중급', words:47079, color:'#1e6840', publishStatus:'출판중', reads:241, avgWpm:161, avgScore:84, description:"Stanley Yelnats is sent to a detention center where the boys dig holes every day." },
+    { title:'Wonder', author:'R.J. Palacio', genre:'소설', level:'중급', words:73053, color:'#8a2424', publishStatus:'출판중', reads:198, avgWpm:155, avgScore:79, description:"August Pullman was born with a facial difference. This is the story of his first year at a mainstream school." },
+    { title:'Matilda', author:'Roald Dahl', genre:'판타지', level:'초급', words:39309, color:'#7a5c1e', publishStatus:'출판중', reads:187, avgWpm:140, avgScore:82, description:"Matilda is a brilliant girl with a gift for mischief and a love of books." },
+    { title:'Harry Potter and the Sorcerer\'s Stone', author:'J.K. Rowling', genre:'판타지', level:'중급', words:77325, color:'#1e5c6e', publishStatus:'출판중', reads:176, avgWpm:172, avgScore:88, description:"Harry Potter learns he's a wizard and begins his magical education at Hogwarts." },
+    { title:'The Giver', author:'Lois Lowry', genre:'SF', level:'고급', words:43617, color:'#6e1e5c', publishStatus:'출판중', reads:154, avgWpm:168, avgScore:72, description:"Jonas lives in a seemingly perfect community. Then he is chosen for an extraordinary role." },
+    { title:'James and the Giant Peach', author:'Roald Dahl', genre:'판타지', level:'초급', words:26000, color:'#3d6e1e', publishStatus:'출판중', reads:142, avgWpm:135, avgScore:80, description:"James escapes his horrible life with aunts by embarking on a magical journey inside a giant peach." },
+    { title:'A Wrinkle in Time', author:'Madeleine L\'Engle', genre:'SF', level:'고급', words:49965, color:'#1e3d6e', publishStatus:'출판중', reads:128, avgWpm:163, avgScore:71, description:"Meg Murry and friends travel through time and space to rescue her father from evil." },
+    { title:'Island of the Blue Dolphins', author:'Scott O\'Dell', genre:'소설', level:'중급', words:41000, color:'#6e3d1e', publishStatus:'출판중', reads:115, avgWpm:150, avgScore:77, description:"A Native American girl survives alone on an island for years after her tribe leaves." },
+    { title:'Number the Stars', author:'Lois Lowry', genre:'역사', level:'중급', words:27197, color:'#2e4f8f', publishStatus:'출판중', reads:108, avgWpm:158, avgScore:83, description:"A story of friendship and bravery during the German occupation of Denmark." },
+    { title:'My Father\'s Dragon', author:'Ruth Stiles Gannett', genre:'판타지', level:'초급', words:12000, color:'#5c2e8c', publishStatus:'출판중', reads:98, avgWpm:128, avgScore:85, description:"Elmer Elevator rescues a baby dragon from wild animals on a remote island." },
+    { title:'Sarah, Plain and Tall', author:'Patricia MacLachlan', genre:'역사', level:'초급', words:7600, color:'#8a2424', publishStatus:'출판중', reads:76, avgWpm:132, avgScore:87, description:"Jacob Witting, a widower with two children, advertises for a wife from the East." },
+    { title:'Bud, Not Buddy', author:'Christopher Paul Curtis', genre:'역사', level:'중급', words:54000, color:'#7a5c1e', publishStatus:'출판중', reads:65, avgWpm:153, avgScore:78, description:"A ten-year-old orphan searches for the man he believes to be his father during the Great Depression." },
+    { title:'The Lightning Thief', author:'Rick Riordan', genre:'판타지', level:'중급', words:87223, color:'#1e5c6e', publishStatus:'출판대기', reads:0, avgWpm:0, avgScore:0, description:"Percy Jackson discovers he is a demigod and must go on a quest to prevent a war among the gods." },
+    { title:'Coraline', author:'Neil Gaiman', genre:'판타지', level:'중급', words:30000, color:'#6e1e5c', publishStatus:'출판대기', reads:0, avgWpm:0, avgScore:0, description:"Coraline discovers a secret door in her house that leads to a parallel world." },
+    { title:'Hatchet', author:'Gary Paulsen', genre:'소설', level:'초급', words:42000, color:'#3d6e1e', publishStatus:'출판대기', reads:0, avgWpm:0, avgScore:0, description:"After a plane crash, a 13-year-old boy must survive alone in the Canadian wilderness." },
+    { title:'The Phantom Tollbooth', author:'Norton Juster', genre:'판타지', level:'고급', words:46880, color:'#1e6840', publishStatus:'출판중지', reads:87, avgWpm:145, avgScore:69, description:"A bored boy named Milo suddenly finds a magic tollbooth appearing in his room." },
+    { title:'Bridge to Terabithia', author:'Katherine Paterson', genre:'소설', level:'중급', words:32000, color:'#8a2424', publishStatus:'출판중지', reads:43, avgWpm:148, avgScore:74, description:"Two lonely children create an imaginary kingdom in the woods." },
   ];
 
   return {
     search: '',
     filterGenre: '',
     filterLevel: '',
-    filterStatus: '',
+    sortBy: 'reads_desc',
+    viewMode: 'card',
+    publishTab: '출판중',
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
     selectedBook: null,
     addMode: false,
     form: {},
     genres: ['소설','판타지','SF','역사','자연','과학'],
+    tabs: [
+      { key: '출판중', label: '출판 중인 책' },
+      { key: '출판대기', label: '출판 대기 책' },
+      { key: '출판중지', label: '출판 중지 책' },
+    ],
     books,
     get filtered() {
-      return this.books.filter(b => {
+      let list = this.books.filter(b => {
         const q = this.search.toLowerCase();
         const matchQ = !q || b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q);
         const matchGenre = !this.filterGenre || b.genre === this.filterGenre;
         const matchLevel = !this.filterLevel || b.level === this.filterLevel;
-        const matchStatus = !this.filterStatus || b.status === this.filterStatus;
-        return matchQ && matchGenre && matchLevel && matchStatus;
+        const matchTab = b.publishStatus === this.publishTab;
+        return matchQ && matchGenre && matchLevel && matchTab;
       });
+      const s = this.sortBy;
+      list = [...list].sort((a, b) => {
+        if (s === 'reads_desc') return b.reads - a.reads;
+        if (s === 'reads_asc') return a.reads - b.reads;
+        if (s === 'title_asc') return a.title.localeCompare(b.title);
+        if (s === 'words_desc') return b.words - a.words;
+        if (s === 'words_asc') return a.words - b.words;
+        if (s === 'score_desc') return b.avgScore - a.avgScore;
+        return 0;
+      });
+      return list;
     },
     get paginated() {
       return this.filtered.slice((this.page - 1) * this.pageSize, this.page * this.pageSize);
@@ -315,7 +421,7 @@ function booksApp() {
     openAddBook() {
       this.selectedBook = null;
       this.addMode = true;
-      this.form = { title:'', author:'', genre:'소설', level:'초급', words:0, color:'#2e4f8f', status:'공개', description:'' };
+      this.form = { title:'', author:'', genre:'소설', level:'초급', words:0, color:'#2e4f8f', publishStatus: this.publishTab, description:'' };
     },
     closePanel() {
       this.selectedBook = null;
@@ -328,9 +434,6 @@ function booksApp() {
         Object.assign(this.selectedBook, this.form);
       }
       this.closePanel();
-    },
-    toggleStatus() {
-      this.form.status = this.form.status === '공개' ? '비공개' : '공개';
     },
     logout() {
       localStorage.removeItem('cr_admin');
