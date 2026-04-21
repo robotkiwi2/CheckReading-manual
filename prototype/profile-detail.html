@@ -92,13 +92,14 @@
                 </span>
               </div>
             </div>
-            <!-- 등급 트로피 (아래쪽 정렬) -->
-            <div class="flex flex-col items-center gap-1 flex-shrink-0 self-end pb-1 cursor-pointer active:opacity-70"
+            <!-- 등급 트로피 + 또래 랭킹 -->
+            <div class="flex flex-col items-center gap-0.5 flex-shrink-0 self-start pt-0.5 cursor-pointer active:opacity-70"
                  @click="gradeModal=true">
               <svg class="w-10 h-10" :class="trophyColor(profile?.gradeLabel||'골드')" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M5 3a1 1 0 000 2H3.5A1.5 1.5 0 002 6.5v1A3.5 3.5 0 005.5 11H6a4 4 0 003 3.874V16H7a1 1 0 100 2h6a1 1 0 100-2h-2v-1.126A4 4 0 0014 11h.5A3.5 3.5 0 0018 7.5v-1A1.5 1.5 0 0016.5 5H15a1 1 0 000-2H5z" clip-rule="evenodd"/>
               </svg>
               <span class="text-white/90 text-[11px] font-semibold" x-text="profile?.gradeLabel||'골드'"></span>
+              <span class="mt-1 text-white text-[10px] font-bold bg-white/20 rounded-full px-2 py-0.5 whitespace-nowrap">상위 23%</span>
             </div>
           </div>
         </div>
