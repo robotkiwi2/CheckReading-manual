@@ -27,3 +27,7 @@
 ## 읽기 결과 보기
 
 * [독서 수준 확인](results/reading-level.md)
+
+## 비전 & 로드맵
+
+* [커뮤니티 성장 방향](vision/community-roadmap.md)
