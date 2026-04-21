@@ -2,7 +2,7 @@
 
 이 폴더에서 작업을 시작할 때 아래 세 파일을 순서대로 읽으세요.
 
-1. **SERVICE.md** — 서비스 개념·용어·기능·데이터 구조 전체 정리
+1. **../SERVICE.md** — 서비스 개념·용어·기능·데이터 구조 전체 정리 (레포 루트 공통 문서 — admin과 공유)
 2. **DESIGN.md** — 기술 스택, 공통 UI 패턴, 각 화면 구현 세부사항
 3. **TODO.md** — 완료된 작업 목록 + 미완성 항목
 
@@ -11,6 +11,7 @@
 - 파일 수정 후 확인 없이 즉시 `git add → commit → push` 진행
 - GitHub repo: `robotkiwi2/CheckReading-manual`, branch `main`, 경로 `/prototype/`
 - 작업 완료 후 TODO.md와 DESIGN.md를 최신 상태로 업데이트
+- **서비스 개념·용어·데이터 구조가 바뀌면 루트 `../SERVICE.md`를 먼저 업데이트할 것**
 
 ## 파일 목록
 

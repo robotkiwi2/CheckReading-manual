@@ -4,10 +4,11 @@
 
 Admin은 CheckReading 서비스를 운영하기 위한 관리자 콘솔이다. **작업 시작 전 반드시 아래 두 문서를 읽고 서비스 개념·용어·데이터 구조를 파악할 것.**
 
-- `../prototype/SERVICE.md` — 서비스 핵심 개념 (레벨 체계 Lv.1~Lv.6+, 시선 상태, 사용자 유형, 알림, 점수 등)
+- `../SERVICE.md` — 서비스 핵심 개념 (레벨 체계 Lv.1~Lv.6+, 시선 상태, 사용자 유형, 알림, 점수 등) — **레포 루트 공통 문서, prototype과 공유**
 - `../prototype/DESIGN.md` — UI 패턴, 책 데이터 구조, 색상 팔레트, Alpine.js 패턴
 
-Admin의 모든 데이터 구조와 용어는 prototype과 일치해야 한다.
+Admin의 모든 데이터 구조와 용어는 prototype과 일치해야 한다.  
+**서비스 개념·용어·데이터 구조가 바뀌면 루트 `../SERVICE.md`를 먼저 업데이트할 것.**
 
 ## 개요
 GitHub repo: `robotkiwi2/CheckReading-manual`, branch `main`, path `/admin/`
