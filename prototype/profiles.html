@@ -546,16 +546,16 @@ function app() {
     addMonths: Array.from({length:12},(_,i)=>i+1),
     addGrades: ['미취학','유치원','초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3','성인'],
     addPrefGroups: [
-      { label:'언어',     items: [{id:'lang_en',label:'영어',on:false},{id:'lang_ko',label:'한국어',on:false},{id:'lang_etc',label:'기타',on:false}] },
-      { label:'종류',     items: [{id:'type_lit',label:'문학',on:false},{id:'type_nf',label:'넌픽션',on:false},{id:'type_etc',label:'기타',on:false}] },
-      { label:'분량',     items: [{id:'len_s',label:'단편',on:false},{id:'len_m',label:'중편',on:false},{id:'len_l',label:'장편',on:false}] },
+      { label:'언어',     items: [{id:'lang_en',label:'영어',on:true},{id:'lang_ko',label:'한국어',on:false},{id:'lang_etc',label:'기타',on:false}] },
+      { label:'종류',     items: [{id:'type_lit',label:'문학',on:true},{id:'type_nf',label:'넌픽션',on:false},{id:'type_etc',label:'기타',on:false}] },
+      { label:'분량',     items: [{id:'len_s',label:'단편',on:true},{id:'len_m',label:'중편',on:true},{id:'len_l',label:'장편',on:false}] },
       { label:'영어책 레벨', items: [
         {id:'lvl_pb',label:'픽처북',on:false},{id:'lvl_sb',label:'스토리북',on:false},
-        {id:'lvl_rb',label:'리더스북',on:false},{id:'lvl_ec',label:'얼리챕터북',on:false},
-        {id:'lvl_mc',label:'미들챕터북',on:false},{id:'lvl_cb',label:'챕터북',on:false},
+        {id:'lvl_rb',label:'리더스북',on:false},{id:'lvl_ec',label:'얼리챕터북',on:true},
+        {id:'lvl_mc',label:'미들챕터북',on:true},{id:'lvl_cb',label:'챕터북',on:false},
         {id:'lvl_nv',label:'노블',on:false},
       ]},
-      { label:'퀴즈 재풀기', items: [{id:'quiz_y',label:'가능',on:false},{id:'quiz_n',label:'불가',on:false}] },
+      { label:'퀴즈 재풀기', items: [{id:'quiz_y',label:'가능',on:true},{id:'quiz_n',label:'불가',on:true}] },
     ],
     addGenres: [
       {id:1,label:'📚 모험',on:false},{id:2,label:'🔬 과학',on:false},
@@ -575,7 +575,8 @@ function app() {
       this.addStep = 1;
       this.newP = { color: C[0], name:'', birthYear:null, birthMonth:null, grade:'', gender:'', photo:null };
       this.addGenres.forEach(g => g.on = false);
-      this.addPrefGroups.forEach(pg => pg.items.forEach(item => item.on = false));
+      const prefDefaults = {lang_en:true,type_lit:true,len_s:true,len_m:true,lvl_ec:true,lvl_mc:true,quiz_y:true,quiz_n:true};
+      this.addPrefGroups.forEach(pg => pg.items.forEach(item => item.on = !!prefDefaults[item.id]));
       this.addPanel = true;
     },
     canNext() {
