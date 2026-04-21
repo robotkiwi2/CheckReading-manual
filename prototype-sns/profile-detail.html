@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프로필 상세 - CheckReading</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="CheckReading">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="theme-color" content="#1d4ed8">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    html,body{height:100%;}
+    [x-cloak]{display:none!important;}
+    .badge-scroll::-webkit-scrollbar{display:none;}
+  </style>
+</head>
+<body class="bg-gray-200" style="height:100dvh;overflow:hidden;">
+<div class="h-full flex items-stretch justify-center bg-gray-200" x-data="app()" x-init="init()">
+
+  <!-- 사이드바 (lg+) -->
+  <aside class="hidden lg:flex flex-col w-56 bg-white border-r border-gray-100 flex-shrink-0">
+    <div class="px-5 py-5 border-b border-gray-100 flex items-center gap-3">
+      <div class="w-8 h-8 bg-blue-700 rounded-xl flex items-center justify-center"><span class="text-white text-xs font-bold">CR</span></div>
+      <span class="font-bold text-gray-900">CheckReading</span>
+    </div>
+    <nav class="flex-1 py-4 px-3 flex flex-col gap-1">
+      <a href="profiles.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-blue-50 text-blue-700 font-semibold text-sm"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg>프로필</a>
+      <a href="chat.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>소통</a>
+      <a href="bookstore.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>서점</a>
+      <a href="bookshelf.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>내 책장</a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>내 정보</a>
+    </nav>
+    <div class="px-4 py-4 border-t border-gray-100 flex items-center gap-3">
+      <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-700" x-text="user?.initial||'?'"></div>
+      <div class="flex-1 min-w-0"><p class="text-sm font-semibold text-gray-800 truncate" x-text="user?.name"></p><p class="text-xs text-gray-400">부모</p></div>
+    </div>
+  </aside>
+
+  <!-- 메인 -->
+  <div class="flex-1 flex flex-col min-w-0 bg-gray-50 max-w-3xl relative overflow-hidden">
+
+    <!-- 헤더 -->
+    <header class="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 z-10">
+      <a href="profiles.html" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full flex-shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </a>
+      <span class="font-bold text-gray-900 flex-1" x-text="profile?.name + ' 프로필'"></span>
+      <!-- 하트 (타인 프로필) -->
+      <button x-show="profile?.isOther" @click="favorited=!favorited"
+              class="w-8 h-8 flex items-center justify-center rounded-full transition-colors"
+              :class="favorited ? 'text-red-400' : 'text-gray-300'">
+        <svg class="w-5 h-5" :fill="favorited ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+        </svg>
+      </button>
+      <!-- 톱니 (내 자녀, 부모만) -->
+      <button x-show="user?.type==='parent'" @click="settingsPanel=true"
+              class="w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-100 rounded-full transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </button>
+    </header>
+
+    <main class="flex-1 overflow-y-auto min-h-0">
+
+      <!-- ① 기본정보 영역 -->
+      <div class="mx-4 mt-4 rounded-2xl shadow-md overflow-hidden" :style="`background:${profile?.color}`">
+        <div class="px-5 pt-5 pb-3">
+          <div class="flex items-start gap-4">
+            <!-- 프로필 사진 + 엄마 미니 아바타 -->
+            <div class="relative flex-shrink-0 w-16 h-16">
+              <div class="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center bg-white/25">
+                <img x-show="profilePhoto" :src="profilePhoto" class="w-full h-full object-cover">
+                <span x-show="!profilePhoto" class="text-3xl font-bold text-white" x-text="profile?.initial"></span>
+              </div>
+              <!-- 엄마 미니 아바타 -->
+              <button @click.stop="showParentCard=true"
+                      class="absolute -bottom-1 -left-1 w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold ring-2 ring-white/40 shadow-sm hover:scale-110 transition-transform"
+                      :style="`background:${parentInfo.color}`"
+                      x-text="parentInfo.initial"></button>
+            </div>
+            <!-- 정보 -->
+            <div class="flex-1 min-w-0 pt-0.5">
+              <h2 class="text-xl font-bold text-white" x-text="profile?.name"></h2>
+              <p class="text-white/80 text-sm mt-0.5" x-text="profile?.age + '세 · ' + (profile?.grade||'초3') + ' · ' + (profile?.gender||'남')"></p>
+              <p class="text-white/70 text-xs mt-0.5" x-text="profile?.level"></p>
+              <div class="flex items-center gap-3 mt-2">
+                <span class="flex items-center gap-1 text-white/80 text-xs">
+                  <svg class="w-3.5 h-3.5 text-red-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
+                  <span x-text="(profile?.favorites||23) + '명 즐겨찾기'"></span>
+                </span>
+                <span class="flex items-center gap-1 text-white/80 text-xs">
+                  <svg class="w-3.5 h-3.5 text-yellow-200" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  <span x-text="'총 ' + (profile?.totalScore||4820) + '점'"></span>
+                </span>
+              </div>
+            </div>
+            <!-- 등급 트로피 (아래쪽 정렬) -->
+            <div class="flex flex-col items-center gap-1 flex-shrink-0 self-end pb-1 cursor-pointer active:opacity-70"
+                 @click="gradeModal=true">
+              <svg class="w-10 h-10" :class="trophyColor(profile?.gradeLabel||'골드')" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 3a1 1 0 000 2H3.5A1.5 1.5 0 002 6.5v1A3.5 3.5 0 005.5 11H6a4 4 0 003 3.874V16H7a1 1 0 100 2h6a1 1 0 100-2h-2v-1.126A4 4 0 0014 11h.5A3.5 3.5 0 0018 7.5v-1A1.5 1.5 0 0016.5 5H15a1 1 0 000-2H5z" clip-rule="evenodd"/>
+              </svg>
+              <span class="text-white/90 text-[11px] font-semibold" x-text="profile?.gradeLabel||'골드'"></span>
+            </div>
+          </div>
+        </div>
+        <!-- 뱃지 스트립 -->
+        <div class="px-4 pb-4">
+          <div class="badge-scroll flex gap-2 overflow-x-auto" style="scrollbar-width:none;">
+            <template x-for="badge in badges" :key="badge.id">
+              <div class="relative flex-shrink-0 flex flex-col items-center gap-1 bg-white/15 rounded-xl px-3 py-2 min-w-[56px] cursor-pointer active:opacity-70"
+                   @click="selectedBadge=badge; badgeModal=true">
+                <span class="text-xl" x-text="badge.icon"></span>
+                <span class="text-white/80 text-[9px] text-center leading-tight" x-text="badge.label"></span>
+                <template x-if="badge.count > 1">
+                  <span class="absolute top-1 right-1 w-4 h-4 bg-white text-[8px] font-bold text-gray-700 rounded-full flex items-center justify-center shadow" x-text="badge.count"></span>
+                </template>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- ② 차트 영역 -->
+      <div class="mx-4 mt-5">
+
+        <!-- 지표 탭 -->
+        <div class="flex bg-gray-100 rounded-2xl p-1 mb-3 gap-0.5">
+          <button @click="chartTab='score'"
+                  class="flex-1 py-2 text-xs font-semibold rounded-xl transition-all"
+                  :class="chartTab==='score' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-400 hover:text-gray-600'">읽기 점수</button>
+          <button @click="chartTab='eye'"
+                  class="flex-1 py-2 text-xs font-semibold rounded-xl transition-all"
+                  :class="chartTab==='eye' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-400 hover:text-gray-600'">시선 상태</button>
+          <button @click="chartTab='focus'"
+                  class="flex-1 py-2 text-xs font-semibold rounded-xl transition-all"
+                  :class="chartTab==='focus' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-400 hover:text-gray-600'">시선 집중도</button>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm px-4 pt-4 pb-3">
+
+          <!-- 범위 선택 + 기간 내비게이션 -->
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex bg-gray-100 rounded-xl p-0.5 gap-0.5">
+              <button @click="chartRange='week'"
+                      class="px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all"
+                      :class="chartRange==='week' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-400'">1주</button>
+              <button @click="chartRange='bimonth'"
+                      class="px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all"
+                      :class="chartRange==='bimonth' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-400'">2달</button>
+              <button @click="chartRange='halfyear'"
+                      class="px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-all"
+                      :class="chartRange==='halfyear' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-400'">6개월</button>
+            </div>
+            <div class="flex items-center gap-1">
+              <button @click="prevPeriod()" :disabled="!canGoPrev()"
+                      class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 disabled:opacity-25 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              <span class="text-[11px] font-semibold text-gray-600 min-w-[108px] text-center" x-text="periodLabel()"></span>
+              <button @click="nextPeriod()" :disabled="chartOffset===0"
+                      class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 disabled:opacity-25 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- 요약 수치 -->
+          <div class="mb-3 min-h-[28px]">
+            <div x-show="chartTab==='score'" class="flex items-baseline gap-2">
+              <span class="text-xl font-bold text-blue-700" x-text="chartSummary.main"></span>
+              <span class="text-xs text-gray-400" x-text="chartSummary.sub"></span>
+              <button @click="scoreTooltip=!scoreTooltip"
+                      class="w-4 h-4 rounded-full bg-gray-200 text-gray-500 text-[10px] font-bold flex items-center justify-center hover:bg-blue-100 hover:text-blue-700 transition-colors flex-shrink-0 mb-0.5">i</button>
+            </div>
+            <!-- 읽기 점수 산출 방식 툴팁 -->
+            <div x-show="chartTab==='score' && scoreTooltip"
+                 x-cloak
+                 @click.outside="scoreTooltip=false"
+                 class="mt-2 mb-1 bg-blue-50 border border-blue-100 rounded-xl px-3.5 py-3 text-xs text-gray-600 leading-relaxed">
+              <p class="font-semibold text-blue-800 mb-1.5">읽기 점수 산출 방식</p>
+              <p class="mb-1"><span class="font-medium text-gray-800">기본 점수</span> = 읽은 단어수 × 책 레벨 가중치 × 시선상태 가중치</p>
+              <p class="mb-2"><span class="font-medium text-gray-800">최종 점수</span> = 기본 점수 + 퀴즈 보너스 + 읽기속도 보너스</p>
+              <p class="text-gray-400 text-[11px]">퀴즈·속도 보너스는 기본 점수의 30% 이내로 제한됩니다.</p>
+            </div>
+            <div x-show="chartTab==='eye'" class="flex flex-wrap gap-3">
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-green-400 flex-shrink-0"></div>
+                <span class="text-xs text-gray-500">읽는 중 <span class="font-bold text-gray-800" x-text="chartSummary.reading+'%'"></span></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0"></div>
+                <span class="text-xs text-gray-500">스캐닝 <span class="font-bold text-gray-800" x-text="chartSummary.scanning+'%'"></span></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-400 flex-shrink-0"></div>
+                <span class="text-xs text-gray-500">이탈 <span class="font-bold text-gray-800" x-text="chartSummary.lost+'%'"></span></span>
+              </div>
+            </div>
+            <div x-show="chartTab==='focus'" class="flex items-baseline gap-2">
+              <span class="text-xl font-bold text-emerald-600" x-text="chartSummary.main"></span>
+              <span class="text-xs text-gray-400" x-text="chartSummary.sub"></span>
+            </div>
+          </div>
+
+          <!-- 차트 캔버스 -->
+          <div style="height:148px; position:relative;"
+               @touchstart.passive="chartTouchX=$event.touches[0].clientX"
+               @touchend.passive="onChartSwipe($event)">
+            <canvas x-ref="chartCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- ③ 월별 활동내역 영역 -->
+      <div class="mx-4 mt-5 mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-bold text-gray-800 text-sm">월별 활동내역</h3>
+          <div class="flex items-center gap-2">
+            <button @click="prevMonth()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+            <span class="text-sm font-semibold text-gray-700" x-text="calYear + '년 ' + (calMonth+1) + '월'"></span>
+            <button @click="nextMonth()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+        <div class="flex gap-3 mb-4">
+          <div class="flex-1 bg-white rounded-2xl p-4 shadow-sm text-center">
+            <p class="text-[10px] text-gray-400 mb-1">획득점수</p>
+            <p class="text-xl font-bold text-blue-700" x-text="monthSummary.score.toLocaleString() + '점'"></p>
+          </div>
+          <div class="flex-1 bg-white rounded-2xl p-4 shadow-sm text-center">
+            <p class="text-[10px] text-gray-400 mb-1">읽은 단어</p>
+            <p class="text-xl font-bold text-green-500" x-text="monthSummary.words.toLocaleString() + '개'"></p>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <div class="grid grid-cols-7 mb-2">
+            <template x-for="d in ['일','월','화','수','목','금','토']" :key="d">
+              <div class="text-center text-[10px] font-semibold" :class="d==='일'?'text-red-400':d==='토'?'text-blue-500':'text-gray-400'" x-text="d"></div>
+            </template>
+          </div>
+          <div class="grid grid-cols-7 gap-y-1">
+            <template x-for="_ in Array(calStartDay).fill(0)" :key="'e'+_"><div></div></template>
+            <template x-for="day in calDays" :key="day">
+              <div class="flex items-center justify-center">
+                <button @click="goDay(day)" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors" :class="dayClass(day)" x-text="day"></button>
+              </div>
+            </template>
+          </div>
+          <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-50 justify-end">
+            <span class="text-[9px] text-gray-400">점수</span>
+            <div class="flex items-center gap-1">
+              <div class="w-3 h-3 rounded-full bg-gray-100"></div>
+              <div class="w-3 h-3 rounded-full bg-green-100"></div>
+              <div class="w-3 h-3 rounded-full bg-green-300"></div>
+              <div class="w-3 h-3 rounded-full bg-green-500"></div>
+              <div class="w-3 h-3 rounded-full bg-green-700"></div>
+            </div>
+            <span class="text-[9px] text-gray-400">높음</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ④ 주간 리포트 -->
+      <div class="mx-4 mt-5 mb-8">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-bold text-gray-800 text-sm">주간 리포트</h3>
+          <span class="text-[11px] text-gray-400" x-text="reports.length + '개'"></span>
+        </div>
+        <div class="flex flex-col gap-2.5">
+          <template x-for="r in reports" :key="r.id">
+            <button @click="openReport(r)"
+                    class="w-full bg-white rounded-2xl shadow-sm px-4 py-3.5 flex items-center gap-3 text-left hover:bg-gray-50 active:bg-gray-100 transition-colors">
+              <div class="flex-shrink-0 w-12 h-12 rounded-xl flex flex-col items-center justify-center"
+                   :class="r.isNew ? 'bg-blue-50' : 'bg-gray-50'">
+                <span class="text-[9px] font-semibold leading-tight" :class="r.isNew ? 'text-blue-500' : 'text-gray-400'" x-text="r.month"></span>
+                <span class="text-[12px] font-bold leading-tight" :class="r.isNew ? 'text-blue-700' : 'text-gray-600'" x-text="r.weekNum"></span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5 mb-0.5">
+                  <span class="text-[10px] text-gray-400" x-text="r.period"></span>
+                  <span x-show="r.isNew" class="px-1.5 py-0.5 bg-blue-600 text-white text-[9px] font-bold rounded-full leading-none">NEW</span>
+                </div>
+                <p class="text-xs font-medium text-gray-700 truncate" x-text="r.summary"></p>
+              </div>
+              <div class="flex-shrink-0 text-right mr-1">
+                <p class="text-sm font-bold text-gray-800" x-text="r.score.toLocaleString() + '점'"></p>
+                <p class="text-[10px] font-semibold" :class="r.scoreDiff >= 0 ? 'text-green-500' : 'text-red-400'"
+                   x-text="(r.scoreDiff >= 0 ? '+' : '') + r.scoreDiff + '점'"></p>
+              </div>
+              <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </template>
+        </div>
+      </div>
+    </main>
+
+    <!-- 일별 읽기내역 모달 -->
+    <div x-show="daySheet" x-cloak
+         class="fixed inset-0 bg-black/40 z-50 flex items-end justify-center"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+      <div class="w-full max-w-3xl bg-white rounded-t-3xl flex flex-col relative overflow-hidden"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
+           style="height:92dvh;">
+        <div class="flex-shrink-0 flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <div class="flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-gray-100">
+          <h3 class="font-bold text-gray-900 text-base" x-text="selectedDay.label + ' 읽기 내역'"></h3>
+          <button @click="daySheet=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+        </div>
+
+        <!-- 좋아요 영역 -->
+        <!-- isOther=true: 하트 버튼 + 카운트 / isOther=false(내 자녀): 받은 좋아요 수 탭 -->
+        <div class="flex-shrink-0 px-5 py-3 border-b border-gray-100 flex items-center gap-3">
+          <!-- 다른 자녀: 좋아요 버튼 -->
+          <template x-if="profile && profile.isOther">
+            <div class="flex items-center gap-2 w-full">
+              <button @click="dayLiked=!dayLiked; dayLiked ? dayLikeCount++ : dayLikeCount--"
+                      class="flex items-center gap-1.5 px-4 py-2 rounded-xl font-semibold text-sm transition-all"
+                      :class="dayLiked ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-400'">
+                <svg class="w-4 h-4 transition-transform" :class="dayLiked ? 'scale-110' : ''" fill="currentColor" viewBox="0 0 24 24">
+                  <path :fill="dayLiked ? '#ef4444' : 'none'" :stroke="dayLiked ? 'none' : 'currentColor'" stroke-width="2"
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span x-text="dayLiked ? '좋아요 취소' : '좋아요'"></span>
+              </button>
+              <span class="text-sm text-gray-500">
+                <span class="font-bold text-gray-800" x-text="dayLikeCount"></span>명이 좋아합니다
+              </span>
+            </div>
+          </template>
+          <!-- 내 자녀: 받은 좋아요 수 → 탭으로 목록 보기 -->
+          <template x-if="profile && !profile.isOther">
+            <button @click="showDayLikers=true"
+                    class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors -mx-1">
+              <div class="flex -space-x-1.5">
+                <template x-for="liker in dayLikers.slice(0,3)" :key="liker.name">
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[9px] font-bold border border-white"
+                       :style="`background:${liker.color}`" x-text="liker.initial"></div>
+                </template>
+              </div>
+              <span class="text-sm text-gray-600">
+                <span class="font-bold text-gray-800" x-text="dayLikeCount"></span>명이 좋아합니다
+              </span>
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </template>
+        </div>
+
+        <div class="flex-1 overflow-y-auto min-h-0">
+          <div class="flex gap-3 px-5 py-4">
+            <div class="flex-1 bg-blue-50 rounded-2xl p-3 text-center"><p class="text-[10px] text-blue-500 mb-0.5">획득 점수</p><p class="text-lg font-bold text-blue-700">230점</p></div>
+            <div class="flex-1 bg-green-50 rounded-2xl p-3 text-center"><p class="text-[10px] text-green-400 mb-0.5">읽은 단어</p><p class="text-lg font-bold text-green-600">1,840개</p></div>
+            <div class="flex-1 bg-orange-50 rounded-2xl p-3 text-center"><p class="text-[10px] text-orange-400 mb-0.5">읽은 시간</p><p class="text-lg font-bold text-orange-500">42분</p></div>
+          </div>
+          <div class="px-5 pb-6">
+            <p class="text-xs font-semibold text-gray-500 mb-3">읽기</p>
+            <div class="flex flex-col gap-3">
+              <!-- Percy Jackson 오전 세션 (시선기록 없음 → 보기 버튼 없음) -->
+              <div class="bg-white border border-gray-100 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
+                <div class="w-10 h-14 rounded-xl flex-shrink-0 flex items-end p-1" style="background:linear-gradient(135deg,#667eea,#764ba2)"><span class="text-white text-[8px] font-bold leading-tight">Percy Jackson</span></div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-1">
+                    <p class="font-semibold text-sm text-gray-800 truncate">Percy Jackson</p>
+                    <span class="text-[10px] text-gray-400 bg-gray-100 rounded-md px-1.5 py-0.5 flex-shrink-0">오전 09:20</span>
+                  </div>
+                  <p class="text-xs text-gray-400">R. Riordan</p>
+                  <div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width:68%"></div></div>
+                  <p class="text-[10px] text-gray-500 mt-1">25분 · 1,200단어 · +150점 · 퀴즈 85%</p>
+                  <p class="text-[10px] text-blue-600 mt-0.5">148 WPM · Reading 68% · 집중도 78%</p>
+                </div>
+              </div>
+              <!-- Percy Jackson 오후 세션 (시선기록 있음 → 보기 버튼 있음) -->
+              <div class="bg-white border border-gray-100 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
+                <div class="w-10 h-14 rounded-xl flex-shrink-0 flex items-end p-1" style="background:linear-gradient(135deg,#667eea,#764ba2)"><span class="text-white text-[8px] font-bold leading-tight">Percy Jackson</span></div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-1">
+                    <p class="font-semibold text-sm text-gray-800 truncate">Percy Jackson</p>
+                    <span class="text-[10px] text-gray-400 bg-gray-100 rounded-md px-1.5 py-0.5 flex-shrink-0">오후 15:10</span>
+                  </div>
+                  <p class="text-xs text-gray-400">R. Riordan</p>
+                  <div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width:75%"></div></div>
+                  <p class="text-[10px] text-gray-500 mt-1">17분 · 640단어 · +80점 · 퀴즈 80%</p>
+                  <div class="flex items-center justify-between mt-0.5">
+                    <p class="text-[10px] text-blue-600">135 WPM · Reading 65% · 집중도 74%</p>
+                    <button @click="window.location.href='reader.html?skip_calib=1'"
+                            class="text-[10px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg px-2 py-1 flex-shrink-0 ml-2">보기</button>
+                  </div>
+                </div>
+              </div>
+              <!-- Magic Tree House (시선기록 있음 → 보기 버튼 있음) -->
+              <div class="bg-white border border-gray-100 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
+                <div class="w-10 h-14 rounded-xl flex-shrink-0 flex items-end p-1" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><span class="text-white text-[8px] font-bold leading-tight">Magic Tree</span></div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-1">
+                    <p class="font-semibold text-sm text-gray-800 truncate">Magic Tree House #5</p>
+                    <span class="text-[10px] text-gray-400 bg-gray-100 rounded-md px-1.5 py-0.5 flex-shrink-0">오후 19:40</span>
+                  </div>
+                  <p class="text-xs text-gray-400">M. Osborne</p>
+                  <div class="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width:92%"></div></div>
+                  <p class="text-[10px] text-gray-500 mt-1">28분 · 1,120단어 · +90점 · 퀴즈 90%</p>
+                  <div class="flex items-center justify-between mt-0.5">
+                    <p class="text-[10px] text-blue-600">162 WPM · Reading 72% · 집중도 82%</p>
+                    <button @click="window.location.href='reader.html?skip_calib=1'"
+                            class="text-[10px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg px-2 py-1 flex-shrink-0 ml-2">보기</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 부모 활동 메모 (내 자녀만) -->
+          <template x-if="profile && !profile.isOther">
+            <div class="px-5 pb-6">
+              <div class="flex items-center gap-1.5 mb-3">
+                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                <p class="text-xs font-semibold text-gray-500">부모 활동</p>
+              </div>
+              <div class="relative">
+                <textarea x-model="dayNote"
+                          placeholder="이 날 함께 한 활동을 기록해 보세요.&#10;예) 함께 소리 내어 읽기, 모르는 단어 찾아보기, 독후감 쓰기 등"
+                          rows="4"
+                          class="w-full text-sm text-gray-700 placeholder-gray-300 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all leading-relaxed"></textarea>
+                <div class="flex justify-end mt-2">
+                  <button @click="dayNote=''"
+                          x-show="dayNote.length > 0"
+                          class="text-xs text-gray-400 hover:text-gray-600 mr-3 transition-colors">지우기</button>
+                  <button class="text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded-xl transition-colors">저장</button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- 좋아요한 부모 목록 서브 패널 (z-60, 내 자녀) -->
+        <div x-show="showDayLikers" x-cloak
+             class="absolute inset-0 bg-black/40 z-10 flex items-end"
+             x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+             @click.self="showDayLikers=false">
+          <div class="w-full bg-white rounded-t-3xl flex flex-col"
+               x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+               x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
+            <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+            <div class="flex items-center justify-between px-5 py-3 border-b border-gray-100">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <h4 class="font-bold text-gray-900 text-base">좋아요</h4>
+                <span class="text-sm text-gray-400 font-medium" x-text="dayLikeCount + '명'"></span>
+              </div>
+              <button @click="showDayLikers=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div class="overflow-y-auto" style="max-height:50dvh;">
+              <template x-for="liker in dayLikers" :key="liker.name">
+                <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-50 last:border-0">
+                  <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+                       :style="`background:${liker.color}`" x-text="liker.initial"></div>
+                  <span class="text-sm font-semibold text-gray-800" x-text="liker.name"></span>
+                  <svg class="w-4 h-4 text-red-400 ml-auto flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                </div>
+              </template>
+            </div>
+            <div class="h-safe-area-inset-bottom pb-4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 엄마 카드 모달 -->
+    <div x-show="showParentCard" x-cloak
+         class="fixed inset-0 bg-black/40 z-50 flex items-end justify-center"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         @click.self="showParentCard=false">
+      <div class="w-full max-w-3xl bg-white rounded-t-3xl overflow-hidden"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
+        <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <!-- 카드 헤더 (그라디언트) -->
+        <div class="px-5 pt-4 pb-8 relative" :style="`background:${parentInfo.color}`">
+          <div class="flex items-center gap-3">
+            <div class="w-14 h-14 bg-white/25 rounded-full flex items-center justify-center ring-4 ring-white/30 flex-shrink-0">
+              <span class="text-2xl font-bold text-white" x-text="parentInfo.initial"></span>
+            </div>
+            <div class="min-w-0">
+              <h3 class="font-bold text-white text-lg leading-tight" x-text="parentInfo.name"></h3>
+              <div class="mt-1 inline-flex items-center gap-1 bg-black/20 rounded-full px-2 py-0.5">
+                <span class="text-xs">🥇</span>
+                <span class="text-white text-[11px] font-bold">골드 등급</span>
+              </div>
+            </div>
+            <!-- 팔로우 버튼 -->
+            <button class="ml-auto flex-shrink-0 bg-white text-blue-600 text-xs font-bold px-4 py-2 rounded-xl shadow-sm hover:bg-blue-50 transition-colors">
+              팔로우
+            </button>
+          </div>
+        </div>
+        <!-- 통계 행 -->
+        <div class="grid grid-cols-4 bg-white -mt-4 mx-4 rounded-2xl shadow-md relative z-10 mb-4 divide-x divide-gray-100">
+          <div class="py-3 text-center">
+            <p class="text-sm font-bold text-gray-800">24</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">팔로워</p>
+          </div>
+          <div class="py-3 text-center">
+            <p class="text-sm font-bold text-gray-800">18</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">팔로잉</p>
+          </div>
+          <div class="py-3 text-center">
+            <p class="text-sm font-bold text-blue-600">847</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">활동지수</p>
+          </div>
+          <div class="py-3 text-center">
+            <p class="text-sm font-bold text-red-400">132</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">받은 좋아요</p>
+          </div>
+        </div>
+        <div class="pb-5"></div>
+      </div>
+    </div>
+
+    <!-- 주간 리포트 상세 패널 -->
+    <div x-show="reportSheet" x-cloak
+         class="fixed inset-0 bg-black/40 z-50 flex items-end justify-center"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+      <div class="w-full max-w-3xl bg-white rounded-t-3xl flex flex-col"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
+           style="height:92dvh;">
+        <div class="flex-shrink-0 flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <div class="flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-gray-100">
+          <div>
+            <p class="font-bold text-gray-900 text-base" x-text="selectedReport?.month + ' ' + selectedReport?.weekNum + ' 리포트'"></p>
+            <p class="text-xs text-gray-400 mt-0.5" x-text="selectedReport?.period"></p>
+          </div>
+          <button @click="reportSheet=false" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+        </div>
+        <div class="flex-1 overflow-y-auto min-h-0">
+          <template x-if="selectedReport">
+
+            <div class="px-5 py-5 flex flex-col gap-5">
+
+              <!-- AI 총평 -->
+              <div class="bg-blue-50 rounded-2xl p-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-base">✨</span>
+                  <p class="text-xs font-bold text-blue-800">이번 주 총평</p>
+                </div>
+                <p class="text-sm text-blue-900 leading-relaxed" x-text="selectedReport.aiComment"></p>
+              </div>
+
+              <!-- 지표 변화 -->
+              <div>
+                <p class="text-xs font-bold text-gray-500 mb-2.5">전주 대비</p>
+                <div class="grid grid-cols-3 gap-2.5">
+                  <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
+                    <p class="text-[10px] text-gray-400 mb-1">읽기 점수</p>
+                    <p class="text-base font-bold text-gray-800" x-text="selectedReport.score.toLocaleString()"></p>
+                    <p class="text-[11px] font-semibold mt-0.5"
+                       :class="selectedReport.scoreDiff >= 0 ? 'text-green-500' : 'text-red-400'"
+                       x-text="(selectedReport.scoreDiff >= 0 ? '▲' : '▼') + Math.abs(selectedReport.scoreDiff)"></p>
+                  </div>
+                  <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
+                    <p class="text-[10px] text-gray-400 mb-1">시선 집중</p>
+                    <p class="text-base font-bold text-gray-800" x-text="selectedReport.eyeReading + '%'"></p>
+                    <p class="text-[11px] font-semibold mt-0.5"
+                       :class="selectedReport.eyeDiff >= 0 ? 'text-green-500' : 'text-red-400'"
+                       x-text="(selectedReport.eyeDiff >= 0 ? '▲' : '▼') + Math.abs(selectedReport.eyeDiff) + '%'"></p>
+                  </div>
+                  <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
+                    <p class="text-[10px] text-gray-400 mb-1">집중도</p>
+                    <p class="text-base font-bold text-gray-800" x-text="selectedReport.focus + '%'"></p>
+                    <p class="text-[11px] font-semibold mt-0.5"
+                       :class="selectedReport.focusDiff >= 0 ? 'text-green-500' : 'text-red-400'"
+                       x-text="(selectedReport.focusDiff >= 0 ? '▲' : '▼') + Math.abs(selectedReport.focusDiff) + '%'"></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 읽은 책 -->
+              <div>
+                <p class="text-xs font-bold text-gray-500 mb-2.5">읽은 책</p>
+                <div class="flex flex-col gap-2.5">
+                  <template x-for="(book, i) in selectedReport.books" :key="i">
+                    <div class="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+                      <div class="w-10 h-14 rounded-xl flex-shrink-0 flex items-end p-1"
+                           :style="`background:${book.color}`">
+                        <span class="text-white text-[8px] font-bold leading-tight" x-text="book.title"></span>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-sm text-gray-800" x-text="book.title"></p>
+                        <p class="text-xs text-gray-400" x-text="book.author"></p>
+                        <div class="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div class="h-full bg-blue-500 rounded-full transition-all" :style="`width:${book.progress}%`"></div>
+                        </div>
+                        <div class="flex items-center justify-between mt-0.5">
+                          <p class="text-[10px] text-blue-600" x-text="book.progress + '%'"></p>
+                          <p class="text-[10px] text-gray-400" x-text="'+' + book.score + '점'"></p>
+                        </div>
+                        <div class="flex items-center gap-2 mt-1.5">
+                          <span class="text-[10px] text-emerald-600 bg-emerald-50 rounded px-1.5 py-0.5" x-text="'시선 ' + book.eye + '%'"></span>
+                          <span class="text-[10px] text-blue-600 bg-blue-50 rounded px-1.5 py-0.5" x-text="book.wpm + ' wpm'"></span>
+                        </div>
+                      </div>
+                      <span x-show="book.progress===100" class="flex-shrink-0 text-base">🏁</span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+              <!-- 독서 요일 패턴 -->
+              <div class="bg-white rounded-2xl p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                  <p class="text-xs font-bold text-gray-500">독서 요일</p>
+                  <p class="text-[11px] text-gray-400">가장 집중한 날 <span class="font-semibold text-gray-700" x-text="selectedReport.bestDay"></span></p>
+                </div>
+                <div class="flex justify-between">
+                  <template x-for="(day, i) in ['월','화','수','목','금','토','일']" :key="i">
+                    <div class="flex flex-col items-center gap-1.5">
+                      <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-colors"
+                           :class="selectedReport.readDays[i]
+                             ? (selectedReport.bestDayIndex === i ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-700')
+                             : 'bg-gray-100 text-gray-300'">
+                        <span x-text="day"></span>
+                      </div>
+                      <div class="w-1.5 h-1.5 rounded-full" :class="selectedReport.readDays[i] ? 'bg-blue-500' : 'bg-gray-200'"></div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 프로필 수정 설정 패널 (우측 슬라이드) ===== -->
+    <div x-show="settingsPanel" x-cloak
+         class="absolute inset-0 bg-white z-30 flex flex-col"
+         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+      <div class="flex-shrink-0 flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+        <button @click="settingsPanel=false; settingsSub=''" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <span class="font-bold text-gray-900">프로필 수정</span>
+      </div>
+      <div class="flex-1 overflow-y-auto min-h-0">
+        <!-- 프로필 미리보기 -->
+        <div class="flex flex-col items-center py-6" :style="`background:${profile?.color}`">
+          <div class="relative mb-2">
+            <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center bg-white/25">
+              <img x-show="profilePhoto" :src="profilePhoto" class="w-full h-full object-cover">
+              <span x-show="!profilePhoto" class="text-4xl font-bold text-white" x-text="profile?.initial"></span>
+            </div>
+            <button @click="openSub('photoupload')"
+                    class="absolute bottom-0 right-0 w-7 h-7 bg-white rounded-full shadow-md flex items-center justify-center">
+              <svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </button>
+          </div>
+          <p class="text-white font-bold text-base" x-text="profile?.name"></p>
+        </div>
+        <!-- 설정 메뉴 목록 -->
+        <div class="bg-white divide-y divide-gray-50 mt-0">
+          <template x-for="item in settingsItems" :key="item.id">
+            <button @click="openSub(item.id)"
+                    class="w-full flex items-center gap-3 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors text-left">
+              <span class="w-5 h-5 flex-shrink-0 text-gray-400 flex items-center justify-center" x-html="iconSvg(item.id)"></span>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-800" x-text="item.label"></p>
+                <p class="text-xs text-gray-400 mt-0.5" x-text="item.desc"></p>
+              </div>
+              <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </template>
+        </div>
+        <!-- 프로필 삭제 -->
+        <div class="px-5 py-6">
+          <button @click="deleteConfirm=true"
+                  class="w-full py-3.5 rounded-xl text-sm font-bold border-2 border-red-200 text-red-500 hover:bg-red-50 transition-colors">
+            프로필 삭제
+          </button>
+        </div>
+      </div>
+      <!-- 삭제 확인 다이얼로그 -->
+      <div x-show="deleteConfirm" x-cloak @click.self="deleteConfirm=false"
+           class="absolute inset-0 bg-black/40 z-50 flex items-center justify-center px-6">
+        <div class="bg-white rounded-2xl p-6 w-full shadow-xl"
+             x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+          <p class="text-base font-bold text-gray-900 mb-2">프로필을 삭제할까요?</p>
+          <p class="text-sm text-gray-500 mb-5" x-text="'\''+profile?.name+'\' 프로필과 모든 읽기 기록이 영구 삭제됩니다.'"></p>
+          <div class="flex gap-3">
+            <button @click="deleteConfirm=false" class="flex-1 py-3 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">취소</button>
+            <button @click="deleteProfile()" class="flex-1 py-3 rounded-xl text-sm font-semibold bg-red-500 text-white hover:bg-red-600">삭제</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 설정 서브 패널 (더 우측에서 슬라이드) ===== -->
+    <div x-show="settingsSub" x-cloak
+         class="absolute inset-0 bg-white z-40 flex flex-col"
+         x-transition:enter="transition ease-out duration-250" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+      <div class="flex-shrink-0 flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+        <button @click="settingsSub=''" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <span class="font-bold text-gray-900" x-text="currentSubLabel()"></span>
+      </div>
+      <div class="flex-1 overflow-y-auto min-h-0 p-5">
+
+        <!-- 사진 교체 (파일 선택) -->
+        <div x-show="settingsSub==='photoupload'">
+          <div class="flex justify-center mb-5">
+            <div class="w-24 h-24 rounded-full overflow-hidden flex items-center justify-center shadow-lg"
+                 :style="`background:${profile?.color}`">
+              <img x-show="profilePhoto" :src="profilePhoto" class="w-full h-full object-cover">
+              <span x-show="!profilePhoto" class="text-4xl font-bold text-white" x-text="profile?.initial"></span>
+            </div>
+          </div>
+          <p class="text-sm text-gray-500 text-center mb-5">프로필 사진으로 사용할 이미지를 선택하세요</p>
+          <input type="file" accept="image/*" x-ref="photoFileInput" class="hidden"
+                 @change="onPhotoSelect($event)">
+          <button @click="$refs.photoFileInput.click()"
+                  class="w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            사진 선택
+          </button>
+          <template x-if="profilePhoto">
+            <button @click="profilePhoto=null"
+                    class="mt-3 w-full py-3 text-sm font-semibold text-red-500 border-2 border-red-200 rounded-xl hover:bg-red-50 transition-colors">
+              사진 제거
+            </button>
+          </template>
+        </div>
+
+        <!-- 색상 교체 -->
+        <div x-show="settingsSub==='photo'">
+          <p class="text-sm text-gray-500 mb-4">배경 색상을 선택하세요</p>
+          <div class="grid grid-cols-4 gap-3">
+            <template x-for="c in avatarColors" :key="c">
+              <button @click="selectedColor=c; if(profile) profile.color=c"
+                      class="aspect-square rounded-2xl flex items-center justify-center text-2xl font-bold text-white shadow-sm transition-all hover:scale-105 relative"
+                      :style="`background:${c}`"
+                      :class="selectedColor===c ? 'ring-4 ring-white ring-offset-2 ring-offset-gray-100 scale-105' : ''">
+                <span x-show="selectedColor===c" class="text-white text-xl leading-none">✓</span>
+                <span x-show="selectedColor!==c" x-text="profile?.initial"></span>
+              </button>
+            </template>
+          </div>
+          <input type="color" x-ref="colorPicker" class="sr-only w-0 h-0"
+                 :value="selectedColor"
+                 @input="selectedColor=$event.target.value; if(profile) profile.color=$event.target.value">
+          <button @click="$refs.colorPicker.click()"
+                  class="mt-4 w-full py-3 text-sm font-semibold text-gray-700 border-2 border-gray-200 rounded-xl hover:border-blue-400 transition-colors flex items-center justify-center gap-2.5">
+            <span class="w-5 h-5 rounded-full border-2 border-gray-300 shadow-sm flex-shrink-0" :style="`background:${selectedColor}`"></span>
+            다른 색 선택
+          </button>
+        </div>
+
+        <!-- 닉네임 변경 -->
+        <div x-show="settingsSub==='nickname'">
+          <label class="block text-xs font-semibold text-gray-500 mb-1.5">닉네임</label>
+          <input type="text" :value="profile?.name" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="닉네임을 입력하세요">
+          <p class="text-xs text-gray-400 mt-2">2~10자, 한글/영문/숫자 사용 가능</p>
+          <button class="mt-6 w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold">저장</button>
+        </div>
+
+        <!-- 비밀번호 변경 -->
+        <div x-show="settingsSub==='password'" class="flex flex-col gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5">현재 비밀번호</label>
+            <input type="text" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono" placeholder="현재 비밀번호" value="mypassword1">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5">새 비밀번호</label>
+            <input type="text" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono" placeholder="새 비밀번호">
+          </div>
+          <button class="mt-2 w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold">변경</button>
+        </div>
+
+        <!-- 생년·학년 통합 -->
+        <div x-show="settingsSub==='birthgrade'">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">생년월</p>
+          <div class="flex gap-3 mb-6">
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-gray-500 mb-1.5">년도</label>
+              <select class="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <template x-for="y in years" :key="y"><option x-text="y + '년'" :selected="y===2016"></option></template>
+              </select>
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-gray-500 mb-1.5">월</label>
+              <select class="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <template x-for="m in 12" :key="m"><option x-text="m + '월'" :selected="m===3"></option></template>
+              </select>
+            </div>
+          </div>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">학년</p>
+          <div class="grid grid-cols-3 gap-2">
+            <template x-for="g in grades" :key="g">
+              <button @click="selectedGrade=g"
+                      class="py-3 rounded-xl text-sm font-medium border transition-colors"
+                      :class="selectedGrade===g ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-gray-700 border-gray-200 hover:border-blue-400'"
+                      x-text="g"></button>
+            </template>
+          </div>
+          <button class="mt-6 w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold">저장</button>
+        </div>
+
+        <!-- 성별 -->
+        <div x-show="settingsSub==='gender'">
+          <p class="text-sm text-gray-500 mb-4">성별을 선택하세요</p>
+          <div class="flex gap-3">
+            <button @click="selectedGender='남'"
+                    class="flex-1 py-5 rounded-2xl text-lg font-bold border-2 transition-colors flex flex-col items-center gap-2"
+                    :class="selectedGender==='남' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-gray-200 text-gray-400'">
+              👦<span class="text-sm">남자</span>
+            </button>
+            <button @click="selectedGender='여'"
+                    class="flex-1 py-5 rounded-2xl text-lg font-bold border-2 transition-colors flex flex-col items-center gap-2"
+                    :class="selectedGender==='여' ? 'bg-pink-50 border-pink-400 text-pink-600' : 'bg-white border-gray-200 text-gray-400'">
+              👧<span class="text-sm">여자</span>
+            </button>
+          </div>
+          <button class="mt-6 w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold">저장</button>
+        </div>
+
+        <!-- 선호책 설정 -->
+        <div x-show="settingsSub==='prefbook'">
+          <p class="text-sm text-gray-500 mb-4">선호하는 책의 조건을 선택하세요 (복수 선택 가능)</p>
+
+          <!-- 속성 그룹 -->
+          <div class="flex flex-col gap-5 mb-5">
+            <template x-for="group in prefGroups" :key="group.label">
+              <div>
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2" x-text="group.label"></p>
+                <div class="flex flex-wrap gap-2">
+                  <template x-for="item in group.items" :key="item.id">
+                    <button @click="item.on=!item.on"
+                            class="px-4 py-1.5 rounded-full text-sm font-medium border-2 transition-colors"
+                            :class="item.on ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-gray-600 border-gray-200 hover:border-blue-400'"
+                            x-text="item.label"></button>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <!-- 장르 그룹 -->
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">장르</p>
+          <div class="flex flex-wrap gap-2">
+            <template x-for="g in genres" :key="g.id">
+              <button @click="g.on=!g.on"
+                      class="px-4 py-1.5 rounded-full text-sm font-medium border-2 transition-colors"
+                      :class="g.on ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-gray-600 border-gray-200 hover:border-blue-400'"
+                      x-text="g.label"></button>
+            </template>
+          </div>
+
+          <button class="mt-6 w-full py-3.5 bg-blue-700 text-white rounded-xl text-sm font-bold">저장</button>
+        </div>
+
+        <!-- 책추천 설정 -->
+        <div x-show="settingsSub==='recommend'">
+          <p class="text-sm text-gray-500 mb-4">책 추천 방식을 설정하세요</p>
+          <div class="bg-white rounded-2xl divide-y divide-gray-50 shadow-sm">
+            <template x-for="r in recommendSettings" :key="r.id">
+              <div class="flex items-center justify-between px-4 py-4">
+                <div>
+                  <p class="text-sm font-medium text-gray-800" x-text="r.label"></p>
+                  <p class="text-xs text-gray-400 mt-0.5" x-text="r.desc"></p>
+                </div>
+                <button @click="r.on=!r.on"
+                        class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
+                        :class="r.on ? 'bg-blue-600' : 'bg-gray-200'">
+                  <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
+                        :style="r.on ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
+                </button>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- 알림 설정 -->
+        <div x-show="settingsSub==='notify'">
+          <p class="text-sm text-gray-500 mb-4">알림을 받을 조건과 시간을 설정하세요</p>
+          <div class="flex flex-col gap-4">
+            <template x-for="group in notifyGroups" :key="group.label">
+              <div>
+                <p class="text-[11px] text-gray-400 font-semibold uppercase tracking-widest px-1 mb-1.5" x-text="group.label"></p>
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden divide-y divide-gray-50">
+                  <template x-for="item in group.items" :key="item.id">
+                    <div>
+                      <!-- 메인 행 -->
+                      <div class="flex items-center gap-3 px-4 py-3.5">
+                        <span class="w-5 h-5 flex-shrink-0 text-gray-400 flex items-center justify-center" x-html="iconSvg(item.id)"></span>
+                        <div class="flex-1 min-w-0">
+                          <p class="text-sm font-medium text-gray-800" x-text="item.label"></p>
+                          <p class="text-xs text-gray-400 mt-0.5 leading-tight" x-text="item.desc"></p>
+                        </div>
+                        <!-- 토글 -->
+                        <button @click="item.on=!item.on"
+                                class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
+                                :class="item.on ? 'bg-blue-600' : 'bg-gray-200'">
+                          <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
+                                :style="item.on ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
+                        </button>
+                      </div>
+                      <!-- 값 선택 (옵션 있고 ON일 때) -->
+                      <div x-show="item.on && item.options && item.options.length"
+                           x-cloak
+                           class="px-4 pb-3 flex flex-wrap gap-1.5">
+                        <template x-for="opt in (item.options||[])" :key="opt">
+                          <button @click="item.value=opt"
+                                  class="px-3 py-1 rounded-lg text-xs font-semibold border transition-colors"
+                                  :class="item.value===opt
+                                    ? 'bg-blue-700 text-white border-blue-700'
+                                    : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-blue-400'">
+                            <span x-text="opt + (item.unit||'')"></span>
+                          </button>
+                        </template>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- 책 뷰어 설정 -->
+        <div x-show="settingsSub==='readdetect'">
+          <p class="text-sm text-gray-500 mb-4">책 뷰어 관련 설정을 조정하세요</p>
+
+          <!-- 읽기 탐지 토글 목록 -->
+          <div class="bg-white rounded-2xl shadow-sm mb-4 divide-y divide-gray-50">
+            <template x-for="r in detectSettings" :key="r.id">
+              <div>
+                <div class="flex items-center justify-between px-4 py-3.5">
+                  <div class="flex items-center gap-2">
+                    <p class="text-sm font-medium text-gray-800" x-text="r.label"></p>
+                    <button @click.stop="detectInfoTitle=r.label; detectInfoText=r.desc; detectInfoModal=true"
+                            class="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center text-gray-400 text-[10px] font-bold leading-none flex-shrink-0">?</button>
+                  </div>
+                  <button @click="r.on=!r.on"
+                          class="relative w-11 h-6 rounded-full overflow-hidden transition-colors flex-shrink-0"
+                          :class="r.on ? 'bg-blue-600' : 'bg-gray-200'">
+                    <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
+                          :style="r.on ? 'transform:translateX(20px)' : 'transform:translateX(0)'"></span>
+                  </button>
+                </div>
+                <!-- 야간 읽기 제한 시간 선택 -->
+                <div x-show="r.id===5 && r.on" x-cloak class="px-4 pb-3.5 border-t border-gray-50">
+                  <p class="text-xs text-gray-500 mt-2 mb-2.5">제한 시작 시간</p>
+                  <div class="flex gap-2">
+                    <template x-for="h in [20,21,22,23,24]" :key="h">
+                      <button @click="nightLimitHour=h"
+                              class="flex-1 py-2 rounded-xl text-sm font-medium transition-colors"
+                              :class="nightLimitHour===h ? 'bg-blue-700 text-white' : 'bg-gray-100 text-gray-600'"
+                              x-text="'밤 '+(h===24?'12':h-12)+'시'"></button>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+
+
+          <!-- 항목 설명 모달 -->
+          <div x-show="detectInfoModal" x-cloak @click.self="detectInfoModal=false"
+               class="absolute inset-0 bg-black/40 z-[60] flex items-center justify-center px-6"
+               x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+               x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+            <div class="bg-white rounded-2xl p-5 w-full shadow-xl"
+                 x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+              <p class="font-bold text-gray-900 text-base mb-2" x-text="detectInfoTitle"></p>
+              <p class="text-sm text-gray-600 leading-relaxed whitespace-pre-line" x-text="detectInfoText"></p>
+              <button @click="detectInfoModal=false"
+                      class="mt-4 w-full py-2.5 bg-blue-700 text-white rounded-xl text-sm font-semibold">확인</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 뱃지 모달 -->
+    <div x-show="badgeModal" x-cloak @click.self="badgeModal=false"
+         class="absolute inset-0 bg-black/50 z-50 flex items-end"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+      <div class="w-full bg-white rounded-t-3xl px-5 pt-4 pb-8"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
+        <div class="flex justify-center mb-4"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <div class="flex items-center gap-4 mb-4">
+          <span class="text-4xl" x-text="selectedBadge?.icon"></span>
+          <div>
+            <p class="font-bold text-gray-900 text-lg" x-text="selectedBadge?.label"></p>
+            <p class="text-xs text-blue-600 font-medium mt-0.5" x-text="selectedBadge?.acquiredAt + ' 획득'"></p>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 leading-relaxed mb-4" x-text="selectedBadge?.desc"></p>
+        <div class="bg-gray-50 rounded-xl px-4 py-3 mb-3">
+          <p class="text-[11px] text-gray-400 font-semibold uppercase tracking-widest mb-1">획득 조건</p>
+          <p class="text-sm text-gray-700" x-text="selectedBadge?.condition"></p>
+        </div>
+        <div x-show="selectedBadge?.nextCondition" class="bg-blue-50 rounded-xl px-4 py-3">
+          <p class="text-[11px] text-blue-500 font-semibold uppercase tracking-widest mb-1">다음 단계</p>
+          <p class="text-sm text-gray-700" x-text="selectedBadge?.nextCondition"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 등급 모달 -->
+    <div x-show="gradeModal" x-cloak @click.self="gradeModal=false"
+         class="absolute inset-0 bg-black/50 z-50 flex items-end"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+      <div class="w-full bg-white rounded-t-3xl px-5 pt-4 pb-8"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
+        <div class="flex justify-center mb-4"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <!-- 헤더 -->
+        <div class="flex items-center gap-3 mb-1">
+          <svg class="w-10 h-10 flex-shrink-0" :class="trophyColor(currentGrade().label)" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5 3a1 1 0 000 2H3.5A1.5 1.5 0 002 6.5v1A3.5 3.5 0 005.5 11H6a4 4 0 003 3.874V16H7a1 1 0 100 2h6a1 1 0 100-2h-2v-1.126A4 4 0 0014 11h.5A3.5 3.5 0 0018 7.5v-1A1.5 1.5 0 0016.5 5H15a1 1 0 000-2H5z" clip-rule="evenodd"/>
+          </svg>
+          <div class="flex-1">
+            <p class="font-bold text-gray-900 text-lg" x-text="currentGrade().label + ' 등급'"></p>
+            <p class="text-sm text-gray-500" x-text="currentGrade().desc"></p>
+          </div>
+        </div>
+        <p class="text-xs text-blue-600 font-medium mb-4 pl-1" x-text="currentGrade().acquiredAt + ' 달성'"></p>
+
+        <!-- 누적 점수 + 달성 조건 -->
+        <div class="bg-gray-50 rounded-xl px-4 py-3 mb-3 flex items-center justify-between">
+          <div>
+            <p class="text-[11px] text-gray-400 font-semibold uppercase tracking-widest mb-1">달성 조건</p>
+            <p class="text-sm text-gray-700">누적 읽기 점수 <span class="font-semibold" x-text="currentGrade().threshold.toLocaleString()"></span>점 이상</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[11px] text-gray-400 mb-1">내 누적 점수</p>
+            <p class="text-lg font-bold text-blue-700" x-text="(profile?.totalScore||4820).toLocaleString() + '점'"></p>
+          </div>
+        </div>
+
+        <!-- 다음 등급 진척도 -->
+        <div x-show="currentGrade().next" class="bg-blue-50 rounded-xl px-4 py-3">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-[11px] text-blue-500 font-semibold uppercase tracking-widest">다음 등급 · <span x-text="currentGrade().next"></span></p>
+            <p class="text-xs text-blue-700 font-semibold" x-text="gradeProgress() + '%'"></p>
+          </div>
+          <div class="h-2 bg-blue-100 rounded-full overflow-hidden mb-2">
+            <div class="h-full bg-blue-600 rounded-full transition-all duration-700" :style="`width:${gradeProgress()}%`"></div>
+          </div>
+          <p class="text-xs text-gray-500">
+            <span class="font-semibold text-blue-700" x-text="(currentGrade().nextThreshold - (profile?.totalScore||4820)).toLocaleString()"></span>점 더 모으면 <span class="font-semibold" x-text="currentGrade().next"></span> 달성
+            <span class="text-gray-400 ml-1" x-text="'(목표 ' + (currentGrade().nextThreshold||0).toLocaleString() + '점)'"></span>
+          </p>
+        </div>
+        <div x-show="!currentGrade().next" class="bg-cyan-50 rounded-xl px-4 py-3 text-center">
+          <p class="text-sm font-semibold text-cyan-600">🏆 최고 등급 달성!</p>
+          <p class="text-xs text-gray-400 mt-1">더 이상 높은 등급은 없습니다</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 하단 탭바 (lg 미만) -->
+    <!-- 부모용 탭바 -->
+    <nav x-show="!isSelfView" class="lg:hidden flex-shrink-0 bg-white border-t border-gray-100 flex">
+      <a href="profiles.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-blue-700"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg><span class="text-xs font-semibold">프로필</span></a>
+      <a href="chat.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><span class="text-xs">소통</span></a>
+      <a href="bookstore.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg><span class="text-xs">서점</span></a>
+      <a href="bookshelf.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg><span class="text-xs">내 책장</span></a>
+      <a href="myinfo.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="text-xs">내 정보</span></a>
+    </nav>
+    <!-- 학생 self-view 탭바 -->
+    <nav x-show="isSelfView" class="lg:hidden flex-shrink-0 bg-white border-t border-gray-100 flex">
+      <a href="chat.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><span class="text-xs">소통</span></a>
+      <a href="bookstore.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg><span class="text-xs">서점</span></a>
+      <a href="bookshelf.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg><span class="text-xs">내 책장</span></a>
+      <a href="myinfo.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-blue-700"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H5z" clip-rule="evenodd"/></svg><span class="text-xs font-semibold">내 정보</span></a>
+    </nav>
+  </div>
+</div>
+
+<script>
+function app() {
+  let chartInst = null;  // Alpine 반응성 밖에 보관 — proxy 간섭 방지
+  const W = ['월','화','수','목','금','토','일'];
+  const chartData = {
+    score: {
+      week: [
+        { label:'4월 4주 (4/14~20)', x:W, y:[45,120,80,200,60,150,90] },
+        { label:'4월 3주 (4/7~13)',  x:W, y:[30,90,110,50,180,70,120] },
+        { label:'4월 2주 (3/31~4/6)',x:W, y:[80,60,140,100,50,190,40] },
+        { label:'4월 1주 (3/24~30)', x:W, y:[50,130,70,160,90,110,85] },
+      ],
+      bimonth: [
+        { label:'2026년 3~4월',   x:['3/1주','3/2주','3/3주','3/4주','4/1주','4/2주','4/3주','4/4주'], y:[380,290,420,510,180,320,440,205] },
+        { label:'2026년 1~2월',   x:['1/1주','1/2주','1/3주','1/4주','2/1주','2/2주','2/3주','2/4주'], y:[290,400,350,420,510,380,290,430] },
+        { label:'2025년 11~12월', x:['11/1주','11/2주','11/3주','11/4주','12/1주','12/2주','12/3주','12/4주'], y:[340,380,420,390,450,410,480,460] },
+      ],
+      halfyear: [
+        { label:'2025.11~2026.4', x:['11월','12월','1월','2월','3월','4월'], y:[380,450,360,430,510,380] },
+        { label:'2025.5~10월',    x:['5월','6월','7월','8월','9월','10월'],  y:[280,320,350,390,420,450] },
+      ],
+    },
+    eye: {
+      week: [
+        { label:'4월 4주 (4/14~20)', x:W, reading:[65,70,60,72,68,75,63], scanning:[22,18,25,20,23,17,26], lost:[13,12,15,8,9,8,11] },
+        { label:'4월 3주 (4/7~13)',  x:W, reading:[62,68,58,70,65,72,61], scanning:[24,20,27,22,25,19,28], lost:[14,12,15,8,10,9,11] },
+        { label:'4월 2주 (3/31~4/6)',x:W, reading:[60,65,55,68,63,70,59], scanning:[26,22,29,24,27,21,30], lost:[14,13,16,8,10,9,11] },
+        { label:'4월 1주 (3/24~30)', x:W, reading:[58,63,53,66,61,68,57], scanning:[28,24,31,26,29,23,32], lost:[14,13,16,8,10,9,11] },
+      ],
+      bimonth: [
+        { label:'2026년 3~4월',   x:['3/1주','3/2주','3/3주','3/4주','4/1주','4/2주','4/3주','4/4주'], reading:[62,65,68,66,65,68,63,70], scanning:[25,23,21,22,22,20,25,18], lost:[13,12,11,12,13,12,12,12] },
+        { label:'2026년 1~2월',   x:['1/1주','1/2주','1/3주','1/4주','2/1주','2/2주','2/3주','2/4주'], reading:[56,59,62,60,59,62,64,63], scanning:[30,28,26,27,27,25,24,25], lost:[14,13,12,13,14,13,12,12] },
+        { label:'2025년 11~12월', x:['11/1주','11/2주','11/3주','11/4주','12/1주','12/2주','12/3주','12/4주'], reading:[50,52,55,53,54,57,59,58], scanning:[35,33,31,32,32,30,29,30], lost:[15,15,14,15,14,13,12,12] },
+      ],
+      halfyear: [
+        { label:'2025.11~2026.4', x:['11월','12월','1월','2월','3월','4월'], reading:[53,57,60,63,66,68], scanning:[33,30,28,25,22,20], lost:[14,13,12,12,12,12] },
+        { label:'2025.5~10월',    x:['5월','6월','7월','8월','9월','10월'],  reading:[45,48,50,52,54,56], scanning:[40,37,36,34,33,32], lost:[15,15,14,14,13,12] },
+      ],
+    },
+    focus: {
+      week: [
+        { label:'4월 4주 (4/14~20)', x:W, y:[72,85,68,91,78,88,75] },
+        { label:'4월 3주 (4/7~13)',  x:W, y:[68,80,65,88,74,85,71] },
+        { label:'4월 2주 (3/31~4/6)',x:W, y:[65,77,62,85,71,82,68] },
+        { label:'4월 1주 (3/24~30)', x:W, y:[62,74,59,82,68,79,65] },
+      ],
+      bimonth: [
+        { label:'2026년 3~4월',   x:['3/1주','3/2주','3/3주','3/4주','4/1주','4/2주','4/3주','4/4주'], y:[63,66,70,68,75,78,72,82] },
+        { label:'2026년 1~2월',   x:['1/1주','1/2주','1/3주','1/4주','2/1주','2/2주','2/3주','2/4주'], y:[55,58,62,60,65,68,72,70] },
+        { label:'2025년 11~12월', x:['11/1주','11/2주','11/3주','11/4주','12/1주','12/2주','12/3주','12/4주'], y:[48,51,54,52,57,60,63,61] },
+      ],
+      halfyear: [
+        { label:'2025.11~2026.4', x:['11월','12월','1월','2월','3월','4월'], y:[52,60,67,74,78,80] },
+        { label:'2025.5~10월',    x:['5월','6월','7월','8월','9월','10월'],  y:[40,44,48,52,56,60] },
+      ],
+    },
+  };
+
+  const monthData = {
+    '2026-3': { score:380,  words:12400, days:{2:45,3:120,5:80,6:200,8:60,9:30,10:150,12:90,13:110,14:75,17:180,19:55,20:230,22:40,23:100,24:160,26:70,28:50,29:130} },
+    '2026-2': { score:510,  words:16200, days:{1:80,3:140,5:60,7:200,9:90,11:170,13:50,15:220,17:30,19:110,21:180,23:70,25:150,27:90} },
+    '2026-1': { score:290,  words:9100,  days:{4:70,6:130,10:50,14:180,18:90,22:110,26:40,28:160,30:75} },
+    '2025-11':{ score:420,  words:13800, days:{2:100,5:60,8:200,10:80,13:150,16:40,19:220,22:90,25:130,28:70} },
+  };
+  const defaultDays = {2:45,3:120,5:80,6:200,8:60,10:150,12:90,14:75,17:180,20:230,22:100,24:160,26:70,29:130};
+
+  return {
+    user: null, profile: null, favorited: false,
+    parentInfo: { name: '김여사', initial: '김', color: 'linear-gradient(135deg,#667eea,#764ba2)' },
+    showParentCard: false,
+    calYear: 2026, calMonth: 3,
+    calDays: [], calStartDay: 0,
+    daySheet: false, selectedDay: { label: '' },
+    dayLiked: false, dayLikeCount: 3,
+    dayLikers: [
+      { name: '이영희 엄마', initial: '이', color: 'linear-gradient(135deg,#f093fb,#f5576c)' },
+      { name: '박민준 아빠', initial: '박', color: 'linear-gradient(135deg,#4facfe,#00f2fe)' },
+      { name: '최수진 엄마', initial: '최', color: 'linear-gradient(135deg,#43e97b,#38f9d7)' },
+    ],
+    showDayLikers: false,
+    dayNote: '',
+    reportSheet: false, selectedReport: null,
+    settingsPanel: false, settingsSub: '', deleteConfirm: false,
+    selectedColor: '', selectedGrade: '초4', selectedGender: '남', profilePhoto: null,
+
+    badges: [
+      {id:1,icon:'📚',label:'다독왕',   desc:'한 달 동안 가장 많은 책을 읽은 독자에게 수여',      condition:'월 10권 이상 완독', acquiredAt:'2026.03.31', nextCondition:'월 20권 이상 완독 시 다독왕 II 달성', count:3},
+      {id:2,icon:'🔥',label:'연속30일', desc:'30일 연속 하루도 빠짐없이 독서한 기록',             condition:'30일 연속 읽기 세션 완료', acquiredAt:'2026.04.01', nextCondition:'60일 연속 읽기 세션 완료 시 연속60일 달성'},
+      {id:3,icon:'⚡',label:'스피드',   desc:'꾸준히 읽으면서 자신의 평균보다 빠른 속도를 유지한 독자에게 수여', condition:'누적 10,000단어 이상 읽기 + 2주 평균 읽기 속도보다 10% 이상 빠름', acquiredAt:'2026.02.14', nextCondition:'2주 평균 읽기 속도보다 20% 이상 빠를 시 스피드 II 달성'},
+      {id:4,icon:'🌟',label:'우수독자', desc:'읽기 점수, reading 비율, 집중도 모두 우수한 독자',  condition:'읽기 점수·reading 비율·집중도 3개 지표 상위 20% 동시 달성', acquiredAt:'2026.03.15', nextCondition:'3개 지표 모두 상위 15% 동시 달성 시 우수독자 II 달성'},
+      {id:5,icon:'🎯',label:'목표달성', desc:'설정한 일일 읽기 목표를 연속 7일 달성',             condition:'일일 목표 점수 7일 연속 달성', acquiredAt:'2026.04.07', nextCondition:'15일 연속 달성 시 목표달성 II 달성', count:2},
+      {id:7,icon:'💎',label:'정확도',   desc:'최근 10회 독서퀴즈 정답률 75% 이상 달성',           condition:'최근 10회 독서퀴즈 정답률 75% 이상', acquiredAt:'2026.03.28', nextCondition:'이후 10회 정답률 80% 이상 달성 시 정확도 II 달성'},
+    ],
+    reports: [
+      { id:1, month:'4월', weekNum:'4주', period:'4/14~20', isNew:true,
+        summary:'목요일 집중도가 이번 주 최고였어요',
+        score:745, scoreDiff:+42, eyeReading:68, eyeDiff:+3, focus:78, focusDiff:+5,
+        bestDay:'목요일', bestDayIndex:3,
+        readDays:[true,true,false,true,true,true,false],
+        books:[
+          { title:'Percy Jackson', author:'R. Riordan', progress:68, score:450, color:'linear-gradient(135deg,#667eea,#764ba2)', eye:70, wpm:145 },
+          { title:'Magic Tree House #5', author:'M. Osborne', progress:92, score:295, color:'linear-gradient(135deg,#43e97b,#38f9d7)', eye:65, wpm:132 },
+        ],
+        aiComment:'이번 주는 목요일과 금요일에 집중도가 특히 높았어요. Percy Jackson을 꾸준히 읽으며 주 4회 독서 습관을 잘 유지했고, Magic Tree House #5를 거의 완독에 가깝게 읽었네요. 전주보다 총점이 42점 올랐고, 시선 집중도도 5% 향상됐어요. 다음 주도 이 페이스를 유지해 보아요! 🎉',
+      },
+      { id:2, month:'4월', weekNum:'3주', period:'4/7~13', isNew:false,
+        summary:'연속 5일 독서, 이번 달 최고 스트릭!',
+        score:703, scoreDiff:-15, eyeReading:65, eyeDiff:-2, focus:73, focusDiff:+2,
+        bestDay:'화요일', bestDayIndex:1,
+        readDays:[true,true,true,false,true,true,false],
+        books:[
+          { title:'Percy Jackson', author:'R. Riordan', progress:45, score:380, color:'linear-gradient(135deg,#667eea,#764ba2)', eye:67, wpm:138 },
+          { title:"Charlotte's Web", author:'E.B. White', progress:100, score:323, color:'linear-gradient(135deg,#f093fb,#f5576c)', eye:72, wpm:125 },
+        ],
+        aiComment:"이번 주는 Charlotte's Web을 완독했어요! 5일 연속 독서로 이번 달 최장 스트릭을 기록했네요. 총점은 지난주보다 15점 낮지만, 완독 보너스를 감안하면 실질적으로는 탄탄한 한 주였어요.",
+      },
+      { id:3, month:'4월', weekNum:'2주', period:'3/31~4/6', isNew:false,
+        summary:'읽기 집중도 이번 달 최고 기록!',
+        score:718, scoreDiff:+28, eyeReading:67, eyeDiff:+4, focus:71, focusDiff:+6,
+        bestDay:'수요일', bestDayIndex:2,
+        readDays:[false,true,true,true,false,true,true],
+        books:[
+          { title:"Charlotte's Web", author:'E.B. White', progress:72, score:390, color:'linear-gradient(135deg,#f093fb,#f5576c)', eye:75, wpm:118 },
+          { title:'The BFG', author:'R. Dahl', progress:30, score:328, color:'linear-gradient(135deg,#4facfe,#00f2fe)', eye:58, wpm:142 },
+        ],
+        aiComment:'이번 주는 시선 집중도가 71%로 이번 달 최고치를 기록했어요. 특히 수요일 세션에서 집중도가 82%까지 올랐는데, 아주 훌륭해요. The BFG를 새로 시작하며 책 선택의 폭도 넓어지고 있어요.',
+      },
+      { id:4, month:'4월', weekNum:'1주', period:'3/24~30', isNew:false,
+        summary:'Percy Jackson 시작! 새 책 적응기',
+        score:690, scoreDiff:+10, eyeReading:63, eyeDiff:+1, focus:65, focusDiff:-3,
+        bestDay:'토요일', bestDayIndex:5,
+        readDays:[false,true,false,true,false,true,true],
+        books:[
+          { title:'Percy Jackson', author:'R. Riordan', progress:18, score:350, color:'linear-gradient(135deg,#667eea,#764ba2)', eye:62, wpm:130 },
+          { title:'Diary of Wimpy Kid', author:'J. Kinney', progress:100, score:340, color:'linear-gradient(135deg,#fa709a,#fee140)', eye:68, wpm:155 },
+        ],
+        aiComment:'Diary of a Wimpy Kid을 완독하고 Percy Jackson을 새로 시작한 주였어요. 새 책 초반이라 집중도가 살짝 낮아졌지만 자연스러운 적응 과정이에요. 주말에 집중해서 읽는 패턴이 보이는데, 평일에도 조금씩 읽어보는 건 어떨까요?',
+      },
+    ],
+
+    scores: { total:4820, totalPct:12, year:1340, yearPct:18, month:380, monthPct:22 },
+    monthSummary: { score:380, words:12400 },
+    dayScores: {},
+
+    chartTab: 'score', chartRange: 'bimonth', chartOffset: 0, scoreTooltip: false,
+    isSelfView: false,
+    badgeModal: false, selectedBadge: null, gradeModal: false,
+    grades: [
+      { label:'브론즈',  color:'text-orange-400', desc:'독서를 시작한 새내기 독자',              threshold:0,     next:'실버',    nextThreshold:1000,  acquiredAt:'2025.08.10' },
+      { label:'실버',    color:'text-gray-300',   desc:'꾸준한 독서 습관이 자리잡힌 독자',        threshold:1000,  next:'골드',    nextThreshold:3500,  acquiredAt:'2025.10.03' },
+      { label:'골드',    color:'text-yellow-300', desc:'높은 집중도와 독서량을 갖춘 우수 독자',   threshold:3500,  next:'플래티넘', nextThreshold:12000, acquiredAt:'2026.01.20' },
+      { label:'플래티넘',color:'text-cyan-300',   desc:'최상위 독서 능력을 갖춘 엘리트 독자',    threshold:12000, next:null,      nextThreshold:null,  acquiredAt:null },
+    ],
+    chartTouchX: 0,
+
+    get chartSummary() {
+      const d = chartData[this.chartTab]?.[this.chartRange];
+      if (!d) return {};
+      const p = d[Math.min(this.chartOffset, d.length - 1)];
+      if (!p) return {};
+      if (this.chartTab === 'score') {
+        const total = p.y.reduce((a, b) => a + b, 0);
+        const avg = Math.round(total / p.y.length);
+        return { main: total.toLocaleString() + '점', sub: '합계 · 평균 ' + avg + '점' };
+      }
+      if (this.chartTab === 'eye') {
+        const avg = arr => Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
+        return { reading: avg(p.reading), scanning: avg(p.scanning), lost: avg(p.lost) };
+      }
+      const avg = Math.round(p.y.reduce((a, b) => a + b, 0) / p.y.length);
+      return { main: avg + '%', sub: '기간 평균 집중도' };
+    },
+
+    settingsItems: [
+      {id:'photo',    icon:'🎨', label:'색상 교체',      desc:'프로필 배경 색상 변경'},
+      {id:'nickname', icon:'✏️', label:'닉네임 변경',     desc:'표시되는 이름 수정'},
+      {id:'password', icon:'🔒', label:'비밀번호 변경',   desc:'로그인 비밀번호 수정'},
+      {id:'birthgrade', icon:'🎂', label:'생년·학년',      desc:'생년월 및 학년 정보 설정'},
+      {id:'gender',   icon:'👤', label:'성별',            desc:'성별 정보 수정'},
+      {id:'prefbook', icon:'📖', label:'선호책 설정',     desc:'좋아하는 장르 선택'},
+      {id:'recommend', icon:'💡', label:'책추천 설정',  desc:'추천 알고리즘 옵션'},
+      {id:'readdetect',icon:'📱',label:'책 뷰어 설정',  desc:'뷰어 화면 및 표시 설정'},
+      {id:'notify',    icon:'🔔', label:'알림 설정',    desc:'읽기 알림 조건 및 시간 설정'},
+    ],
+
+    avatarColors: [
+      '#2e4f8f',
+      '#5c2e8c',
+      '#1e6840',
+      '#8a2424',
+      '#1e6868',
+      '#7a5618',
+      '#2e3d8f',
+      '#7a2260',
+    ],
+    years: Array.from({length:15}, (_,i) => 2024-i),
+    grades: ['미취학','유치원','초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3','성인'],
+    prefGroups: [
+      { label:'언어',     items: [{id:'lang_en',label:'영어',on:true},{id:'lang_ko',label:'한국어',on:false},{id:'lang_etc',label:'기타',on:false}] },
+      { label:'종류',     items: [{id:'type_lit',label:'문학',on:true},{id:'type_nf',label:'넌픽션',on:false},{id:'type_etc',label:'기타',on:false}] },
+      { label:'분량',     items: [{id:'len_s',label:'단편',on:false},{id:'len_m',label:'중편',on:true},{id:'len_l',label:'장편',on:true}] },
+      { label:'영어책 레벨', items: [
+        {id:'lvl_pb',label:'픽처북',on:false},{id:'lvl_sb',label:'스토리북',on:false},
+        {id:'lvl_rb',label:'리더스북',on:false},{id:'lvl_ec',label:'얼리챕터북',on:false},
+        {id:'lvl_mc',label:'미들챕터북',on:true},{id:'lvl_cb',label:'챕터북',on:true},
+        {id:'lvl_nv',label:'노블',on:false},
+      ]},
+      { label:'퀴즈 재풀기', items: [{id:'quiz_y',label:'가능',on:true},{id:'quiz_n',label:'불가',on:false}] },
+    ],
+    genres: [
+      {id:1,label:'📚 모험',on:true},{id:2,label:'🔬 과학',on:false},
+      {id:3,label:'🏰 판타지',on:true},{id:4,label:'🌍 역사',on:false},
+      {id:5,label:'😂 유머',on:true},{id:6,label:'🔎 미스터리',on:false},
+      {id:7,label:'🐾 동물',on:false},{id:8,label:'🚀 SF',on:true},
+      {id:9,label:'💪 스포츠',on:false},{id:10,label:'🎨 예술',on:false},
+    ],
+    recommendSettings: [
+      {id:1,label:'또래 추천 반영',desc:'같은 나이·레벨 친구들이 읽는 책 우선 추천',on:true},
+      {id:2,label:'선호 장르 우선',desc:'선택한 장르 위주로 추천',on:true},
+      {id:3,label:'읽기 이력 기반',desc:'완독한 책과 유사한 책 추천',on:true},
+      {id:4,label:'새로운 장르 탐색',desc:'가끔 다른 장르도 추천',on:false},
+      {id:5,label:'선생님 큐레이션',desc:'담당 선생님이 직접 선별한 목록 포함',on:true},
+      {id:6,label:'필독서 추천',desc:'해당 나이에 권장되는 책 추천',on:true},
+      {id:7,label:'오늘 목표 할당',desc:'매일 아침 오늘의 읽기 목표 자동 설정',on:true},
+    ],
+    notifyGroups: [
+      { label:'읽기 이벤트', items: [
+        { id:'n1', icon:'📖', label:'읽기 시작/종료', desc:'자녀가 읽기를 시작하거나 종료하면 알림', on:true,  value:null },
+        { id:'n2', icon:'✅', label:'완독',           desc:'책을 끝까지 완독하면 알림',               on:true,  value:null },
+      ]},
+      { label:'중단 감지', items: [
+        { id:'n3', icon:'⏸', label:'읽기 중단', desc:'얼굴이 탐지되지 않거나 조작이 없으면 중단으로 판정. 5분 초과 시 자동 종료됩니다.', on:true, value:'1분', unit:'', options:['30초','1분','2분','3분','5분'] },
+      ]},
+      { label:'시선 상태', items: [
+        { id:'n4', icon:'👁', label:'Reading 비율 저하', desc:'집중 읽기 비율이 기준 이하로 떨어질 때', on:true, value:50, unit:'%', options:[30,40,50,60,70] },
+        { id:'n5', icon:'🚨', label:'Lost 비율 급증',    desc:'시선 이탈 비율이 기준 이상 높아질 때',  on:true, value:30, unit:'%', options:[20,30,40,50] },
+      ]},
+      { label:'목표 & 습관', items: [
+        { id:'n6',  icon:'🎯', label:'오늘 목표 달성',  desc:'일일 읽기 목표 달성 시 칭찬 알림',           on:true,  value:null },
+        { id:'n7',  icon:'🌙', label:'저녁 리마인더',   desc:'오늘 아직 읽지 않았을 때 독서 유도 알림',    on:true,  value:'20:00', unit:'', options:['18:00','19:00','20:00','21:00','22:00'] },
+        { id:'n8',  icon:'📊', label:'주간 리포트',     desc:'매주 읽기 현황 요약 리포트 전송 (일요일)',    on:true,  value:null },
+        { id:'n10', icon:'🏆', label:'레벨 업',         desc:'자녀 읽기 레벨이 올라갈 때 알림',            on:true,  value:null },
+      ]},
+    ],
+
+    detectSettings: [
+      {id:2,label:'페이지 이탈 감지',   desc:'화면을 오래 벗어나거나 멈추면 읽기 세션을 일시정지하고 알림을 보냅니다.',on:true},
+      {id:3,label:'자동 시선 맞춤',     desc:'책을 읽는 동안, 시선의 위치를 자동으로 보정합니다.',on:false},
+      {id:5,label:'야간 읽기 제한',     desc:'설정한 시간 이후에는 읽기 세션을 시작할 수 없도록 제한합니다.',on:false},
+      {id:6,label:'집중듣기 도움',      desc:'집중듣기시, 읽어주는 위치를 계속 따라가지 못하면 단어를 점멸해서 현재 위치를 알려줍니다.',on:true},
+      {id:7,label:'읽기 속도 자동 조정',desc:'reading 비율이 80% 이상이고 시선 집중도가 80% 이상이면 재생 속도를 5% 높입니다.\nreading 비율이 60% 이하이고 시선 집중도가 60% 이하이면 재생 속도를 5% 낮춥니다.',on:true},
+      {id:8,label:'권장도서 우선',      desc:'권장도서의 책을 다 읽기 전에는 다른 책을 읽을 수 없습니다.',on:false},
+    ],
+    nightLimitHour: 22,
+    detectInfoModal: false, detectInfoTitle: '', detectInfoText: '',
+
+    init() {
+      this.user = JSON.parse(localStorage.getItem('cr_user') || 'null');
+      if (!this.user) { window.location.href = 'index.html'; return; }
+      this.profile = JSON.parse(localStorage.getItem('cr_profile') || 'null');
+      if (!this.profile) {
+        if (this.user.type === 'student') {
+          this.isSelfView = true;
+          const colors = ['#2e4f8f','#5c2e8c','#1e6840','#8a2424','#1e6868','#7a5618','#2e3d8f','#7a2260'];
+          const idx = ((this.user.name || '').charCodeAt(0) || 0) % colors.length;
+          this.profile = { name: this.user.name, initial: this.user.initial, color: colors[idx],
+            age: 10, grade: '초3', gender: '남', level: 'Lv.3', gradeLabel: '골드', totalScore: 4820 };
+        } else { window.location.href = 'profiles.html'; return; }
+      }
+      this.selectedColor = this.profile.color || this.avatarColors[0];
+      this.selectedGrade = this.profile.grade || '초4';
+      this.selectedGender = this.profile.gender || '남';
+      this.buildCalendar();
+      this.$nextTick(() => this.renderChart());
+      this.$watch('chartTab',    () => { this.chartOffset = 0; this.$nextTick(() => this.renderChart()); });
+      this.$watch('chartRange',  () => { this.chartOffset = 0; this.$nextTick(() => this.renderChart()); });
+      this.$watch('chartOffset', () => this.$nextTick(() => this.renderChart()));
+      if (localStorage.getItem('cr_openReport')) {
+        localStorage.removeItem('cr_openReport');
+        setTimeout(() => { this.selectedReport = this.reports[0]; this.reportSheet = true; }, 50);
+      }
+    },
+
+    buildCalendar() {
+      const key = `${this.calYear}-${this.calMonth}`;
+      const data = monthData[key] || { score:0, words:0, days:defaultDays };
+      this.monthSummary = { score:data.score, words:data.words };
+      this.dayScores = data.days;
+      const daysInMonth = new Date(this.calYear, this.calMonth+1, 0).getDate();
+      this.calStartDay = new Date(this.calYear, this.calMonth, 1).getDay();
+      this.calDays = Array.from({length:daysInMonth}, (_,i) => i+1);
+    },
+    prevMonth() { if(this.calMonth===0){this.calMonth=11;this.calYear--;}else this.calMonth--; this.buildCalendar(); },
+    nextMonth() { if(this.calMonth===11){this.calMonth=0;this.calYear++;}else this.calMonth++; this.buildCalendar(); },
+
+    dayClass(day) {
+      const score = this.dayScores[day] || 0;
+      const today = new Date();
+      const isToday = day===today.getDate() && this.calMonth===today.getMonth() && this.calYear===today.getFullYear();
+      let bg = 'bg-gray-100 text-gray-400 cursor-default';
+      if (score>0   && score<=50)  bg='bg-green-100 text-green-700 hover:bg-green-200';
+      if (score>50  && score<=100) bg='bg-green-200 text-green-800 hover:bg-green-300';
+      if (score>100 && score<=150) bg='bg-green-400 text-white hover:bg-green-500';
+      if (score>150) bg='bg-green-600 text-white hover:bg-green-700';
+      if (isToday) return bg+' ring-2 ring-blue-500 ring-offset-1';
+      return bg;
+    },
+    goDay(day) {
+      if(!(this.dayScores[day]>0)) return;
+      this.selectedDay = { label:`${this.calYear}년 ${this.calMonth+1}월 ${day}일` };
+      this.dayLiked = false;
+      this.dayLikeCount = 3;
+      this.showDayLikers = false;
+      this.dayNote = '';
+      this.daySheet = true;
+    },
+
+    canGoPrev() {
+      const d = chartData[this.chartTab]?.[this.chartRange];
+      return d && this.chartOffset < d.length - 1;
+    },
+    prevPeriod() { if (this.canGoPrev()) this.chartOffset++; },
+    nextPeriod() { if (this.chartOffset > 0) this.chartOffset--; },
+    periodLabel() {
+      const d = chartData[this.chartTab]?.[this.chartRange];
+      if (!d) return '';
+      return d[Math.min(this.chartOffset, d.length - 1)]?.label || '';
+    },
+    onChartSwipe(e) {
+      const dx = e.changedTouches[0].clientX - this.chartTouchX;
+      if (Math.abs(dx) > 40) { dx < 0 ? this.prevPeriod() : this.nextPeriod(); }
+    },
+    renderChart() {
+      const canvas = this.$refs.chartCanvas;
+      if (!canvas || typeof Chart === 'undefined') return;
+      if (chartInst) { chartInst.destroy(); chartInst = null; }
+
+      const tab = this.chartTab, range = this.chartRange;
+      const d = chartData[tab]?.[range];
+      if (!d) return;
+      const p = d[Math.min(this.chartOffset, d.length - 1)];
+      if (!p) return;
+
+      const ctx = canvas.getContext('2d');
+      const baseOpts = {
+        responsive: true, maintainAspectRatio: false,
+        animation: { duration: 250 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            displayColors: false,
+            callbacks: { label: v => v.raw + (tab === 'focus' ? '%' : tab === 'eye' ? '%' : '점') },
+          },
+        },
+      };
+      const xScale = { grid: { display: false }, ticks: { font: { size: 10 }, color: '#9ca3af' }, border: { display: false } };
+      const yScale = { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10 }, color: '#9ca3af', maxTicksLimit: 5 }, border: { display: false }, beginAtZero: true };
+
+      if (tab === 'score' || tab === 'focus') {
+        const color = tab === 'score' ? '#6366f1' : '#10b981';
+        const bg    = tab === 'score' ? 'rgba(99,102,241,0.08)' : 'rgba(16,185,129,0.08)';
+        chartInst = new Chart(ctx, {
+          type: 'line',
+          data: { labels: p.x, datasets: [{ data: p.y, borderColor: color, backgroundColor: bg, fill: true, tension: 0.4, pointBackgroundColor: color, pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6 }] },
+          options: { ...baseOpts, scales: { x: xScale, y: yScale } },
+        });
+      } else {
+        chartInst = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: p.x,
+            datasets: [
+              { label:'이탈',    data: p.lost,     backgroundColor: '#f87171', stack: 's' },
+              { label:'스캐닝',  data: p.scanning, backgroundColor: '#fbbf24', stack: 's' },
+              { label:'읽는 중', data: p.reading,  backgroundColor: '#4ade80', stack: 's' },
+            ],
+          },
+          options: {
+            ...baseOpts,
+            scales: {
+              x: { ...xScale, stacked: true },
+              y: { ...yScale, stacked: true, max: 100, ticks: { ...yScale.ticks, callback: v => v + '%' } },
+            },
+          },
+        });
+      }
+    },
+
+    openReport(r) { this.selectedReport = r; this.reportSheet = true; r.isNew = false; },
+
+    openSub(id) { this.settingsSub = id; },
+    iconSvg(id) {
+      const s = `fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5" stroke-linecap="round" stroke-linejoin="round"`;
+      const svg = p => `<svg ${s}>${p}</svg>`;
+      const m = {
+        photoupload: svg(`<path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>`),
+        photo:       svg(`<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>`),
+        nickname:    svg(`<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/>`),
+        password:    svg(`<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>`),
+        birthgrade:  svg(`<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>`),
+        gender:      svg(`<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>`),
+        prefbook:    svg(`<path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>`),
+        recommend:   svg(`<path d="M9 18h6M10 22h4M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/>`),
+        readdetect:  svg(`<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`),
+        notify:      svg(`<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>`),
+        n1:  svg(`<path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>`),
+        n2:  svg(`<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`),
+        n3:  svg(`<circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/>`),
+        n4:  svg(`<polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/>`),
+        n5:  svg(`<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>`),
+        n6:  svg(`<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>`),
+        n7:  svg(`<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>`),
+        n8:  svg(`<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>`),
+        n10: svg(`<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>`),
+      };
+      return m[id] || '';
+    },
+    onPhotoSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => { this.profilePhoto = e.target.result; };
+      reader.readAsDataURL(file);
+    },
+    deleteProfile() { localStorage.removeItem('cr_profile'); window.location.href = 'profiles.html'; },
+    currentSubLabel() {
+      return this.settingsItems.find(s=>s.id===this.settingsSub)?.label || '';
+    },
+
+    trophyColor(grade) {
+      if(grade==='플래티넘') return 'text-cyan-300';
+      if(grade==='골드') return 'text-yellow-300';
+      if(grade==='실버') return 'text-gray-300';
+      return 'text-orange-300';
+    },
+    currentGrade() {
+      const label = this.profile?.gradeLabel || '골드';
+      return this.grades.find(g => g.label === label) || this.grades[2];
+    },
+    gradeProgress() {
+      const g = this.currentGrade();
+      const total = this.profile?.totalScore || 4820;
+      if (!g.nextThreshold) return 100;
+      return Math.min(100, Math.round((total - g.threshold) / (g.nextThreshold - g.threshold) * 100));
+    }
+  }
+}
+</script>
+</body>
+</html>

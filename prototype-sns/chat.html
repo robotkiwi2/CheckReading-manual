@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소통 - CheckReading</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="CheckReading">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="theme-color" content="#1d4ed8">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style> html,body{height:100%;} [x-cloak]{display:none!important;} </style>
+</head>
+<body class="bg-gray-200" style="height:100dvh;overflow:hidden;">
+<div class="h-full flex items-stretch justify-center bg-gray-200" x-data="app()" x-init="init()">
+
+  <!-- 사이드바 (lg+) -->
+  <aside class="hidden lg:flex flex-col w-56 bg-white border-r border-gray-100 flex-shrink-0">
+    <div class="px-5 py-5 border-b border-gray-100 flex items-center gap-3">
+      <span class="font-bold text-gray-900">CheckReading</span>
+    </div>
+    <nav class="flex-1 py-4 px-3 flex flex-col gap-1">
+      <a x-show="isParent" href="profiles.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg>프로필</a>
+      <a href="chat.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-blue-50 text-blue-700 font-semibold text-sm"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>소통</a>
+      <a href="bookstore.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>서점</a>
+      <a href="bookshelf.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>내 책장</a>
+      <a href="myinfo.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 text-sm"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>내 정보</a>
+    </nav>
+    <div class="px-4 py-4 border-t border-gray-100 flex items-center gap-3 relative">
+      <button @click="showMenu=!showMenu" class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-700 flex-shrink-0" x-text="user?.initial||'?'"></button>
+      <div class="flex-1 min-w-0"><p class="text-sm font-semibold text-gray-800 truncate" x-text="user?.name"></p><p class="text-xs text-gray-400" x-text="isParent?'부모':'학생'"></p></div>
+      <div x-show="showMenu" x-cloak @click.outside="showMenu=false"
+           x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+           class="absolute bottom-16 left-3 bg-white rounded-2xl shadow-xl border border-gray-100 w-44 overflow-hidden z-50">
+        <button onclick="window.location.href='myinfo.html'" class="w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>정보 보기</button>
+        <button @click="logout()" class="w-full px-4 py-3 text-sm text-left text-red-500 hover:bg-red-50 flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>로그아웃</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 메인 -->
+  <div class="flex-1 flex flex-col min-w-0 bg-gray-50 max-w-3xl relative overflow-hidden">
+
+    <header class="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-gray-900">소통</span>
+      </div>
+      <div class="relative">
+        <button @click="showMenu=!showMenu" class="lg:hidden w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-700" x-text="user?.initial||'?'"></button>
+        <div x-show="showMenu" x-cloak @click.outside="showMenu=false"
+             x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+             class="lg:hidden absolute top-10 right-0 bg-white rounded-2xl shadow-xl border border-gray-100 w-44 overflow-hidden z-50">
+          <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs text-gray-400" x-text="isParent?'부모':'학생'"></p><p class="text-sm font-semibold text-gray-800" x-text="user?.name"></p></div>
+          <button onclick="window.location.href='myinfo.html'" class="w-full px-4 py-3 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>정보 보기</button>
+          <button @click="logout()" class="w-full px-4 py-3 text-sm text-left text-red-500 hover:bg-red-50 flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>로그아웃</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 채팅방 목록 -->
+    <main class="flex-1 overflow-y-auto min-h-0">
+      <div class="flex flex-col divide-y divide-gray-100">
+        <template x-for="room in rooms" :key="room.id">
+          <button @click="openRoom(room)" class="flex items-center gap-3 px-4 py-3.5 bg-white hover:bg-gray-50 text-left transition-colors">
+            <!-- 아바타 -->
+            <div class="relative flex-shrink-0">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-base"
+                   :style="`background:${room.color}`" x-text="room.initial"></div>
+              <div x-show="room.unread > 0" class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-[10px] font-bold" x-text="room.unread"></span>
+              </div>
+            </div>
+            <!-- 내용 -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between mb-0.5">
+                <p class="text-sm font-semibold text-gray-900" x-text="room.name"></p>
+                <span class="text-[10px] text-gray-400 flex-shrink-0 ml-2" x-text="room.time"></span>
+              </div>
+              <p class="text-xs text-gray-500 truncate" x-text="room.lastMsg"></p>
+            </div>
+          </button>
+        </template>
+      </div>
+    </main>
+
+    <!-- 채팅방 패널 (슬라이드업) -->
+    <div x-show="activeRoom" x-cloak
+         x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+         x-transition:leave="transition ease-in duration-200 transform" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
+         class="absolute inset-0 bg-gray-50 z-20 flex flex-col">
+
+      <!-- 채팅 헤더 -->
+      <div class="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
+        <button @click="activeRoom=null" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+             :style="`background:${activeRoom?.color}`" x-text="activeRoom?.initial"></div>
+        <p class="font-bold text-gray-900 text-sm flex-1" x-text="activeRoom?.name"></p>
+      </div>
+
+      <!-- 메시지 목록 -->
+      <div class="flex-1 overflow-y-auto min-h-0 px-4 py-4 flex flex-col gap-3" x-ref="msgList">
+        <template x-for="msg in activeRoom?.messages" :key="msg.id">
+          <div>
+
+            <!-- 시스템 메시지 -->
+            <template x-if="msg.type==='system'">
+              <div class="flex justify-center">
+                <span class="bg-gray-200 text-gray-500 text-[11px] px-3 py-1 rounded-full" x-text="msg.text"></span>
+              </div>
+            </template>
+
+            <!-- 날짜 구분선 -->
+            <template x-if="msg.type==='date'">
+              <div class="flex items-center gap-3">
+                <hr class="flex-1 border-gray-200">
+                <span class="text-[11px] text-gray-400" x-text="msg.text"></span>
+                <hr class="flex-1 border-gray-200">
+              </div>
+            </template>
+
+            <!-- 상대방 메시지 (왼쪽) -->
+            <template x-if="msg.type==='them'">
+              <div class="flex items-end gap-2">
+                <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                     :style="`background:${activeRoom?.color}`" x-text="activeRoom?.initial"></div>
+                <div class="max-w-[70%]">
+                  <div class="bg-white rounded-2xl rounded-bl-sm px-3.5 py-2.5 shadow-sm">
+                    <p class="text-sm text-gray-800 leading-relaxed" x-text="msg.text"></p>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-1 ml-1" x-text="msg.time"></p>
+                </div>
+              </div>
+            </template>
+
+            <!-- 리포트 알림 카드 -->
+            <template x-if="msg.type==='report'">
+              <div class="flex justify-center">
+                <button @click="goToReport(msg)"
+                        class="w-full bg-white rounded-2xl shadow-sm p-4 text-left border border-blue-100 hover:bg-blue-50 active:bg-blue-100 transition-colors">
+                  <div class="flex items-center gap-2.5 mb-2.5">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+                         :style="`background:${msg.profileColor}`" x-text="msg.profileInitial"></div>
+                    <div class="min-w-0">
+                      <p class="text-xs font-bold text-blue-700">📊 주간 리포트 도착</p>
+                      <p class="text-[10px] text-gray-400 truncate" x-text="msg.profileName + ' · ' + msg.week + ' (' + msg.period + ')'"></p>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-600 mb-3 leading-relaxed" x-text="msg.summary"></p>
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-sm font-bold text-gray-800" x-text="msg.score.toLocaleString() + '점'"></span>
+                      <span class="text-xs font-semibold"
+                            :class="msg.scoreDiff >= 0 ? 'text-green-500' : 'text-red-400'"
+                            x-text="(msg.scoreDiff >= 0 ? '▲' : '▼') + Math.abs(msg.scoreDiff) + '점'"></span>
+                    </div>
+                    <span class="text-xs text-blue-600 font-semibold">리포트 보기 →</span>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-2 text-right" x-text="msg.time"></p>
+                </button>
+              </div>
+            </template>
+
+            <!-- 내 메시지 (오른쪽) -->
+            <template x-if="msg.type==='me'">
+              <div class="flex items-end gap-2 justify-end">
+                <div class="max-w-[70%]">
+                  <div class="bg-blue-600 rounded-2xl rounded-br-sm px-3.5 py-2.5">
+                    <p class="text-sm text-white leading-relaxed" x-text="msg.text"></p>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-1 text-right mr-1" x-text="msg.time"></p>
+                </div>
+              </div>
+            </template>
+
+          </div>
+        </template>
+      </div>
+
+      <!-- 입력창 -->
+      <div class="flex-shrink-0 bg-white border-t border-gray-100 px-3 py-2.5 flex items-center gap-2">
+        <input type="text" x-model="inputMsg" @keydown.enter="sendMsg()"
+               placeholder="메시지 입력..." class="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm outline-none placeholder-gray-400">
+        <button @click="sendMsg()" :disabled="!inputMsg.trim()"
+                class="w-9 h-9 bg-blue-600 disabled:bg-gray-200 rounded-full flex items-center justify-center transition-colors flex-shrink-0">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 하단 탭바 (lg 미만) -->
+    <nav class="lg:hidden flex-shrink-0 bg-white border-t border-gray-100 flex">
+      <a x-show="isParent" href="profiles.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg><span class="text-xs">프로필</span></a>
+      <a href="chat.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-blue-700"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><span class="text-xs font-semibold">소통</span></a>
+      <a href="bookstore.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg><span class="text-xs">서점</span></a>
+      <a href="bookshelf.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg><span class="text-xs">내 책장</span></a>
+      <a href="myinfo.html" class="flex-1 flex flex-col items-center py-3 gap-1 text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="text-xs">내 정보</span></a>
+    </nav>
+  </div>
+</div>
+
+<script>
+function app() {
+  const profileColors = {
+    hong: '#3d5069',
+    chun: '#553d6a',
+    system: '#2d5a3f',
+  };
+  return {
+    user: null, isParent: false, showMenu: false,
+    activeRoom: null, inputMsg: '',
+
+    rooms: [
+      {
+        id: 'hong', name: '홍길동', initial: '홍', color: profileColors.hong,
+        unread: 2, time: '방금 전',
+        lastMsg: '📖 Percy Jackson 42% 읽었어요!',
+        messages: [
+          {id:1, type:'date',   text:'2024년 3월 15일'},
+          {id:2, type:'system', text:'홍길동이 Percy Jackson을 시작했습니다'},
+          {id:3, type:'them',   text:'엄마, Percy Jackson 재밌어요!', time:'오전 9:12'},
+          {id:4, type:'me',     text:'그래~ 열심히 읽어봐 😊', time:'오전 9:15'},
+          {id:5, type:'date',   text:'오늘'},
+          {id:6, type:'system', text:'홍길동이 오늘 35분 읽었습니다 🎉'},
+          {id:7, type:'them',   text:'📖 Percy Jackson 42% 읽었어요!', time:'방금 전'},
+          {id:8, type:'them',   text:'오늘 목표 달성했어요!', time:'방금 전'},
+        ]
+      },
+      {
+        id: 'chun', name: '성춘향', initial: '성', color: profileColors.chun,
+        unread: 0, time: '1시간 전',
+        lastMsg: '오늘 30분 읽었습니다',
+        messages: [
+          {id:1, type:'date',   text:'오늘'},
+          {id:2, type:'system', text:'성춘향이 Wonder를 시작했습니다'},
+          {id:3, type:'them',   text:'엄마, Wonder 어려워요', time:'오전 10:00'},
+          {id:4, type:'me',     text:'조금만 더 읽어봐, 곧 재밌어질 거야!', time:'오전 10:05'},
+          {id:5, type:'them',   text:'오늘 30분 읽었습니다', time:'1시간 전'},
+        ]
+      },
+      {
+        id: 'system', name: '시스템 알림', initial: '📢', color: profileColors.system,
+        unread: 2, time: '오늘 오전 8:00',
+        lastMsg: '📊 주간 리포트가 도착했어요',
+        messages: [
+          {id:1, type:'date',   text:'2026년 4월 13일'},
+          {id:2, type:'system', text:'홍길동이 이번 주 목표를 달성했습니다! 🎉'},
+          {id:3, type:'system', text:'성춘향이 필독서 Wonder를 시작했습니다'},
+          {id:4, type:'system', text:'홍길동 연속 읽기 14일째 🔥'},
+          {id:5, type:'date',   text:'오늘'},
+          {
+            id:6, type:'report',
+            profileId:'hong', profileName:'홍길동',
+            profileColor:'#3d5069', profileInitial:'홍',
+            week:'4월 4주', period:'4/14~20',
+            summary:'목요일 집중도가 이번 주 최고였어요. 전주보다 총점 42점 상승!',
+            score:745, scoreDiff:+42, time:'오전 8:00',
+          },
+          {
+            id:7, type:'report',
+            profileId:'chun', profileName:'성춘향',
+            profileColor:'#553d6a', profileInitial:'성',
+            week:'4월 4주', period:'4/14~20',
+            summary:'이번 주 Charlotte\'s Web 완독! 연속 5일 독서 달성했어요.',
+            score:703, scoreDiff:-15, time:'오전 8:01',
+          },
+        ]
+      },
+    ],
+
+    init() {
+      this.user = JSON.parse(localStorage.getItem('cr_user') || 'null');
+      if (!this.user) { window.location.href = 'index.html'; return; }
+      this.isParent = this.user.type === 'parent';
+    },
+    logout() { localStorage.removeItem('cr_user'); window.location.href = 'index.html'; },
+    openRoom(room) {
+      this.activeRoom = room;
+      room.unread = 0;
+      this.$nextTick(() => {
+        const el = this.$refs.msgList;
+        if (el) el.scrollTop = el.scrollHeight;
+      });
+    },
+    goToReport(msg) {
+      const profileMap = {
+        hong: { name:'홍길동', initial:'홍', color:'#3d5069', age:10, grade:'초4', gender:'남', level:'Lexile 650L', gradeLabel:'골드', favorites:23, totalScore:4820 },
+        chun: { name:'성춘향', initial:'성', color:'#553d6a', age:9,  grade:'초3', gender:'여', level:'Lexile 520L', gradeLabel:'실버', favorites:15, totalScore:3210 },
+      };
+      const profile = profileMap[msg.profileId];
+      if (!profile) return;
+      localStorage.setItem('cr_profile', JSON.stringify(profile));
+      localStorage.setItem('cr_openReport', '1');
+      window.location.href = 'profile-detail.html';
+    },
+
+    sendMsg() {
+      const text = this.inputMsg.trim();
+      if (!text || !this.activeRoom) return;
+      this.activeRoom.messages.push({
+        id: Date.now(), type: 'me', text,
+        time: new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'})
+      });
+      this.inputMsg = '';
+      this.$nextTick(() => {
+        const el = this.$refs.msgList;
+        if (el) el.scrollTop = el.scrollHeight;
+      });
+    }
+  }
+}
+</script>
+</body>
+</html>
