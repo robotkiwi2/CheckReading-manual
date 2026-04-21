@@ -71,10 +71,17 @@
       <div class="mx-4 mt-4 rounded-2xl shadow-md overflow-hidden" :style="`background:${profile?.color}`">
         <div class="px-5 pt-5 pb-3">
           <div class="flex items-start gap-4">
-            <!-- 프로필 사진 -->
-            <div class="w-16 h-16 rounded-full flex-shrink-0 overflow-hidden flex items-center justify-center bg-white/25">
-              <img x-show="profilePhoto" :src="profilePhoto" class="w-full h-full object-cover">
-              <span x-show="!profilePhoto" class="text-3xl font-bold text-white" x-text="profile?.initial"></span>
+            <!-- 프로필 사진 + 엄마 미니 아바타 -->
+            <div class="relative flex-shrink-0 w-16 h-16">
+              <div class="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center bg-white/25">
+                <img x-show="profilePhoto" :src="profilePhoto" class="w-full h-full object-cover">
+                <span x-show="!profilePhoto" class="text-3xl font-bold text-white" x-text="profile?.initial"></span>
+              </div>
+              <!-- 엄마 미니 아바타 -->
+              <button @click.stop="showParentCard=true"
+                      class="absolute -bottom-1 -left-1 w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold ring-2 ring-white/40 shadow-sm hover:scale-110 transition-transform"
+                      :style="`background:${parentInfo.color}`"
+                      x-text="parentInfo.initial"></button>
             </div>
             <!-- 정보 -->
             <div class="flex-1 min-w-0 pt-0.5">
@@ -463,6 +470,58 @@
             <div class="h-safe-area-inset-bottom pb-4"></div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- 엄마 카드 모달 -->
+    <div x-show="showParentCard" x-cloak
+         class="fixed inset-0 bg-black/40 z-50 flex items-end justify-center"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         @click.self="showParentCard=false">
+      <div class="w-full max-w-3xl bg-white rounded-t-3xl overflow-hidden"
+           x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full">
+        <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-200 rounded-full"></div></div>
+        <!-- 카드 헤더 (그라디언트) -->
+        <div class="px-5 pt-4 pb-8 relative" :style="`background:${parentInfo.color}`">
+          <div class="flex items-center gap-3">
+            <div class="w-14 h-14 bg-white/25 rounded-full flex items-center justify-center ring-4 ring-white/30 flex-shrink-0">
+              <span class="text-2xl font-bold text-white" x-text="parentInfo.initial"></span>
+            </div>
+            <div class="min-w-0">
+              <h3 class="font-bold text-white text-lg leading-tight" x-text="parentInfo.name"></h3>
+              <div class="mt-1 inline-flex items-center gap-1 bg-black/20 rounded-full px-2 py-0.5">
+                <span class="text-xs">🥇</span>
+                <span class="text-white text-[11px] font-bold">골드 등급</span>
+              </div>
+            </div>
+            <!-- 팔로우 버튼 -->
+            <button class="ml-auto flex-shrink-0 bg-white text-blue-600 text-xs font-bold px-4 py-2 rounded-xl shadow-sm hover:bg-blue-50 transition-colors">
+              팔로우
+            </button>
+          </div>
+        </div>
+        <!-- 통계 행 -->
+        <div class="grid grid-cols-4 bg-white -mt-4 mx-4 rounded-2xl shadow-md relative z-10 mb-4 divide-x divide-gray-100">
+          <div class="py-3 text-center">
+            <p class="text-sm font-bold text-gray-800">24</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">팔로워</p>
+          </div>
+          <div class="py-3 text-center">
+            <p class="text-sm font-bold text-gray-800">18</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">팔로잉</p>
+          </div>
+          <div class="py-3 text-center">
+            <p class="text-sm font-bold text-blue-600">847</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">활동지수</p>
+          </div>
+          <div class="py-3 text-center">
+            <p class="text-sm font-bold text-red-400">132</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">받은 좋아요</p>
+          </div>
+        </div>
+        <div class="pb-5"></div>
       </div>
     </div>
 
@@ -1104,6 +1163,8 @@ function app() {
 
   return {
     user: null, profile: null, favorited: false,
+    parentInfo: { name: '김여사', initial: '김', color: 'linear-gradient(135deg,#667eea,#764ba2)' },
+    showParentCard: false,
     calYear: 2026, calMonth: 3,
     calDays: [], calStartDay: 0,
     daySheet: false, selectedDay: { label: '' },
