@@ -323,16 +323,26 @@
           <p class="text-xs text-gray-400 mt-2">한글/영문/숫자 사용 가능</p>
         </div>
 
-        <!-- Step 3: 생년 -->
+        <!-- Step 3: 생년월 -->
         <div x-show="addStep===3">
-          <h2 class="text-lg font-bold text-gray-900 mb-1">생년</h2>
-          <p class="text-sm text-gray-400 mb-6">태어난 연도를 선택하세요</p>
-          <div class="grid grid-cols-3 gap-2">
+          <h2 class="text-lg font-bold text-gray-900 mb-1">생년월</h2>
+          <p class="text-sm text-gray-400 mb-4">태어난 연도와 월을 선택하세요</p>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">연도</p>
+          <div class="grid grid-cols-4 gap-2 mb-5">
             <template x-for="y in addYears" :key="y">
               <button @click="newP.birthYear=y"
-                      class="py-3 rounded-xl text-sm font-medium border-2 transition-colors"
+                      class="py-2.5 rounded-xl text-sm font-medium border-2 transition-colors"
                       :class="newP.birthYear===y ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-gray-700 border-gray-200 hover:border-blue-400'"
-                      x-text="y + '년'"></button>
+                      x-text="y"></button>
+            </template>
+          </div>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">월</p>
+          <div class="grid grid-cols-4 gap-2">
+            <template x-for="m in addMonths" :key="m">
+              <button @click="newP.birthMonth=m"
+                      class="py-2.5 rounded-xl text-sm font-medium border-2 transition-colors"
+                      :class="newP.birthMonth===m ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-gray-700 border-gray-200 hover:border-blue-400'"
+                      x-text="m + '월'"></button>
             </template>
           </div>
         </div>
@@ -369,14 +379,30 @@
           </div>
         </div>
 
-        <!-- Step 6: 선호 장르 -->
+        <!-- Step 6: 선호 책 -->
         <div x-show="addStep===6">
-          <h2 class="text-lg font-bold text-gray-900 mb-1">선호 장르</h2>
-          <p class="text-sm text-gray-400 mb-6">좋아하는 장르를 선택하세요 (복수 선택)</p>
+          <h2 class="text-lg font-bold text-gray-900 mb-1">선호 책</h2>
+          <p class="text-sm text-gray-400 mb-5">선호하는 책의 조건을 선택하세요 (복수 선택)</p>
+          <div class="flex flex-col gap-5 mb-5">
+            <template x-for="group in addPrefGroups" :key="group.label">
+              <div>
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2" x-text="group.label"></p>
+                <div class="flex flex-wrap gap-2">
+                  <template x-for="item in group.items" :key="item.id">
+                    <button @click="item.on=!item.on"
+                            class="px-4 py-1.5 rounded-full text-sm font-medium border-2 transition-colors"
+                            :class="item.on ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-gray-600 border-gray-200 hover:border-blue-400'"
+                            x-text="item.label"></button>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">장르</p>
           <div class="flex flex-wrap gap-2">
             <template x-for="g in addGenres" :key="g.id">
               <button @click="g.on=!g.on"
-                      class="px-4 py-2.5 rounded-full text-sm font-medium border-2 transition-colors"
+                      class="px-4 py-1.5 rounded-full text-sm font-medium border-2 transition-colors"
                       :class="g.on ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-gray-600 border-gray-200 hover:border-blue-400'"
                       x-text="g.label"></button>
             </template>
@@ -489,8 +515,21 @@ function app() {
       window.location.href = 'profile-detail.html';
     },
     addColors: ['#3d5069','#553d6a','#2d5a3f','#6a3d3d','#3d5a5a','#6a5a3d','#3d4a6a','#5a3d4a'],
-    addYears: Array.from({length:15},(_,i)=>2024-i),
-    addGrades: ['초1','초2','초3','초4','초5','초6','중1','중2','중3'],
+    addYears: Array.from({length:25},(_,i)=>2024-i),
+    addMonths: Array.from({length:12},(_,i)=>i+1),
+    addGrades: ['미취학','유치원','초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3','성인'],
+    addPrefGroups: [
+      { label:'언어',     items: [{id:'lang_en',label:'영어',on:false},{id:'lang_ko',label:'한국어',on:false},{id:'lang_etc',label:'기타',on:false}] },
+      { label:'종류',     items: [{id:'type_lit',label:'문학',on:false},{id:'type_nf',label:'넌픽션',on:false},{id:'type_etc',label:'기타',on:false}] },
+      { label:'분량',     items: [{id:'len_s',label:'단편',on:false},{id:'len_m',label:'중편',on:false},{id:'len_l',label:'장편',on:false}] },
+      { label:'영어책 레벨', items: [
+        {id:'lvl_pb',label:'픽처북',on:false},{id:'lvl_sb',label:'스토리북',on:false},
+        {id:'lvl_rb',label:'리더스북',on:false},{id:'lvl_ec',label:'얼리챕터북',on:false},
+        {id:'lvl_mc',label:'미들챕터북',on:false},{id:'lvl_cb',label:'챕터북',on:false},
+        {id:'lvl_nv',label:'노블',on:false},
+      ]},
+      { label:'퀴즈 재풀기', items: [{id:'quiz_y',label:'가능',on:false},{id:'quiz_n',label:'불가',on:false}] },
+    ],
     addGenres: [
       {id:1,label:'📚 모험',on:false},{id:2,label:'🔬 과학',on:false},
       {id:3,label:'🏰 판타지',on:false},{id:4,label:'🌍 역사',on:false},
@@ -500,14 +539,15 @@ function app() {
     ],
     openAdd() {
       this.addStep = 1;
-      this.newP = { color: C[0], name:'', birthYear:2016, grade:'', gender:'' };
+      this.newP = { color: C[0], name:'', birthYear:null, birthMonth:null, grade:'', gender:'' };
       this.addGenres.forEach(g => g.on = false);
+      this.addPrefGroups.forEach(pg => pg.items.forEach(item => item.on = false));
       this.addPanel = true;
     },
     canNext() {
       if (this.addStep===1) return !!this.newP.color;
       if (this.addStep===2) return this.newP.name.trim().length >= 2;
-      if (this.addStep===3) return !!this.newP.birthYear;
+      if (this.addStep===3) return !!this.newP.birthYear && !!this.newP.birthMonth;
       if (this.addStep===4) return !!this.newP.grade;
       if (this.addStep===5) return !!this.newP.gender;
       return true;
