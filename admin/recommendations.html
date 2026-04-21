@@ -350,6 +350,7 @@
               <option value="history">완독 이력 기반</option>
               <option value="peer">또래 인기 기반</option>
               <option value="series">시리즈 연속</option>
+              <option value="explore">새로운 장르 탐색</option>
               <option value="popular">인기도 기반</option>
               <option value="new">신규 출판</option>
               <option value="editor">편집자 추천</option>
@@ -662,6 +663,14 @@ function recoApp() {
         minCompleted: 0, popularPeriod: '30', newWithinDays: 30, wordsMin: '', wordsMax: '',
         peerAgeDelta: 1, peerSameGender: true, seriesRecentDays: 30, customNote: '',
       },
+      {
+        id: 'ps7', name: '새로운 장르 탐색', description: '선호 장르 외 책도 가끔 추천해 독서 폭을 넓혀줌',
+        filterType: 'explore', conditionSummary: '선호 장르 제외 전 장르, 최대 1~2권',
+        sortBy: 'reads_desc', maxBooks: 4, assignedCount: 12, isActive: true, updatedDate: '2026-04-21',
+        levelMin: 1, levelMax: 6, levelRelative: false, genres: [], genreFromProfile: false,
+        minCompleted: 0, popularPeriod: '30', newWithinDays: 30, wordsMin: '', wordsMax: '',
+        peerAgeDelta: 1, peerSameGender: true, seriesRecentDays: 30, customNote: '',
+      },
     ],
 
     commonSchemas: [
@@ -785,6 +794,7 @@ function recoApp() {
         history: { label: '완독이력', cls: 'bg-amber-50 text-amber-700' },
         peer:    { label: '또래인기', cls: 'bg-pink-50 text-pink-700' },
         series:  { label: '시리즈',   cls: 'bg-teal-50 text-teal-700' },
+        explore: { label: '장르탐색', cls: 'bg-lime-50 text-lime-700' },
         popular: { label: '인기도',   cls: 'bg-rose-50 text-rose-700' },
         new:     { label: '신규출판', cls: 'bg-emerald-50 text-emerald-700' },
         editor:  { label: '편집자',   cls: 'bg-indigo-50 text-indigo-700' },

@@ -1252,11 +1252,12 @@ function app() {
       {id:9,label:'💪 스포츠',on:false},{id:10,label:'🎨 예술',on:false},
     ],
     recommendSettings: [
-      {id:1,label:'레벨 맞춤 추천',   desc:'현재 레벨에 맞는 책 위주로 추천',              on:true},
-      {id:2,label:'장르 선호 추천',   desc:'설정한 선호 장르 위주로 추천',                  on:true},
-      {id:3,label:'완독 이력 기반 추천',desc:'완독한 책과 유사한 장르·레벨 책 추천',        on:true},
-      {id:4,label:'또래에게 인기있는 책',desc:'비슷한 나이·성별 친구들이 많이 읽은 책',     on:true},
-      {id:5,label:'이어지는 시리즈', desc:'현재 읽고 있는 시리즈의 다음 권 추천',           on:true},
+      {id:1,label:'레벨 맞춤 추천',     desc:'현재 레벨에 맞는 책 위주로 추천',              on:true},
+      {id:2,label:'장르 선호 추천',     desc:'설정한 선호 장르 위주로 추천',                  on:true},
+      {id:3,label:'완독 이력 기반 추천',desc:'완독한 책과 유사한 장르·레벨 책 추천',          on:true},
+      {id:4,label:'또래에게 인기있는 책',desc:'비슷한 나이·성별 친구들이 많이 읽은 책',       on:true},
+      {id:5,label:'이어지는 시리즈',   desc:'현재 읽고 있는 시리즈의 다음 권 추천',           on:true},
+      {id:6,label:'새로운 장르 탐색',  desc:'선호 장르 외의 책도 가끔 추천해 독서 폭을 넓혀줍니다', on:false},
     ],
     notifyGroups: [
       { label:'읽기 이벤트', items: [
@@ -1271,7 +1272,7 @@ function app() {
         { id:'n5', icon:'🚨', label:'Lost 비율 급증',    desc:'시선 이탈 비율이 기준 이상 높아질 때',  on:true, value:30, unit:'%', options:[20,30,40,50] },
       ]},
       { label:'목표 & 습관', items: [
-        { id:'n6',  icon:'🎯', label:'오늘 목표 달성',  desc:'일일 읽기 목표 달성 시 칭찬 알림',           on:true,  value:null },
+        { id:'n6',  icon:'🎯', label:'오늘 목표 할당',  desc:'매일 아침 목표 읽기 점수를 자동으로 부과합니다',  on:true,  value:300, unit:'점', options:[100,200,300,400,500] },
         { id:'n7',  icon:'🌙', label:'저녁 리마인더',   desc:'오늘 아직 읽지 않았을 때 독서 유도 알림',    on:true,  value:'20:00', unit:'', options:['18:00','19:00','20:00','21:00','22:00'] },
         { id:'n8',  icon:'📊', label:'주간 리포트',     desc:'매주 읽기 현황 요약 리포트 전송 (일요일)',    on:true,  value:null },
         { id:'n10', icon:'🏆', label:'레벨 업',         desc:'자녀 읽기 레벨이 올라갈 때 알림',            on:true,  value:null },
