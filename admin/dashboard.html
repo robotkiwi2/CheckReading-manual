@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대시보드 · CheckReading Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-50" x-data="adminShell()">
+
+<!-- Sidebar -->
+<div class="fixed inset-y-0 left-0 w-60 bg-white border-r border-gray-200 flex flex-col z-30">
+  <div class="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
+    <div class="w-8 h-8 bg-blue-700 rounded-lg flex items-center justify-center">
+      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+      </svg>
+    </div>
+    <div>
+      <div class="text-sm font-bold text-gray-900">CheckReading</div>
+      <div class="text-xs text-gray-400">Admin Console</div>
+    </div>
+  </div>
+
+  <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+    <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 text-sm font-medium">
+      <svg class="w-4.5 h-4.5 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      대시보드
+    </a>
+    <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+      회원 관리
+    </a>
+    <a href="books.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      도서 관리
+    </a>
+    <a href="subscriptions.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+      구독 관리
+    </a>
+    <a href="notifications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      알림 관리
+    </a>
+  </nav>
+
+  <div class="px-3 py-4 border-t border-gray-100">
+    <div class="flex items-center gap-3 px-3 py-2">
+      <div class="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-xs font-bold">관</div>
+      <div class="flex-1 min-w-0">
+        <div class="text-xs font-medium text-gray-800 truncate" x-text="admin.name"></div>
+        <div class="text-xs text-gray-400 truncate" x-text="admin.email"></div>
+      </div>
+      <button @click="logout()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="ml-60">
+  <!-- Top bar -->
+  <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+    <div>
+      <h1 class="text-lg font-semibold text-gray-900">대시보드</h1>
+      <p class="text-xs text-gray-400 mt-0.5">2026년 4월 21일 기준</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <select class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option>최근 30일</option>
+        <option>최근 7일</option>
+        <option>이번 달</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="p-6">
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <template x-for="kpi in kpis" :key="kpi.label">
+        <div class="bg-white rounded-xl p-5 border border-gray-100">
+          <div class="flex items-start justify-between mb-3">
+            <span class="text-sm text-gray-500" x-text="kpi.label"></span>
+            <span class="text-xs font-medium px-2 py-0.5 rounded-full"
+              :class="kpi.trend > 0 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'"
+              x-text="(kpi.trend > 0 ? '+' : '') + kpi.trend + '%'"></span>
+          </div>
+          <div class="text-2xl font-bold text-gray-900" x-text="kpi.value"></div>
+          <div class="text-xs text-gray-400 mt-1" x-text="kpi.sub"></div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Charts row -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <!-- 신규 가입 추이 -->
+      <div class="col-span-2 bg-white rounded-xl p-5 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-semibold text-gray-800">신규 가입 추이</h2>
+          <span class="text-xs text-gray-400">최근 30일</span>
+        </div>
+        <canvas id="signupChart" height="100"></canvas>
+      </div>
+
+      <!-- 구독 플랜 분포 -->
+      <div class="bg-white rounded-xl p-5 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-semibold text-gray-800">구독 플랜</h2>
+        </div>
+        <canvas id="planChart" height="180"></canvas>
+        <div class="mt-4 space-y-2">
+          <template x-for="p in plans" :key="p.label">
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <div class="w-2.5 h-2.5 rounded-full" :style="`background:${p.color}`"></div>
+                <span class="text-gray-600" x-text="p.label"></span>
+              </div>
+              <span class="font-medium text-gray-800" x-text="p.count + '명'"></span>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent activity -->
+    <div class="grid grid-cols-2 gap-4">
+      <!-- 최근 가입 회원 -->
+      <div class="bg-white rounded-xl p-5 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-semibold text-gray-800">최근 가입 회원</h2>
+          <a href="users.html" class="text-xs text-blue-600 hover:underline">전체보기</a>
+        </div>
+        <div class="space-y-3">
+          <template x-for="u in recentUsers" :key="u.email">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                :style="`background:${u.color}`" x-text="u.name[0]"></div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium text-gray-800" x-text="u.name"></div>
+                <div class="text-xs text-gray-400" x-text="u.email"></div>
+              </div>
+              <div class="text-right">
+                <span class="text-xs px-2 py-0.5 rounded-full"
+                  :class="u.plan === '프리미엄' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500'"
+                  x-text="u.plan"></span>
+                <div class="text-xs text-gray-400 mt-0.5" x-text="u.date"></div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- 인기 도서 -->
+      <div class="bg-white rounded-xl p-5 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-semibold text-gray-800">인기 도서 TOP 5</h2>
+          <a href="books.html" class="text-xs text-blue-600 hover:underline">전체보기</a>
+        </div>
+        <div class="space-y-3">
+          <template x-for="(b, i) in topBooks" :key="b.title">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold"
+                :class="i === 0 ? 'bg-yellow-100 text-yellow-600' : i === 1 ? 'bg-gray-100 text-gray-500' : i === 2 ? 'bg-orange-100 text-orange-500' : 'bg-gray-50 text-gray-400'"
+                x-text="i + 1"></div>
+              <div class="w-8 h-11 rounded flex-shrink-0" :style="`background:${b.color}`"></div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium text-gray-800 truncate" x-text="b.title"></div>
+                <div class="text-xs text-gray-400" x-text="b.author"></div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-semibold text-gray-800" x-text="b.reads + '회'"></div>
+                <div class="text-xs text-gray-400">읽기</div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+function adminShell() {
+  return {
+    admin: JSON.parse(localStorage.getItem('cr_admin') || '{"name":"관리자","email":"admin@readerseye.com"}'),
+    kpis: [
+      { label: '전체 회원', value: '1,284명', trend: 8.2, sub: '부모 계정 기준' },
+      { label: '활성 학생', value: '2,107명', trend: 5.6, sub: '이번 달 1회 이상 읽기' },
+      { label: '도서 목록', value: '348권', trend: 3.1, sub: '이번 달 12권 추가' },
+      { label: '월 구독 수익', value: '₩4,820K', trend: -1.4, sub: '지난달 대비' },
+    ],
+    plans: [
+      { label: '프리미엄', count: 847, color: '#1d4ed8' },
+      { label: '베이직', count: 312, color: '#60a5fa' },
+      { label: '무료체험', count: 125, color: '#e5e7eb' },
+    ],
+    recentUsers: [
+      { name: '김지수', email: 'jisu@example.com', plan: '프리미엄', date: '오늘', color: '#2e4f8f' },
+      { name: '박민준', email: 'minjun@example.com', plan: '베이직', date: '오늘', color: '#5c2e8c' },
+      { name: '이서연', email: 'seoyeon@example.com', plan: '프리미엄', date: '어제', color: '#1e6840' },
+      { name: '최현우', email: 'hyunwoo@example.com', plan: '무료체험', date: '어제', color: '#8a2424' },
+      { name: '정수아', email: 'sua@example.com', plan: '프리미엄', date: '2일 전', color: '#7a5c1e' },
+    ],
+    topBooks: [
+      { title: 'Charlotte\'s Web', author: 'E.B. White', reads: 312, color: '#2e4f8f' },
+      { title: 'The BFG', author: 'Roald Dahl', reads: 278, color: '#5c2e8c' },
+      { title: 'Holes', author: 'Louis Sachar', reads: 241, color: '#1e6840' },
+      { title: 'Wonder', author: 'R.J. Palacio', reads: 198, color: '#8a2424' },
+      { title: 'Matilda', author: 'Roald Dahl', reads: 187, color: '#7a5c1e' },
+    ],
+    logout() {
+      localStorage.removeItem('cr_admin');
+      location.href = 'index.html';
+    },
+    init() {
+      this.$nextTick(() => {
+        this.drawCharts();
+      });
+    },
+    drawCharts() {
+      // Signup trend chart
+      const days = Array.from({length: 30}, (_, i) => {
+        const d = new Date(2026, 3, 21);
+        d.setDate(d.getDate() - (29 - i));
+        return `${d.getMonth()+1}/${d.getDate()}`;
+      });
+      const signupData = [3,5,2,8,6,4,9,11,7,5,8,12,6,10,8,14,9,7,11,13,8,6,12,10,15,9,11,8,13,16];
+      new Chart(document.getElementById('signupChart'), {
+        type: 'line',
+        data: {
+          labels: days.filter((_, i) => i % 5 === 0 || i === 29),
+          datasets: [{
+            data: signupData.filter((_, i) => i % 5 === 0 || i === 29),
+            borderColor: '#1d4ed8',
+            backgroundColor: 'rgba(29,78,216,0.08)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: '#1d4ed8',
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+            y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 11 }, stepSize: 5 }, beginAtZero: true }
+          }
+        }
+      });
+
+      // Plan donut chart
+      new Chart(document.getElementById('planChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['프리미엄', '베이직', '무료체험'],
+          datasets: [{ data: [847, 312, 125], backgroundColor: ['#1d4ed8', '#60a5fa', '#e5e7eb'], borderWidth: 0 }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          cutout: '72%',
+        }
+      });
+    }
+  }
+}
+</script>
+</body>
+</html>

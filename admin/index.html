@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CheckReading Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+<div x-data="loginApp()" class="w-full max-w-sm">
+  <div class="text-center mb-8">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-700 rounded-2xl mb-4">
+      <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-900">CheckReading</h1>
+    <p class="text-sm text-gray-500 mt-1">관리자 콘솔</p>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm p-6">
+    <form @submit.prevent="login()">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+        <input x-model="email" type="email" placeholder="admin@readerseye.com"
+          class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
+        <input x-model="password" type="password" placeholder="••••••••"
+          class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <template x-if="error">
+        <p class="text-red-500 text-xs mb-4" x-text="error"></p>
+      </template>
+      <button type="submit"
+        class="w-full bg-blue-700 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors">
+        로그인
+      </button>
+    </form>
+  </div>
+  <p class="text-center text-xs text-gray-400 mt-6">리더스아이 내부 시스템 · 권한자만 접속 가능</p>
+</div>
+
+<script>
+function loginApp() {
+  return {
+    email: '',
+    password: '',
+    error: '',
+    login() {
+      if (this.email === 'admin@readerseye.com' && this.password === 'admin1234') {
+        localStorage.setItem('cr_admin', JSON.stringify({ email: this.email, name: '관리자' }));
+        location.href = 'dashboard.html';
+      } else {
+        this.error = '이메일 또는 비밀번호가 올바르지 않습니다.';
+      }
+    }
+  }
+}
+</script>
+</body>
+</html>

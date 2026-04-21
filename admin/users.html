@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>회원 관리 · CheckReading Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-50" x-data="usersApp()">
+
+<!-- Sidebar -->
+<div class="fixed inset-y-0 left-0 w-60 bg-white border-r border-gray-200 flex flex-col z-30">
+  <div class="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
+    <div class="w-8 h-8 bg-blue-700 rounded-lg flex items-center justify-center">
+      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+      </svg>
+    </div>
+    <div>
+      <div class="text-sm font-bold text-gray-900">CheckReading</div>
+      <div class="text-xs text-gray-400">Admin Console</div>
+    </div>
+  </div>
+  <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+    <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      대시보드
+    </a>
+    <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 text-sm font-medium">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+      회원 관리
+    </a>
+    <a href="books.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      도서 관리
+    </a>
+    <a href="subscriptions.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+      구독 관리
+    </a>
+    <a href="notifications.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      알림 관리
+    </a>
+  </nav>
+  <div class="px-3 py-4 border-t border-gray-100">
+    <div class="flex items-center gap-3 px-3 py-2">
+      <div class="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-xs font-bold">관</div>
+      <div class="flex-1 min-w-0">
+        <div class="text-xs font-medium text-gray-800">관리자</div>
+        <div class="text-xs text-gray-400">admin@readerseye.com</div>
+      </div>
+      <button @click="logout()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="ml-60">
+  <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+    <div>
+      <h1 class="text-lg font-semibold text-gray-900">회원 관리</h1>
+      <p class="text-xs text-gray-400 mt-0.5">전체 <span x-text="filtered.length"></span>명</p>
+    </div>
+    <button class="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      회원 초대
+    </button>
+  </header>
+
+  <main class="p-6">
+    <!-- Filters -->
+    <div class="flex items-center gap-3 mb-4">
+      <div class="relative flex-1 max-w-xs">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input x-model="search" type="text" placeholder="이름, 이메일 검색"
+          class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <select x-model="filterPlan" class="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="">전체 플랜</option>
+        <option>프리미엄</option>
+        <option>베이직</option>
+        <option>무료체험</option>
+      </select>
+      <select x-model="filterStatus" class="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="">전체 상태</option>
+        <option>활성</option>
+        <option>휴면</option>
+        <option>정지</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-100 bg-gray-50">
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 w-8">
+              <input type="checkbox" class="rounded">
+            </th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">회원</th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">자녀 수</th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">플랜</th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">상태</th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">가입일</th>
+            <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">마지막 활동</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="u in paginated" :key="u.email">
+            <tr class="border-b border-gray-50 hover:bg-gray-50 cursor-pointer" @click="openDetail(u)">
+              <td class="px-4 py-3" @click.stop>
+                <input type="checkbox" class="rounded">
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                    :style="`background:${u.color}`" x-text="u.name[0]"></div>
+                  <div>
+                    <div class="font-medium text-gray-900" x-text="u.name"></div>
+                    <div class="text-xs text-gray-400" x-text="u.email"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-gray-600" x-text="u.children + '명'"></td>
+              <td class="px-4 py-3">
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium"
+                  :class="u.plan === '프리미엄' ? 'bg-blue-50 text-blue-600' : u.plan === '베이직' ? 'bg-indigo-50 text-indigo-500' : 'bg-gray-100 text-gray-500'"
+                  x-text="u.plan"></span>
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-1.5">
+                  <div class="w-1.5 h-1.5 rounded-full"
+                    :class="u.status === '활성' ? 'bg-green-400' : u.status === '휴면' ? 'bg-yellow-400' : 'bg-red-400'"></div>
+                  <span class="text-xs text-gray-600" x-text="u.status"></span>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-gray-500 text-xs" x-text="u.joinDate"></td>
+              <td class="px-4 py-3 text-gray-500 text-xs" x-text="u.lastActive"></td>
+              <td class="px-4 py-3" @click.stop>
+                <button class="text-gray-400 hover:text-gray-600 p-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                </button>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+        <span class="text-xs text-gray-400">
+          <span x-text="(page - 1) * pageSize + 1"></span>–<span x-text="Math.min(page * pageSize, filtered.length)"></span> / <span x-text="filtered.length"></span>명
+        </span>
+        <div class="flex items-center gap-1">
+          <button @click="page = Math.max(1, page - 1)" :disabled="page === 1"
+            class="px-3 py-1 text-xs border border-gray-200 rounded-md text-gray-600 disabled:opacity-40 hover:bg-gray-50">이전</button>
+          <template x-for="p in totalPages" :key="p">
+            <button @click="page = p"
+              class="w-7 h-7 text-xs rounded-md"
+              :class="page === p ? 'bg-blue-700 text-white' : 'text-gray-600 hover:bg-gray-50'"
+              x-text="p"></button>
+          </template>
+          <button @click="page = Math.min(totalPages, page + 1)" :disabled="page === totalPages"
+            class="px-3 py-1 text-xs border border-gray-200 rounded-md text-gray-600 disabled:opacity-40 hover:bg-gray-50">다음</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- User detail panel -->
+<div x-show="selectedUser" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+  x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full"
+  class="fixed inset-y-0 right-0 w-96 bg-white shadow-xl border-l border-gray-200 z-40 overflow-y-auto transform"
+  style="display:none">
+  <template x-if="selectedUser">
+    <div>
+      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <h2 class="text-sm font-semibold text-gray-900">회원 상세</h2>
+        <button @click="selectedUser = null" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-5">
+        <!-- Profile -->
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-bold"
+            :style="`background:${selectedUser.color}`" x-text="selectedUser.name[0]"></div>
+          <div>
+            <div class="font-semibold text-gray-900" x-text="selectedUser.name"></div>
+            <div class="text-sm text-gray-400" x-text="selectedUser.email"></div>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="text-xs px-2 py-0.5 rounded-full"
+                :class="selectedUser.plan === '프리미엄' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500'"
+                x-text="selectedUser.plan"></span>
+              <div class="flex items-center gap-1">
+                <div class="w-1.5 h-1.5 rounded-full"
+                  :class="selectedUser.status === '활성' ? 'bg-green-400' : 'bg-yellow-400'"></div>
+                <span class="text-xs text-gray-500" x-text="selectedUser.status"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+          <div class="bg-gray-50 rounded-xl p-3 text-center">
+            <div class="text-lg font-bold text-gray-900" x-text="selectedUser.children"></div>
+            <div class="text-xs text-gray-500">자녀</div>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-3 text-center">
+            <div class="text-lg font-bold text-gray-900" x-text="selectedUser.totalBooks"></div>
+            <div class="text-xs text-gray-500">읽은 책</div>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-3 text-center">
+            <div class="text-lg font-bold text-gray-900" x-text="selectedUser.readDays"></div>
+            <div class="text-xs text-gray-500">읽기 일수</div>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="space-y-3 mb-6">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500">가입일</span>
+            <span class="text-gray-800" x-text="selectedUser.joinDate"></span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500">마지막 활동</span>
+            <span class="text-gray-800" x-text="selectedUser.lastActive"></span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500">구독 갱신일</span>
+            <span class="text-gray-800" x-text="selectedUser.renewDate"></span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500">연동 기기</span>
+            <span class="text-gray-800" x-text="selectedUser.devices + '대'"></span>
+          </div>
+        </div>
+
+        <!-- Children list -->
+        <div class="mb-6">
+          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">자녀 프로필</h3>
+          <div class="space-y-2">
+            <template x-for="child in selectedUser.childList" :key="child.name">
+              <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                  :style="`background:${child.color}`" x-text="child.name[0]"></div>
+                <div class="flex-1">
+                  <div class="text-sm font-medium text-gray-800" x-text="child.name"></div>
+                  <div class="text-xs text-gray-400" x-text="child.grade + ' · 읽기 ' + child.books + '권'"></div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-2">
+          <button class="w-full text-sm py-2.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+            구독 플랜 변경
+          </button>
+          <button class="w-full text-sm py-2.5 border border-red-200 rounded-lg text-red-500 hover:bg-red-50 font-medium">
+            계정 정지
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+</div>
+
+<script>
+function usersApp() {
+  const colors = ['#2e4f8f','#5c2e8c','#1e6840','#8a2424','#7a5c1e','#1e5c6e','#6e1e5c','#3d6e1e'];
+  const users = [
+    { name:'김지수', email:'jisu@ex.com', children:2, plan:'프리미엄', status:'활성', joinDate:'2025-08-12', lastActive:'오늘', renewDate:'2026-05-12', devices:3, totalBooks:47, readDays:128, color:'#2e4f8f', childList:[{name:'김민재',grade:'초5',books:28,color:'#1e6840'},{name:'김서아',grade:'초2',books:19,color:'#5c2e8c'}] },
+    { name:'박민준', email:'minjun@ex.com', children:1, plan:'베이직', status:'활성', joinDate:'2025-10-03', lastActive:'어제', renewDate:'2026-05-03', devices:2, totalBooks:23, readDays:67, color:'#5c2e8c', childList:[{name:'박태양',grade:'초4',books:23,color:'#8a2424'}] },
+    { name:'이서연', email:'seoyeon@ex.com', children:3, plan:'프리미엄', status:'활성', joinDate:'2025-06-20', lastActive:'어제', renewDate:'2026-06-20', devices:4, totalBooks:89, readDays:203, color:'#1e6840', childList:[{name:'이도현',grade:'중1',books:41,color:'#2e4f8f'},{name:'이하은',grade:'초6',books:32,color:'#7a5c1e'},{name:'이준서',grade:'초3',books:16,color:'#1e5c6e'}] },
+    { name:'최현우', email:'hyunwoo@ex.com', children:1, plan:'무료체험', status:'활성', joinDate:'2026-04-15', lastActive:'3일 전', renewDate:'-', devices:1, totalBooks:4, readDays:6, color:'#8a2424', childList:[{name:'최아린',grade:'초1',books:4,color:'#6e1e5c'}] },
+    { name:'정수아', email:'sua@ex.com', children:2, plan:'프리미엄', status:'활성', joinDate:'2025-09-01', lastActive:'2일 전', renewDate:'2026-09-01', devices:3, totalBooks:61, readDays:145, color:'#7a5c1e', childList:[{name:'정유진',grade:'초5',books:38,color:'#1e6840'},{name:'정민호',grade:'초2',books:23,color:'#2e4f8f'}] },
+    { name:'강도윤', email:'doyun@ex.com', children:1, plan:'베이직', status:'휴면', joinDate:'2025-04-10', lastActive:'3주 전', renewDate:'2026-04-10', devices:2, totalBooks:18, readDays:44, color:'#1e5c6e', childList:[{name:'강지우',grade:'초3',books:18,color:'#5c2e8c'}] },
+    { name:'윤하나', email:'hana@ex.com', children:2, plan:'프리미엄', status:'활성', joinDate:'2025-11-22', lastActive:'오늘', renewDate:'2026-11-22', devices:2, totalBooks:52, readDays:112, color:'#6e1e5c', childList:[{name:'윤재원',grade:'초6',books:30,color:'#8a2424'},{name:'윤소율',grade:'초4',books:22,color:'#1e6840'}] },
+    { name:'임준혁', email:'junhyuk@ex.com', children:1, plan:'프리미엄', status:'정지', joinDate:'2025-07-30', lastActive:'1달 전', renewDate:'-', devices:0, totalBooks:35, readDays:80, color:'#3d6e1e', childList:[{name:'임채은',grade:'초5',books:35,color:'#2e4f8f'}] },
+    { name:'오미래', email:'mirae@ex.com', children:1, plan:'베이직', status:'활성', joinDate:'2026-01-08', lastActive:'오늘', renewDate:'2026-07-08', devices:2, totalBooks:11, readDays:29, color:'#2e4f8f', childList:[{name:'오한결',grade:'초2',books:11,color:'#7a5c1e'}] },
+    { name:'한소희', email:'sohee@ex.com', children:2, plan:'프리미엄', status:'활성', joinDate:'2025-12-15', lastActive:'어제', renewDate:'2026-12-15', devices:3, totalBooks:40, readDays:98, color:'#5c2e8c', childList:[{name:'한예준',grade:'중1',books:25,color:'#1e6840'},{name:'한나은',grade:'초4',books:15,color:'#8a2424'}] },
+  ];
+
+  return {
+    search: '',
+    filterPlan: '',
+    filterStatus: '',
+    page: 1,
+    pageSize: 8,
+    selectedUser: null,
+    users,
+    get filtered() {
+      return this.users.filter(u => {
+        const q = this.search.toLowerCase();
+        const matchQ = !q || u.name.includes(q) || u.email.includes(q);
+        const matchPlan = !this.filterPlan || u.plan === this.filterPlan;
+        const matchStatus = !this.filterStatus || u.status === this.filterStatus;
+        return matchQ && matchPlan && matchStatus;
+      });
+    },
+    get paginated() {
+      return this.filtered.slice((this.page - 1) * this.pageSize, this.page * this.pageSize);
+    },
+    get totalPages() {
+      return Math.max(1, Math.ceil(this.filtered.length / this.pageSize));
+    },
+    openDetail(u) { this.selectedUser = u; },
+    logout() {
+      localStorage.removeItem('cr_admin');
+      location.href = 'index.html';
+    }
+  }
+}
+</script>
+</body>
+</html>
