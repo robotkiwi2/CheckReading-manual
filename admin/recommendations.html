@@ -275,6 +275,8 @@
           <option value="level">레벨 기반</option>
           <option value="genre">장르 기반</option>
           <option value="history">완독 이력 기반</option>
+          <option value="peer">또래 인기 기반</option>
+          <option value="series">시리즈 연속</option>
           <option value="popular">인기도 기반</option>
           <option value="new">신규 출판</option>
           <option value="editor">편집자 추천</option>
@@ -370,6 +372,42 @@
         </div>
       </div>
 
+      <!-- 조건 — 또래 인기 -->
+      <div x-show="form.filterType === 'peer'" class="space-y-3">
+        <label class="block text-xs font-medium text-gray-700">또래 범위</label>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-600">나이</span>
+          <input type="number" x-model="form.peerAgeDelta" min="0" max="5" class="w-16 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span class="text-xs text-gray-600">살 차이 이내</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="peerSameGender" x-model="form.peerSameGender" class="rounded border-gray-300 text-blue-600">
+          <label for="peerSameGender" class="text-xs text-gray-600">동일 성별만 포함</label>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 mb-1 block">집계 기간</label>
+          <select x-model="form.popularPeriod" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="7">최근 7일</option>
+            <option value="30">최근 30일</option>
+            <option value="90">최근 90일</option>
+            <option value="all">전체 기간</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 조건 — 시리즈 연속 -->
+      <div x-show="form.filterType === 'series'" class="space-y-3">
+        <label class="block text-xs font-medium text-gray-700">현재 읽는 시리즈 기준</label>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-600">최근</span>
+          <input type="number" x-model="form.seriesRecentDays" min="1" max="180" class="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <span class="text-xs text-gray-600">일 이내 읽은 시리즈 대상</span>
+        </div>
+        <div class="text-xs text-gray-400 bg-gray-50 rounded-lg px-3 py-2 leading-relaxed">
+          프로필이 읽고 있는 시리즈 중 아직 읽지 않은 다음 권을 시리즈 순서대로 추천합니다. 시리즈가 없는 단독 도서는 제외됩니다.
+        </div>
+      </div>
+
       <!-- 조건 — 편집자 추천 / 커스텀 -->
       <div x-show="form.filterType === 'editor' || form.filterType === 'custom'" class="space-y-2">
         <label class="block text-xs font-medium text-gray-700">메모</label>
@@ -387,6 +425,7 @@
           <option value="level_desc">레벨 높은 순</option>
           <option value="new">최근 출판 순</option>
           <option value="words_asc">분량 짧은 순</option>
+          <option value="series_order">시리즈 순서</option>
           <option value="random">랜덤</option>
         </select>
       </div>
@@ -508,23 +547,48 @@ function recoApp() {
       },
       {
         id: 'ps4',
-        name: '짧은 책 먼저',
-        description: '분량이 짧아 부담 없이 시작할 수 있는 책',
-        filterType: 'words',
-        conditionSummary: '5,000단어 이하',
-        sortBy: 'words_asc',
-        maxBooks: 8,
-        assignedCount: 15,
+        name: '또래에게 인기있는 책',
+        description: '비슷한 나이·성별 친구들이 많이 읽은 책',
+        filterType: 'peer',
+        conditionSummary: '나이 ±1살, 동일 성별',
+        sortBy: 'reads_desc',
+        maxBooks: 10,
+        assignedCount: 27,
         isActive: true,
-        updatedDate: '2026-03-20',
+        updatedDate: '2026-04-21',
         levelMin: 1, levelMax: 6, levelRelative: false,
         genres: [], genreFromProfile: false,
         minCompleted: 0,
         popularPeriod: '30',
         newWithinDays: 30,
-        wordsMin: '', wordsMax: 5000,
+        wordsMin: '', wordsMax: '',
         displayOrder: 1,
         customNote: '',
+        peerAgeDelta: 1,
+        peerSameGender: true,
+      },
+      {
+        id: 'ps6',
+        name: '이어지는 시리즈',
+        description: '현재 읽고 있는 시리즈의 다음 권',
+        filterType: 'series',
+        conditionSummary: '최근 30일 이내 읽은 시리즈 기준',
+        sortBy: 'series_order',
+        maxBooks: 6,
+        assignedCount: 19,
+        isActive: true,
+        updatedDate: '2026-04-21',
+        levelMin: 1, levelMax: 6, levelRelative: false,
+        genres: [], genreFromProfile: false,
+        minCompleted: 0,
+        popularPeriod: '30',
+        newWithinDays: 30,
+        wordsMin: '', wordsMax: '',
+        displayOrder: 1,
+        customNote: '',
+        peerAgeDelta: 1,
+        peerSameGender: true,
+        seriesRecentDays: 30,
       },
       {
         id: 'ps5',
@@ -651,6 +715,8 @@ function recoApp() {
         level:   { label: '레벨',     cls: 'bg-blue-50 text-blue-700' },
         genre:   { label: '장르',     cls: 'bg-purple-50 text-purple-700' },
         history: { label: '완독이력', cls: 'bg-amber-50 text-amber-700' },
+        peer:    { label: '또래인기', cls: 'bg-pink-50 text-pink-700' },
+        series:  { label: '시리즈',   cls: 'bg-teal-50 text-teal-700' },
         popular: { label: '인기도',   cls: 'bg-rose-50 text-rose-700' },
         new:     { label: '신규출판', cls: 'bg-emerald-50 text-emerald-700' },
         editor:  { label: '편집자',   cls: 'bg-indigo-50 text-indigo-700' },
@@ -665,7 +731,7 @@ function recoApp() {
         reads_desc: '읽기 많은 순', reads_asc: '읽기 적은 순',
         score_desc: '퀴즈 점수순', level_asc: '레벨 낮은 순',
         level_desc: '레벨 높은 순', new: '최근 출판 순',
-        words_asc: '분량 짧은 순', random: '랜덤',
+        words_asc: '분량 짧은 순', series_order: '시리즈 순서', random: '랜덤',
       };
       return map[key] || key;
     },
@@ -685,6 +751,8 @@ function recoApp() {
         sortBy: 'reads_desc', maxBooks: 10,
         displayOrder: this.commonSchemas.length + 1,
         isActive: true, customNote: '',
+        peerAgeDelta: 1, peerSameGender: true,
+        seriesRecentDays: 30,
       };
       this.panelOpen = true;
     },
