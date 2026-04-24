@@ -26,7 +26,8 @@ GitHub repo: `robotkiwi2/CheckReading-manual`, branch `main`, path `/admin/`
 | `index.html` | 로그인 | 버튼 누르면 바로 진입 (프로토타입 — 검증 없음) |
 | `dashboard.html` | 대시보드 | KPI 카드 4종, 신규 가입 라인차트, 구독 도넛차트, 최근 가입 목록, 인기 도서 TOP5 |
 | `users.html` | 회원 관리 | 검색/필터(플랜·상태)/페이지네이션, 우측 슬라이드 상세 패널(자녀 목록·통계) |
-| `books.html` | 도서 관리 | 출판 탭 3종, 카드/표 뷰 토글, 검색·장르·레벨·정렬 필터, 우측 편집 패널 |
+| `books.html` | 도서 관리 | 출판 탭 4종(출판중/출판대기/출판중지/제작중), 카드/표 뷰 토글, 검색·장르·레벨·정렬 필터, 우측 편집 패널 |
+| `recommendations.html` | 추천 관리 | 탭 4종 + 드래그 정렬 + 우측 편집 패널 |
 
 ---
 
@@ -75,11 +76,70 @@ GitHub repo: `robotkiwi2/CheckReading-manual`, branch `main`, path `/admin/`
 
 ---
 
+## recommendations.html 상세
+
+### 탭 구조 (4종)
+- **프로필 추천 선반**: 프로필 선호 설정에 따라 할당되는 개인화 스키마
+- **공통 추천 선반**: 전체 사용자 공통 노출 스키마
+- **이벤트 추천 선반**: 기간 한정 이벤트성 스키마 (방학특집, 크리스마스 등). 노출 시작·종료일 설정 가능
+- **상단 홍보**: 서점 최상단 배너에 직접 노출할 책 관리 (책 제목, 홍보 문구, 태그+색상, 표지 배경색, 노출 기간)
+
+### 프로필 추천 선반 스키마 6종 (prototype 책추천설정과 1:1 대응)
+| 스키마 | filterType | 기본 활성 |
+|--------|-----------|---------|
+| 레벨 맞춤 추천 | level | ON |
+| 장르 선호 추천 | genre | ON |
+| 완독 이력 기반 추천 | history | ON |
+| 또래에게 인기있는 책 | peer | ON |
+| 이어지는 시리즈 | series | ON |
+| 새로운 장르 탐색 | explore | OFF (opt-in) |
+
+### 스키마 데이터 구조
+```js
+{
+  id, name, description,
+  filterType,           // level/genre/history/peer/series/explore/popular/new/editor/words/custom
+  conditionSummary,     // 테이블에 표시되는 조건 요약 문자열
+  sortBy,               // reads_desc/score_desc/level_asc/new/series_order/random 등
+  maxBooks,             // 최대 표시 권수 (3~30)
+  isActive,             // 활성화 여부
+  updatedDate,          // YYYY-MM-DD
+  assignedCount,        // 할당된 프로필 수 (profile 탭만)
+  // 이벤트 선반 추가 필드:
+  eventTag,             // 배지 텍스트 (예: '여름방학')
+  startDate, endDate,   // 노출 기간 YYYY-MM-DD
+  // 조건별 필드 (filterType에 따라 사용):
+  levelMin, levelMax, levelRelative,
+  genres[], genreFromProfile,
+  minCompleted, popularPeriod,
+  newWithinDays, wordsMin, wordsMax,
+  peerAgeDelta, peerSameGender,
+  seriesRecentDays, customNote,
+}
+```
+
+### 상단 홍보 데이터 구조
+```js
+{
+  id, bookTitle, author,
+  tag,          // 홍보 태그 텍스트 (신간, 추천, 이벤트 등)
+  tagColor,     // 태그 색상 hex
+  subtitle,     // 배너 부제 / 홍보 문구
+  coverColor,   // 표지 배경색 hex (프로필 팔레트 8종 또는 직접 입력)
+  startDate, endDate,
+  isActive, updatedDate,
+}
+```
+
+### 드래그 정렬
+모든 탭에서 행을 드래그해 순서 변경 가능. 그립 핸들(⋮⋮) 클릭 시 cursor:grab. 드래그 중 파란 상단 선으로 삽입 위치 표시.
+
+---
+
 ## 미완성 / 계획 중
 
 | 항목 | 설명 |
 |------|------|
-| `recommendations.html` | 추천 관리 — [프로필 추천 선반] [공통 추천 선반] 탭, 스키마 CRUD (우측 편집 패널) |
 | `subscriptions.html` | 구독 관리 (플랜별 목록, 결제 내역) |
 | `notifications.html` | 알림 관리 (공지 발송, 푸시 이력) |
 | 회원 상세 — 읽기 이력 탭 | 자녀별 읽기 세션 로그 |
